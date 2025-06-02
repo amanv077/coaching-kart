@@ -48,13 +48,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="max-w-md w-full space-y-8">
+    <div className="max-w-md w-full space-y-8 bg-card rounded-xl shadow-xl p-8 relative z-10 border border-muted/30"
+      style={{
+        transform: "perspective(1000px) rotateY(2deg)",
+        backgroundImage: "linear-gradient(to bottom right, hsl(var(--background)), hsl(var(--card)))",
+        boxShadow: "rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px, rgba(255, 255, 255, 0.1) 0px 1px 0px inset",
+      }}>
+      <div className="absolute top-0 left-0 right-0 h-2 bg-coaching-gradient rounded-t-xl"></div>
+      <div className="absolute -left-2 top-8 bottom-8 w-[8px] bg-coaching-gradient/20 rounded-l-md" style={{ transform: "translateX(-2px)" }}></div>
         {/* Header */}
         <div className="text-center">
-          <div className="w-16 h-16 bg-coaching-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <span className="text-white font-bold text-2xl">CK</span>
+          <div className=" text-3xl bg-coaching-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="text-white font-bold text-2xl">Coaching-Kart</span>
           </div>
-          <h2 className="text-3xl font-bold text-foreground">
+          <h2 className="text-2xl font-bold text-foreground">
             Welcome Back! 👋
           </h2>
           <p className="mt-2 text-muted-foreground">

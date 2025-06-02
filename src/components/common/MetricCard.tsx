@@ -7,7 +7,7 @@ interface MetricCardProps {
 
 const MetricCard = ({ value, label }: MetricCardProps) => (
   <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-coaching-primary/10">
-    <div className="text-4xl md:text-5xl font-bold bg-coaching-gradient bg-clip-text text-transparent mb-2">
+    <div className="text-4xl md:text-5xl font-bold bg-coaching-gradient bg-clip-text   mb-2">
       {value}
     </div>
     <div className="text-sm text-muted-foreground uppercase tracking-wider">

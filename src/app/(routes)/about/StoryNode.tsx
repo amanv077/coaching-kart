@@ -46,7 +46,7 @@ const StoryNode = ({
       
       <div className={`md:col-span-3 flex items-center ${isLeft ? 'md:order-2' : 'md:order-1'}`}>
         <div className={`bg-card/80 backdrop-filter backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-coaching-primary/10 shadow-lg transform hover:-translate-y-1 transition-all duration-300 ${isLeft ? 'md:ml-4' : 'md:mr-4'}`}>
-          <h3 className="text-2xl md:text-3xl font-bold mb-4 bg-coaching-gradient bg-clip-text text-transparent">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 bg-coaching-gradient bg-clip-text  ">
             {title}
           </h3>
           <p className="text-muted-foreground leading-relaxed">

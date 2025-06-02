@@ -10,7 +10,7 @@ const PageHeader = ({ title, subtitle }: PageHeaderProps) => (
     <div className="absolute inset-0 bg-gradient-to-r from-coaching-primary/10 to-coaching-accent/10 z-0"></div>
     <div className="container mx-auto px-4 relative z-10">
       <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-coaching-gradient bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-coaching-gradient bg-clip-text  ">
           {title}
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">

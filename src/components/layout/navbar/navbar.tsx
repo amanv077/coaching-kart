@@ -47,17 +47,12 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center space-x-6">
+        
           <Link 
-            href="/courses" 
+            href="/coaching" 
             className="text-muted-foreground hover:text-coaching-primary transition-colors"
           >
-            Courses
-          </Link>
-          <Link 
-            href="/coaches" 
-            className="text-muted-foreground hover:text-coaching-primary transition-colors"
-          >
-            Coaches
+            Coachings
           </Link>
           
           {/* Dashboard link shown only when logged in */}
@@ -74,13 +69,13 @@ const Navbar = () => {
             href="/about" 
             className="text-muted-foreground hover:text-coaching-primary transition-colors"
           >
-            About
+            About Us
           </Link>
           <Link 
-            href="/contact" 
+            href="/contact-us" 
             className="text-muted-foreground hover:text-coaching-primary transition-colors"
           >
-            Contact
+            Contact Us
           </Link>
         </div>
         

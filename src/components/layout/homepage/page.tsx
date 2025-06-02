@@ -29,7 +29,7 @@ const HomePage = () => {
         primaryButtonText="🎯 Find Top Coaching"
         primaryButtonHref="/coaching-search"
         secondaryButtonText="🎁 Get Free Demo"
-        secondaryButtonHref="/free-demo"
+        secondaryButtonHref="/coaching"
       />
 
       {/* Floating Achievement Stats - Updated for the new motive */}

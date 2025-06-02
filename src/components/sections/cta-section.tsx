@@ -47,7 +47,7 @@ const CTASection = ({
             <Button 
               variant="outline" 
               size="lg" 
-              className="bg-white text-coaching-primary hover:bg-white/90 border-white shadow-lg hover:shadow-xl transition-all duration-300" 
+              className="bg-white text-black hover:bg-white/90 border-white shadow-lg hover:shadow-xl transition-all duration-300" 
               asChild
             >
               <Link href={buttonHref} className="group">

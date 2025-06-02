@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/navbar/navbar";
 import Footer from "@/components/layout/footer/footer";
 import { ThemeProvider } from "@/context/theme-provider";
+import AuthProvider from "@/components/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,11 +31,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider defaultTheme="system" storageKey="coaching-kart-theme">
-          <Navbar />
-          {children}
-          <Footer/>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider defaultTheme="system" storageKey="coaching-kart-theme">
+            <Navbar />
+            {children}
+            <Footer/>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,0 +1,284 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String          @id @default(cuid())
+  userId        String          @unique @default(cuid()) // Custom userId field
+  name          String
+  email         String          @unique
+  password      String
+  phoneNumber   String?
+  city          String?
+  classLevel    String?
+  age           Int?
+  schoolOrCollege String?
+  lookingFor    LookingFor?     @default(Both)
+  roles         UserRole[]      // Multiple roles allowed
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // NextAuth relations
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Course enrollments
+  enrolledCourses CourseEnrollment[]
+  
+  // Orders and purchases  
+  orders        Order[]
+  
+  // Reviews given by user
+  reviews       Review[]
+  
+  // Demo session bookings
+  demoSessionBookings DemoSessionBooking[]
+  
+  // Owned coachings (if user has coaching role)
+  ownedCoachings Coaching[]      @relation("CoachingOwner")
+  
+  @@map("users")
+}
+
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  role   Role
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, role])
+  @@map("user_roles")
+}
+
+enum Role {
+  STUDENT
+  COACH
+  ADMIN
+}
+
+enum LookingFor {
+  Online
+  Offline
+  Both
+}
+
+model Coaching {
+  id              String   @id @default(cuid())
+  coachingId      String   @unique @default(cuid())
+  coachingName    String
+  contactNumber   String
+  alternateNumber String?
+  address         String
+  city            String
+  pincode         String
+  landmark        String?
+  email           String
+  images          String[] // Array of image URLs
+  approved        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Owner relation
+  ownerUserId     String
+  owner           User     @relation("CoachingOwner", fields: [ownerUserId], references: [id])
+  
+  // Courses offered by this coaching
+  courses         Course[]
+  
+  // Reviews for this coaching
+  reviews         Review[]
+  
+  // Demo sessions
+  demoSessions    DemoSession[]
+  
+  @@map("coachings")
+}
+
+model Course {
+  id                String   @id @default(cuid())
+  courseId          String   @unique @default(cuid())
+  courseName        String
+  courseDuration    String
+  courseDescription String
+  courseAmount      Float
+  courseDiscount    Float    @default(0)
+  courseMRP         Float
+  image             String?
+  rating            Float    @default(0)
+  courseTeacher     String
+  subjects          String[] // Array of subjects
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Coaching relation
+  coachingId        String
+  coaching          Coaching @relation(fields: [coachingId], references: [id])
+  
+  // Course enrollments
+  enrollments       CourseEnrollment[]
+  
+  // Orders for this course
+  orders            Order[]
+  
+  // Reviews for this course
+  reviews           Review[]
+  
+  // Demo sessions for this course
+  demoSessions      DemoSession[]
+  
+  @@unique([coachingId, courseName])
+  @@map("courses")
+}
+
+model CourseEnrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
+  enrolledAt DateTime @default(now())
+  
+  user       User     @relation(fields: [userId], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id])
+  
+  @@unique([userId, courseId])
+  @@map("course_enrollments")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  reviewId  String   @unique @default(cuid())
+  userId    String
+  coachingId String
+  courseId  String?  // Optional - can review coaching without specific course
+  rating    Int      // 1-5
+  comment   String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  coaching  Coaching @relation(fields: [coachingId], references: [id])
+  course    Course?  @relation(fields: [courseId], references: [id])
+  
+  @@map("reviews")
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  orderId         String        @unique @default(cuid())
+  userId          String
+  courseId        String
+  amountPaid      Float
+  discountApplied Float         @default(0)
+  paymentStatus   PaymentStatus @default(pending)
+  paymentMethod   PaymentMethod
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  user            User          @relation(fields: [userId], references: [id])
+  course          Course        @relation(fields: [courseId], references: [id])
+  
+  @@map("orders")
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+}
+
+enum PaymentMethod {
+  online
+  upi
+  card
+  wallet
+}
+
+model DemoSession {
+  id              String   @id @default(cuid())
+  sessionId       String   @unique @default(cuid())
+  coachingId      String
+  courseId        String
+  mode            SessionMode
+  dateTime        DateTime
+  durationMinutes Int
+  location        String?  // Required if offline
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  coaching        Coaching @relation(fields: [coachingId], references: [id])
+  course          Course   @relation(fields: [courseId], references: [id])
+  
+  // Attendees (many-to-many relation)
+  bookings        DemoSessionBooking[]
+  
+  @@map("demo_sessions")
+}
+
+enum SessionMode {
+  online
+  offline
+}
+
+model DemoSessionBooking {
+  id          String      @id @default(cuid())
+  userId      String
+  sessionId   String
+  bookedAt    DateTime    @default(now())
+  status      BookingStatus @default(confirmed)
+  
+  user        User        @relation(fields: [userId], references: [id])
+  session     DemoSession @relation(fields: [sessionId], references: [id])
+  
+  @@unique([userId, sessionId])
+  @@map("demo_session_bookings")
+}
+
+enum BookingStatus {
+  confirmed
+  cancelled
+  completed
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

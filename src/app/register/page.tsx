@@ -99,7 +99,9 @@ export default function RegisterPage() {
           <div className="w-16 h-16 bg-coaching-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
             <span className="text-white font-bold text-2xl">CK</span>
           </div>
-          <h2 className="text-3xl font-bold text-foreground">Join Coaching Kart! 🚀</h2>
+          <h2 className="text-3xl font-bold text-foreground">
+            Join Coaching Kart! 🚀
+          </h2>
           <p className="mt-2 text-muted-foreground">
             Create your account and start your learning journey today
           </p>
@@ -109,7 +111,10 @@ export default function RegisterPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Full Name
               </label>
               <input
@@ -125,7 +130,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -142,7 +150,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Account Type
               </label>
               <select
@@ -159,7 +170,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Password
               </label>
               <input
@@ -176,7 +190,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Confirm Password
               </label>
               <input
@@ -202,17 +219,17 @@ export default function RegisterPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 text-lg font-semibold"
+            className="w-full py-3 text-lg font-semibold hover:bg-gray-600 transition-colors cursor-pointer"
             variant="gradient"
           >
-            {isLoading ? '🔄 Creating Account...' : '🎯 Create Account'}
+            {isLoading ? "🔄 Creating Account..." : "🎯 Create Account"}
           </Button>
 
           <div className="text-center">
             <p className="text-muted-foreground">
-              Already have an account?{' '}
-              <Link 
-                href="/login" 
+              Already have an account?{" "}
+              <Link
+                href="/login"
                 className="text-coaching-primary hover:text-coaching-primary/80 font-semibold transition-colors"
               >
                 Sign in here
@@ -223,27 +240,26 @@ export default function RegisterPage() {
 
         {/* Role Benefits */}
         <div className="mt-8 p-6 bg-card border border-border rounded-lg">
-          <h3 className="text-lg font-semibold text-foreground mb-4">🌟 Choose Your Journey</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">
+            🌟 Choose Your Journey
+          </h3>
           <div className="space-y-3 text-sm">
             <div className="flex items-start space-x-3">
               <span className="text-coaching-primary">🎓</span>
               <div>
                 <span className="font-semibold text-foreground">Student:</span>
-                <span className="text-muted-foreground ml-1">Access courses, book sessions, track progress</span>
+                <span className="text-muted-foreground ml-1">
+                  Access courses, book sessions, track progress
+                </span>
               </div>
             </div>
             <div className="flex items-start space-x-3">
               <span className="text-coaching-secondary">👨‍🏫</span>
               <div>
                 <span className="font-semibold text-foreground">Coach:</span>
-                <span className="text-muted-foreground ml-1">Create courses, manage students, earn income</span>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <span className="text-coaching-accent">⚙️</span>
-              <div>
-                <span className="font-semibold text-foreground">Admin:</span>
-                <span className="text-muted-foreground ml-1">Manage platform, users, and analytics</span>
+                <span className="text-muted-foreground ml-1">
+                  Create courses, manage students, earn income
+                </span>
               </div>
             </div>
           </div>

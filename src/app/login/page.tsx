@@ -54,7 +54,9 @@ export default function LoginPage() {
           <div className="w-16 h-16 bg-coaching-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
             <span className="text-white font-bold text-2xl">CK</span>
           </div>
-          <h2 className="text-3xl font-bold text-foreground">Welcome Back! 👋</h2>
+          <h2 className="text-3xl font-bold text-foreground">
+            Welcome Back! 👋
+          </h2>
           <p className="mt-2 text-muted-foreground">
             Sign in to your account to continue your learning journey
           </p>
@@ -64,7 +66,10 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -80,7 +85,10 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Password
               </label>
               <input
@@ -106,17 +114,17 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 text-lg font-semibold"
+            className="w-full py-3 text-lg font-semibold cursor-pointer hover:bg-gray-500"
             variant="gradient"
           >
-            {isLoading ? '🔄 Signing In...' : '🚀 Sign In'}
+            {isLoading ? "🔄 Signing In..." : "🚀 Sign In"}
           </Button>
 
           <div className="text-center">
             <p className="text-muted-foreground">
-              Don't have an account?{' '}
-              <Link 
-                href="/register" 
+              Don't have an account?{" "}
+              <Link
+                href="/register"
                 className="text-coaching-primary hover:text-coaching-primary/80 font-semibold transition-colors"
               >
                 Sign up here
@@ -124,25 +132,6 @@ export default function LoginPage() {
             </p>
           </div>
         </form>
-
-        {/* Demo Accounts */}
-        <div className="mt-8 p-6 bg-card border border-border rounded-lg">
-          <h3 className="text-lg font-semibold text-foreground mb-4">🎯 Demo Accounts</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Student:</span>
-              <span className="text-foreground font-mono">student@demo.com / demo123</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Coach:</span>
-              <span className="text-foreground font-mono">coach@demo.com / demo123</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Admin:</span>
-              <span className="text-foreground font-mono">admin@demo.com / demo123</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

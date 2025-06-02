@@ -59,6 +59,17 @@ const Navbar = () => {
           >
             Coaches
           </Link>
+          
+          {/* Dashboard link shown only when logged in */}
+          {session && (
+            <Link 
+              href={getDashboardLink(session.user?.role as UserRole)}
+              className="text-coaching-primary hover:text-coaching-primary/80 font-medium transition-colors"
+            >
+              Dashboard
+            </Link>
+          )}
+          
           <Link 
             href="/about" 
             className="text-muted-foreground hover:text-coaching-primary transition-colors"
@@ -71,7 +82,9 @@ const Navbar = () => {
           >
             Contact
           </Link>
-        </div>        {/* Right Side Actions */}
+        </div>
+        
+        {/* Right Side Actions */}
         <div className="flex items-center space-x-4">
           <ThemeToggle />
           
@@ -88,7 +101,8 @@ const Navbar = () => {
                   </div>
                   <span className="hidden sm:inline">{session.user?.name}</span>
                 </Button>
-              </DropdownMenuTrigger>              <DropdownMenuContent align="end" className="w-56">
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium">{session.user?.name}</p>

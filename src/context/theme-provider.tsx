@@ -12,9 +12,40 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// Add this script to prevent flash
+function ThemeScript({ defaultTheme, storageKey }: { defaultTheme: Theme; storageKey: string }) {
+  // This script runs on the client before React hydration
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          (function() {
+            function getThemePreference() {
+              var theme = localStorage.getItem('${storageKey}');
+              if (!theme) return '${defaultTheme}';
+              return theme;
+            }
+            
+            var theme = getThemePreference();
+            var resolvedTheme = theme;
+            
+            if (theme === 'system') {
+              resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            
+            document.documentElement.classList.remove('light', 'dark');
+            document.documentElement.classList.add(resolvedTheme);
+            document.documentElement.style.colorScheme = resolvedTheme;
+          })();
+        `,
+      }}
+    />
+  );
+}
+
 export function ThemeProvider({ 
   children,
-  defaultTheme = 'system',
+  defaultTheme = 'dark',  // Changed default to 'dark' to avoid flash
   storageKey = 'coaching-kart-theme'
 }: {
   children: React.ReactNode;
@@ -22,7 +53,7 @@ export function ThemeProvider({
   storageKey?: string;
 }) {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark'); // Default to dark
 
   useEffect(() => {
     // Load theme from localStorage
@@ -50,6 +81,7 @@ export function ThemeProvider({
     }
     
     root.classList.add(resolved);
+    root.style.colorScheme = resolved;
     setResolvedTheme(resolved);
     
     // Store theme preference
@@ -61,15 +93,18 @@ export function ThemeProvider({
   };
 
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        theme, 
-        setTheme: handleSetTheme, 
-        resolvedTheme 
-      }}
-    >
-      {children}
-    </ThemeContext.Provider>
+    <>
+      <ThemeScript defaultTheme={defaultTheme} storageKey={storageKey} />
+      <ThemeContext.Provider 
+        value={{ 
+          theme, 
+          setTheme: handleSetTheme, 
+          resolvedTheme 
+        }}
+      >
+        {children}
+      </ThemeContext.Provider>
+    </>
   );
 }
 

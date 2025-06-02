@@ -95,17 +95,18 @@ async function main() {
   if (coachUser) {
     // Create a coaching center
     const coaching = await prisma.coaching.upsert({
-      where: { email: 'sarahcoaching@demo.com' },
+      where: { coachingId: 'sarahcoaching' }, // Use coachingId instead of email
       update: {},
       create: {
+        coachingId: 'sarahcoaching',
         coachingName: 'Sarah\'s Excellence Academy',
+        email: 'sarahcoaching@demo.com', // Email is a regular field, not a unique identifier
         contactNumber: '+91-9876543211',
         alternateNumber: '+91-9876543213',
         address: '123 Education Street, Koramangala',
         city: 'Bangalore',
         pincode: '560034',
         landmark: 'Near Forum Mall',
-        email: 'sarahcoaching@demo.com',
         images: [
           'https://example.com/coaching1.jpg',
           'https://example.com/coaching2.jpg'

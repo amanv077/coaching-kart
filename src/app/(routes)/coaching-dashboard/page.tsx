@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageLoader, CardLoader } from '@/components/ui/loader';
 import Link from 'next/link';
 import { 
   Plus, 
@@ -79,13 +80,8 @@ const CoachDashboard = () => {
     monthlyEarnings: 0
   });
   const [isLoading, setIsLoading] = useState(true);
-
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      </div>
-    );
+    return <PageLoader text="Loading your dashboard..." />;
   }
 
   if (!session) {
@@ -284,25 +280,8 @@ const CoachDashboard = () => {
                 Add New Coaching
               </Link>
             </Button>
-          </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-20 h-20 bg-gray-200 rounded-xl" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-3/4" />
-                        <div className="h-3 bg-gray-200 rounded w-1/2" />
-                        <div className="h-3 bg-gray-200 rounded w-2/3" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          </div>          {isLoading ? (
+            <CardLoader text="Loading your coaching institutes..." className="py-12" />
           ) : coachings.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {coachings.map((coaching) => (

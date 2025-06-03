@@ -5,6 +5,7 @@ import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ButtonLoader } from '@/components/ui/loader';
 import { DEFAULT_REDIRECTS } from '@/types/auth';
 
 export default function LoginPage() {
@@ -116,15 +117,20 @@ export default function LoginPage() {
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
             </div>
-          )}
-
-          <Button
+          )}          <Button
             type="submit"
             disabled={isLoading}
             className="w-full py-3 text-lg font-semibold cursor-pointer hover:bg-gray-500"
             variant="gradient"
           >
-            {isLoading ? "🔄 Signing In..." : "🚀 Sign In"}
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <ButtonLoader size="sm" />
+                Signing In...
+              </div>
+            ) : (
+              "🚀 Sign In"
+            )}
           </Button>
 
           <div className="text-center">

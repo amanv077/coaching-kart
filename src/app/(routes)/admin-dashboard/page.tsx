@@ -4,17 +4,13 @@ import React from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { PageLoader } from '@/components/ui/loader';
 import Link from 'next/link';
 
 const AdminDashboard = () => {
   const { data: session, status } = useSession();
-
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      </div>
-    );
+    return <PageLoader text="Loading admin dashboard..." />;
   }
   if (!session) {
     redirect('/login');

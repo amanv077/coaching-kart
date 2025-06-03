@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
 import { Button } from '@/components/ui/button';
+import Loader from '@/components/ui/loader';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,9 +93,8 @@ const Navbar = () => {
         {/* Desktop Right Side Actions */}
         <div className="hidden md:flex items-center space-x-4">
           <ThemeToggle />
-          
-          {status === 'loading' ? (
-            <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            {status === 'loading' ? (
+            <Loader size="sm" />
           ) : session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -171,9 +171,8 @@ const Navbar = () => {
         {/* Mobile Menu Button and User Actions */}
         <div className="flex md:hidden items-center space-x-2">
           <ThemeToggle />
-          
-          {status === 'loading' ? (
-            <div className="w-6 h-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            {status === 'loading' ? (
+            <Loader size="sm" />
           ) : session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

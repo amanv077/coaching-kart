@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ButtonLoader } from "@/components/ui/loader";
 import { UserRole } from "@/types/auth";
 
 export default function RegisterPage() {
@@ -174,7 +175,11 @@ export default function RegisterPage() {
             className="w-full py-3 text-lg font-semibold transition-colors cursor-pointer"
             variant="neon"
           >
-            {isLoading ? "🔄 Creating Account..." : "🎯 Create Account"}
+            {isLoading ? (
+              <ButtonLoader />
+            ) : (
+              "🎯 Create Account"
+            )}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">

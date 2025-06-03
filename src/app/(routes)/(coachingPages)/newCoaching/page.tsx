@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Upload, X, Building2, MapPin, Phone, Mail, Calendar, Users, BookOpen, Award } from 'lucide-react';
 import { toast } from 'sonner';
+import { ButtonLoader } from '@/components/ui/loader';
 
 interface CoachingFormData {
   // Organization details
@@ -661,13 +662,13 @@ const NewCoaching = () => {
           </Card>
 
           {/* Submit Button */}
-          <div className="flex justify-center">
-            <Button
+          <div className="flex justify-center">            <Button
               type="submit"
               size="lg"
               disabled={isLoading}
               className="w-full md:w-auto px-12"
             >
+              {isLoading ? <ButtonLoader className="mr-2" /> : null}
               {isLoading ? 'Creating Coaching...' : 'Create Coaching'}
             </Button>
           </div>

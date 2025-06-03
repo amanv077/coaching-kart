@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { CardLoader } from '@/components/ui/loader';
 import PublicCoachingCard from '@/components/common/PublicCoachingCard';
 import CoachingFilters from '@/components/common/CoachingFilters';
-import { Loader2, SlidersHorizontal, Grid, List } from 'lucide-react';
+import { SlidersHorizontal, Grid, List } from 'lucide-react';
 
 interface CoachingProfile {
   id: string;
@@ -260,14 +261,10 @@ const CoachingsPage = () => {
 									</Button>
 								</div>
 							</div>
-						</div>
-
-						{/* Loading State */}
+						</div>						{/* Loading State */}
 						{loading && (
-							<div className="flex justify-center items-center py-16">
-								<Loader2 className="h-8 w-8 animate-spin text-coaching-primary" />
-							</div>
-						)}						{/* Results Grid */}
+							<CardLoader text="Loading coaching institutes..." />
+						)}{/* Results Grid */}
 						{!loading && !error && coachings.length > 0 && (
 							<div
 								className={

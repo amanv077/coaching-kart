@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ButtonLoader } from '@/components/ui/loader';
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
 
 const ContactUs = () => {
@@ -155,10 +156,9 @@ const ContactUs = () => {
                     type="submit" 
                     disabled={isSubmitting}
                     className="w-full bg-coaching-primary hover:bg-coaching-primary/90 text-white font-medium py-3"
-                  >
-                    {isSubmitting ? (
+                  >                    {isSubmitting ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <ButtonLoader size="sm" />
                         Sending Message...
                       </div>
                     ) : (

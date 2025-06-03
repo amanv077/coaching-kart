@@ -4,18 +4,14 @@ import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { PageLoader } from '@/components/ui/loader';
 import { UserRole } from '@/types/auth';
 
 const ProfilePage = () => {
   const { data: session, status } = useSession();
   const [isEditing, setIsEditing] = useState(false);
-
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      </div>
-    );
+    return <PageLoader text="Loading your profile..." />;
   }
 
   if (!session) {

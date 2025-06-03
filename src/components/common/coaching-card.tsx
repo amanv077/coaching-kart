@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getOptimizedImageUrl, getImageAlt } from '@/utils/image-utils';
 import { 
   MapPin, 
   Phone, 
@@ -63,8 +64,47 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
   showActions = false, 
   variant = 'default' 
 }) => {
-  const mainProfile = coaching.profiles[0]; // Show first profile as main
-  const totalCourses = coaching.profiles.reduce((acc, profile) => acc + profile.courses.length, 0);
+  // Defensive checks for profiles
+  const hasProfiles = coaching.profiles && coaching.profiles.length > 0;
+  const mainProfile = hasProfiles ? coaching.profiles[0] : null;
+  const totalCourses = hasProfiles 
+    ? coaching.profiles.reduce((acc, profile) => acc + (profile.courses?.length || 0), 0)
+    : 0;
+
+  // If no profiles exist, show a minimal card with just organization info
+  if (!hasProfiles) {
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Building2 className="h-8 w-8 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-lg text-gray-900 truncate">
+                {coaching.organizationName}
+              </h3>
+              <p className="text-sm text-gray-500">No profile data available</p>
+              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                <span>0 Branches</span>
+                <span>0 Courses</span>
+              </div>
+              {showActions && (
+                <div className="flex gap-2 mt-3">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Setup Profile
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const getStatusBadge = (status: string, approved: boolean, isActive: boolean) => {
     if (!isActive) {
@@ -82,19 +122,18 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
         return <Badge variant="secondary">Pending</Badge>;
     }
   };
-
   if (variant === 'compact') {
     return (
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
-          <div className="flex items-start gap-4">
-            {/* Logo */}
+          <div className="flex items-start gap-4">            {/* Logo */}
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              {mainProfile.logo ? (
+              {mainProfile?.logo ? (
                 <img 
-                  src={mainProfile.logo} 
-                  alt={coaching.organizationName}
+                  src={getOptimizedImageUrl(mainProfile.logo, 64, 64, 'auto')} 
+                  alt={getImageAlt(mainProfile.logo, coaching.organizationName)}
                   className="w-full h-full object-cover rounded-lg"
+                  loading="lazy"
                 />
               ) : (
                 <Building2 className="h-8 w-8 text-white" />
@@ -108,17 +147,19 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
                   <h3 className="font-semibold text-lg text-gray-900 truncate">
                     {coaching.organizationName}
                   </h3>
-                  <p className="text-sm text-gray-600">{mainProfile.name}</p>
+                  <p className="text-sm text-gray-600">{mainProfile?.name || 'No profile name'}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <MapPin className="h-3 w-3 text-gray-400" />
-                    <span className="text-sm text-gray-500">{mainProfile.city}, {mainProfile.state}</span>
+                    <span className="text-sm text-gray-500">
+                      {mainProfile?.city && mainProfile?.state ? `${mainProfile.city}, ${mainProfile.state}` : 'Location not specified'}
+                    </span>
                   </div>
                 </div>
-                {getStatusBadge(mainProfile.verificationStatus, mainProfile.approved, mainProfile.isActive)}
+                {mainProfile && getStatusBadge(mainProfile.verificationStatus, mainProfile.approved, mainProfile.isActive)}
               </div>
               
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                <span>{coaching.profiles.length} Branch{coaching.profiles.length > 1 ? 'es' : ''}</span>
+                <span>{coaching.profiles?.length || 0} Branch{(coaching.profiles?.length || 0) > 1 ? 'es' : ''}</span>
                 <span>{totalCourses} Course{totalCourses > 1 ? 's' : ''}</span>
               </div>
             </div>
@@ -138,22 +179,21 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
       </Card>
     );
   }
-
   return (
     <Card className="hover:shadow-lg transition-all duration-300">
       <CardHeader className="pb-3">
         <div className="flex items-start gap-4">
-          {/* Logo */}
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
-            {mainProfile.logo ? (
-              <img 
-                src={mainProfile.logo} 
-                alt={coaching.organizationName}
-                className="w-full h-full object-cover rounded-xl"
-              />
-            ) : (
-              <Building2 className="h-10 w-10 text-white" />
-            )}
+          {/* Logo */}            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              {mainProfile?.logo ? (
+                <img 
+                  src={getOptimizedImageUrl(mainProfile.logo, 80, 80, 'auto')} 
+                  alt={getImageAlt(mainProfile.logo, coaching.organizationName)}
+                  className="w-full h-full object-cover rounded-xl"
+                  loading="lazy"
+                />
+              ) : (
+                <Building2 className="h-10 w-10 text-white" />
+              )}
           </div>
 
           {/* Header Info */}
@@ -163,14 +203,14 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
                 <h3 className="text-xl font-bold text-gray-900 mb-1">
                   {coaching.organizationName}
                 </h3>
-                <p className="text-gray-600 font-medium">{mainProfile.name}</p>
-                {mainProfile.tagline && (
+                <p className="text-gray-600 font-medium">{mainProfile?.name || 'No profile name'}</p>
+                {mainProfile?.tagline && (
                   <p className="text-sm text-gray-500 italic mt-1">{mainProfile.tagline}</p>
                 )}
               </div>
               <div className="flex flex-col items-end gap-2">
-                {getStatusBadge(mainProfile.verificationStatus, mainProfile.approved, mainProfile.isActive)}
-                {mainProfile.rating && (
+                {mainProfile && getStatusBadge(mainProfile.verificationStatus, mainProfile.approved, mainProfile.isActive)}
+                {mainProfile?.rating && (
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <span className="text-sm font-medium">{mainProfile.rating}</span>
@@ -182,13 +222,15 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
 
             {/* Quick Stats */}
             <div className="flex items-center gap-6 mt-3 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>Est. {mainProfile.establishedYear}</span>
-              </div>
+              {mainProfile?.establishedYear && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>Est. {mainProfile.establishedYear}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1">
                 <Building2 className="h-4 w-4" />
-                <span>{coaching.profiles.length} Branch{coaching.profiles.length > 1 ? 'es' : ''}</span>
+                <span>{coaching.profiles?.length || 0} Branch{(coaching.profiles?.length || 0) > 1 ? 'es' : ''}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
@@ -197,25 +239,30 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
             </div>
           </div>
         </div>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
+      </CardHeader>      <CardContent className="space-y-4">
         {/* Description */}
-        <p className="text-gray-600 text-sm line-clamp-2">{mainProfile.description}</p>
+        {mainProfile?.description && (
+          <p className="text-gray-600 text-sm line-clamp-2">{mainProfile.description}</p>
+        )}
 
         {/* Location & Contact */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div className="flex items-center gap-2 text-gray-600">
             <MapPin className="h-4 w-4 text-gray-400" />
-            <span>{mainProfile.city}, {mainProfile.state}</span>
+            <span>
+              {mainProfile?.city && mainProfile?.state 
+                ? `${mainProfile.city}, ${mainProfile.state}` 
+                : 'Location not specified'
+              }
+            </span>
           </div>
           <div className="flex items-center gap-2 text-gray-600">
             <Phone className="h-4 w-4 text-gray-400" />
-            <span>{mainProfile.contactNumber}</span>
+            <span>{mainProfile?.contactNumber || 'Not provided'}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-600">
             <Mail className="h-4 w-4 text-gray-400" />
-            <span className="truncate">{mainProfile.email}</span>
+            <span className="truncate">{mainProfile?.email || 'Not provided'}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-600">
             <Clock className="h-4 w-4 text-gray-400" />
@@ -224,42 +271,48 @@ const CoachingCard: React.FC<CoachingCardProps> = ({
         </div>
 
         {/* Subjects & Exams */}
-        <div className="space-y-2">
-          <div>
-            <span className="text-sm font-medium text-gray-700">Subjects: </span>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {mainProfile.subjectsOffered.slice(0, 4).map((subject) => (
-                <Badge key={subject} variant="secondary" className="text-xs">
-                  {subject}
-                </Badge>
-              ))}
-              {mainProfile.subjectsOffered.length > 4 && (
-                <Badge variant="secondary" className="text-xs">
-                  +{mainProfile.subjectsOffered.length - 4} more
-                </Badge>
-              )}
-            </div>
-          </div>
+        {mainProfile && (
+          <div className="space-y-2">
+            {mainProfile.subjectsOffered && mainProfile.subjectsOffered.length > 0 && (
+              <div>
+                <span className="text-sm font-medium text-gray-700">Subjects: </span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {mainProfile.subjectsOffered.slice(0, 4).map((subject) => (
+                    <Badge key={subject} variant="secondary" className="text-xs">
+                      {subject}
+                    </Badge>
+                  ))}
+                  {mainProfile.subjectsOffered.length > 4 && (
+                    <Badge variant="secondary" className="text-xs">
+                      +{mainProfile.subjectsOffered.length - 4} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
 
-          <div>
-            <span className="text-sm font-medium text-gray-700">Exams: </span>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {mainProfile.examsOffered.slice(0, 3).map((exam) => (
-                <Badge key={exam} variant="outline" className="text-xs">
-                  {exam}
-                </Badge>
-              ))}
-              {mainProfile.examsOffered.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{mainProfile.examsOffered.length - 3} more
-                </Badge>
-              )}
-            </div>
+            {mainProfile.examsOffered && mainProfile.examsOffered.length > 0 && (
+              <div>
+                <span className="text-sm font-medium text-gray-700">Exams: </span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {mainProfile.examsOffered.slice(0, 3).map((exam) => (
+                    <Badge key={exam} variant="outline" className="text-xs">
+                      {exam}
+                    </Badge>
+                  ))}
+                  {mainProfile.examsOffered.length > 3 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{mainProfile.examsOffered.length - 3} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
         {/* Course Price Range */}
-        {mainProfile.courses.length > 0 && (
+        {mainProfile?.courses && mainProfile.courses.length > 0 && (
           <div className="text-sm">
             <span className="text-gray-700 font-medium">Course Fees: </span>
             <span className="text-green-600 font-semibold">

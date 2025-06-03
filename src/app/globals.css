@@ -45,174 +45,113 @@
 
 :root {
   --radius: 0.625rem;
+    /* 🌟 VIBRANT DARK THEME - Pure black with electric accents */
   
-  /* 🌟 CENTRALIZED NEON THEME - Light Mode */
-  /* Update colors in src/lib/theme.ts to change everywhere! */
+  /* Background and text - Maximum contrast */
+  --background: #000000;
+  --foreground: #ffffff;
+  
+  /* Cards and surfaces - Subtle dark contrast */
+  --card: #0d0d0d;
+  --card-foreground: #ffffff;
+  --popover: #0d0d0d;
+  --popover-foreground: #ffffff;
+  
+  /* Primary: Electric neon green - main accent */
+  --primary: #00ff88;
+  --primary-foreground: #000000;
+  
+  /* Secondary: subtle dark elements */
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
+  
+  /* Muted: visible grays for better UX */
+  --muted: #4a4a4a;
+  --muted-foreground: #e0e0e0;
+  
+  /* Accent: Brilliant blue */
+  --accent: #0099ff;
+  --accent-foreground: #ffffff;
+  
+  /* Borders and inputs */
+  --border: #333333;
+  --input: #1a1a1a;
+  --ring: #00ff88;
+  
+  /* Destructive: bright red */
+  --destructive: #ff4444;
+  --destructive-foreground: #ffffff;
+    /* Chart colors - vibrant palette */
+  --chart-1: #00ff88;
+  --chart-2: #0099ff;
+  --chart-3: #ff0088;
+  --chart-4: #ffffff;
+  --chart-5: #e0e0e0;
+  
+  /* Sidebar colors */
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00ff88;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #333333;
+  --sidebar-ring: #00ff88;
+}
+
+.light {
+  /* 🌞 OPTIONAL LIGHT THEME */
+  /* Light mode alternative for those who prefer it */
   
   /* Background and text */
   --background: #ffffff;
-  --foreground: #0d0d0d;
+  --foreground: #0a0a0a;
   
   /* Cards and surfaces */
   --card: #f8f9fa;
-  --card-foreground: #0d0d0d;
+  --card-foreground: #0a0a0a;
   --popover: #ffffff;
-  --popover-foreground: #0d0d0d;
+  --popover-foreground: #0a0a0a;
   
-  /* Primary: #00FF85 (neon green) - buttons/CTAs */
-  --primary: #00ff85;
-  --primary-foreground: #0d0d0d;
+  /* Primary: same vibrant green works on light */
+  --primary: #00ff88;
+  --primary-foreground: #0a0a0a;
   
   /* Secondary: subtle backgrounds */
   --secondary: #f1f5f9;
-  --secondary-foreground: #0d0d0d;
+  --secondary-foreground: #0a0a0a;
   
   /* Muted elements */
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  
-  /* Accent: #1E90FF (electric blue) */
-  --accent: #1e90ff;
+    /* Accent: brilliant blue */
+  --accent: #0099ff;
   --accent-foreground: #ffffff;
   
   /* Borders and inputs */
   --border: #e2e8f0;
   --input: #f8fafc;
-  --ring: #00ff85;
+  --ring: #00ff88;
   
   /* Destructive actions */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  
-  /* Chart colors using neon palette */
-  --chart-1: #00ff85;
-  --chart-2: #1e90ff;
-  --chart-3: #ff0099;
-  --chart-4: #0d0d0d;
+    /* Chart colors */
+  --chart-1: #00ff88;
+  --chart-2: #0099ff;
+  --chart-3: #ff0088;
+  --chart-4: #0a0a0a;
   --chart-5: #64748b;
   
   /* Sidebar colors */
   --sidebar: #ffffff;
-  --sidebar-foreground: #0d0d0d;
-  --sidebar-primary: #00ff85;
-  --sidebar-primary-foreground: #0d0d0d;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #00ff88;
+  --sidebar-primary-foreground: #0a0a0a;
   --sidebar-accent: #f8fafc;
-  --sidebar-accent-foreground: #0d0d0d;
+  --sidebar-accent-foreground: #0a0a0a;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #00ff85;
-}
-
-.dark {
-  /* 🌙 CENTRALIZED NEON THEME - Dark Mode */
-  /* The true neon experience with black background */
-  
-  /* Background: #0D0D0D (almost black) */
-  --background: #0d0d0d;
-  --foreground: #ffffff;
-  
-  /* Cards: #1A1A1A (slightly lighter) */
-  --card: #1a1a1a;
-  --card-foreground: #ffffff;
-  --popover: #1a1a1a;
-  --popover-foreground: #ffffff;
-  
-  /* Primary: #00FF85 (neon green) - glows beautifully on dark */
-  --primary: #00ff85;
-  --primary-foreground: #0d0d0d;
-  
-  /* Secondary: card background for subtle elements */
-  --secondary: #1a1a1a;
-  --secondary-foreground: #ffffff;
-  
-  /* Muted: #666666 for less important elements */
-  --muted: #333333;
-  --muted-foreground: #b0b0b0;
-  
-  /* Accent: #1E90FF (electric blue) - complements green */
-  --accent: #1e90ff;
-  --accent-foreground: #ffffff;
-  
-  /* Borders: #333333 for subtle separation */
-  --border: #333333;
-  --input: #1a1a1a;
-  --ring: #00ff85;
-  
-  /* Destructive: bright red stands out on dark */
-  --destructive: #ff4444;
-  --destructive-foreground: #ffffff;
-  
-  /* Chart colors optimized for dark theme */
-  --chart-1: #00ff85;
-  --chart-2: #1e90ff;
-  --chart-3: #ff0099;
-  --chart-4: #ffffff;
-  --chart-5: #666666;
-  
-  /* Sidebar dark theme */
-  --sidebar: #0d0d0d;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #00ff85;
-  --sidebar-primary-foreground: #0d0d0d;
-  --sidebar-accent: #1a1a1a;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333333;
-  --sidebar-ring: #00ff85;
-}
-
-.dark {
-  /* Dark Theme using neon palette */
-  /* Background: #0D0D0D (almost black) */
-  --background: #0d0d0d;
-  /* Primary Text: #FFFFFF (pure white) */
-  --foreground: #ffffff;
-  
-  /* Cards and surfaces - slightly lighter than background */
-  --card: #1a1a1a;
-  --card-foreground: #ffffff;
-  --popover: #1a1a1a;
-  --popover-foreground: #ffffff;
-  
-  /* Primary Button/CTA: #00FF85 (neon green) */
-  --primary: #00ff85;
-  --primary-foreground: #0d0d0d;
-  
-  /* Secondary colors - #1E90FF (electric blue) */
-  --secondary: #262626;
-  --secondary-foreground: #ffffff;
-  
-  /* Muted elements */
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  
-  /* Accent: #1E90FF (electric blue) */
-  --accent: #1e90ff;
-  --accent-foreground: #ffffff;
-  
-  /* Borders and inputs */
-  --border: #333333;
-  --input: #262626;
-  --ring: #00ff85;
-  
-  /* Destructive actions */
-  --destructive: #ff0099;
-  --destructive-foreground: #ffffff;
-  
-  /* Chart colors using neon palette */
-  --chart-1: #00ff85;
-  --chart-2: #1e90ff;
-  --chart-3: #ff0099;
-  --chart-4: #ffffff;
-  --chart-5: #666666;
-  
-  /* Sidebar colors */
-  --sidebar: #1a1a1a;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #00ff85;
-  --sidebar-primary-foreground: #0d0d0d;
-  --sidebar-accent: #262626;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333333;
-  --sidebar-ring: #00ff85;
+  --sidebar-ring: #00ff88;
 }
 
 @layer base {
@@ -224,7 +163,7 @@
   }
 }
 
-/* 🎨 Enhanced Animations for Homepage */
+/* 🎨 Enhanced Animations for Vibrant UI */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -232,14 +171,27 @@
 
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 20px rgba(0, 255, 133, 0.3),
-                0 0 40px rgba(0, 255, 133, 0.2),
-                0 0 60px rgba(0, 255, 133, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3),
+                0 0 40px rgba(0, 255, 136, 0.2),
+                0 0 60px rgba(0, 255, 136, 0.1);
   }
   50% { 
-    box-shadow: 0 0 30px rgba(0, 255, 133, 0.5),
-                0 0 60px rgba(0, 255, 133, 0.3),
-                0 0 90px rgba(0, 255, 133, 0.2);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5),
+                0 0 60px rgba(0, 255, 136, 0.3),
+                0 0 90px rgba(0, 255, 136, 0.2);
+  }
+}
+
+@keyframes blue-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(0, 153, 255, 0.3),
+                0 0 40px rgba(0, 153, 255, 0.2),
+                0 0 60px rgba(0, 153, 255, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(0, 153, 255, 0.5),
+                0 0 60px rgba(0, 153, 255, 0.3),
+                0 0 90px rgba(0, 153, 255, 0.2);
   }
 }
 
@@ -259,7 +211,18 @@
   }
 }
 
-/* Utility Classes */
+@keyframes slide-in-up {
+  0% { 
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Utility Classes for Vibrant Effects */
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
@@ -268,12 +231,42 @@
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
+.animate-blue-glow {
+  animation: blue-glow 2s ease-in-out infinite;
+}
+
 .animate-rainbow {
   animation: rainbow 3s linear infinite;
 }
 
 .animate-scale-in {
   animation: scale-in 0.6s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.6s ease-out forwards;
+}
+
+/* Enhanced hover effects for vibrant theme */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2);
+}
+
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+.hover-blue-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
 }
 
 /* Mobile-first responsive utilities */
@@ -292,7 +285,50 @@
   }
 }
 
-/* Enhanced hover effects */
-.hover-lift {
+/* Vibrant button styles */
+.btn-vibrant {
+  background: linear-gradient(135deg, #00ff88, #0080ff);
+  color: #0a0a0a;
+  font-weight: 600;
   transition: all 0.3s ease;
+}
+
+.btn-vibrant:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+}
+
+/* Vibrant card styles */
+.card-vibrant {
+  background: #111111;
+  border: 1px solid #2a2a2a;
+  transition: all 0.3s ease;
+}
+
+.card-vibrant:hover {
+  border-color: #00ff88;
+  box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+}
+
+/* Text glow effects */
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 10px rgba(0, 128, 255, 0.5);
+}
+
+/* Loading spinner with vibrant colors */
+@keyframes spin-vibrant {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-vibrant {
+  animation: spin-vibrant 1s linear infinite;
+  border: 2px solid #2a2a2a;
+  border-top: 2px solid #00ff88;
+  border-radius: 50%;
 }

@@ -3,17 +3,15 @@
 
 export const THEME_COLORS = {
   // === CORE THEME COLORS (Edit these 5 values to change entire project theme) ===
-  background: '#0D0D0D',      // Almost black background
+  background: '#000000',      // Pure black background for maximum contrast
   primaryText: '#FFFFFF',     // Pure white text
-  accentGreen: '#00FF85',     // Neon green (primary/buttons/CTA)
-  accentBlue: '#1E90FF',      // Electric blue (secondary)
-  hoverPink: '#FF0099',       // Vivid pink (hover effects)
-  
-  // Extended palette for UI consistency
-  cardBackground: '#1A1A1A',  // Slightly lighter than main background
-  border: '#333333',          // Subtle borders
-  muted: '#666666',           // Muted text and elements
-  mutedText: '#B0B0B0',       // Lighter muted text
+  accentGreen: '#00FF88',     // Electric neon green (primary/buttons/CTA)
+  accentBlue: '#0099FF',      // Brilliant blue (secondary accent)
+  hoverPink: '#FF0088',       // Hot pink (hover/interactive effects)    // Extended palette for UI consistency
+  cardBackground: '#0D0D0D',  // Subtle dark card background
+  border: '#333333',          // Bright borders for visibility
+  muted: '#4A4A4A',           // Brighter muted elements
+  mutedText: '#E0E0E0',       // Very light muted text for readability
   
   // Light mode overrides (automatically generated from dark colors)
   light: {

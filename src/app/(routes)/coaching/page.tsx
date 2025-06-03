@@ -1,79 +1,58 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import CoachingCard from '@/components/common/CoachingCard';
+import PublicCoachingCard from '@/components/common/PublicCoachingCard';
 import CoachingFilters from '@/components/common/CoachingFilters';
 import { Loader2, SlidersHorizontal, Grid, List } from 'lucide-react';
 
-// Mock data - replace with actual API call
-const mockCoachings = [
-	{
-		id: '1',
-		name: 'Excel Physics Academy',
-		description:
-			'Premier coaching institute for JEE preparation with 15+ years of experience and top-notch faculty.',
-		image: '/images/coaching/excel-physics.jpg',
-		location: { city: 'Delhi', area: 'Rajouri Garden', distance: '2.5 km' },
-		rating: 4.8,
-		totalReviews: 324,
-		subjects: ['Physics', 'Mathematics', 'Chemistry'],
-		exams: ['JEE Main', 'JEE Advanced', 'BITSAT'],
-		modes: ['offline', 'online'] as ('online' | 'offline')[],
-		price: { from: 15000, to: 25000, period: 'month' },
-		features: [
-			'Small Batch Size',
-			'Doubt Sessions',
-			'Test Series',
-			'Study Material',
-		],
-		established: 2008,
-		totalStudents: 5000,
-		successRate: 92,
-		isVerified: true,
-		isFeatured: true,
-	},
-	{
-		id: '2',
-		name: 'Bright Future Medical Institute',
-		description:
-			'Specialized NEET coaching with experienced doctors as faculty and proven track record.',
-		image: '/images/coaching/bright-future.jpg',
-		location: { city: 'Mumbai', area: 'Andheri West', distance: '1.8 km' },
-		rating: 4.6,
-		totalReviews: 256,
-		subjects: ['Biology', 'Chemistry', 'Physics'],
-		exams: ['NEET', 'AIIMS'],
-		modes: ['offline'] as ('online' | 'offline')[],
-		price: { from: 18000, period: 'month' },
-		features: ['Expert Faculty', 'Regular Tests', 'Personal Mentoring'],
-		established: 2012,
-		totalStudents: 3500,
-		successRate: 89,
-		isVerified: true,
-		isFeatured: false,
-	},
-	{
-		id: '3',
-		name: 'TechMaster Coding Academy',
-		description:
-			'Modern approach to computer science education with hands-on projects and industry experts.',
-		image: '/images/coaching/techmaster.jpg',
-		location: { city: 'Bangalore', area: 'Koramangala', distance: '3.2 km' },
-		rating: 4.7,
-		totalReviews: 189,
-		subjects: ['Computer Science', 'Mathematics', 'Programming'],
-		exams: ['GATE', 'Placement Tests'],
-		modes: ['online', 'offline'] as ('online' | 'offline')[],
-		price: { from: 12000, to: 20000, period: 'month' },
-		features: ['Live Projects', 'Industry Mentors', 'Placement Assistance'],
-		established: 2015,
-		totalStudents: 2800,
-		successRate: 94,
-		isVerified: true,
-		isFeatured: false,
-	},
-];
+interface CoachingProfile {
+  id: string;
+  profileId: string;
+  name: string;
+  branchName?: string;
+  city: string;
+  state: string;
+  logo?: string;
+  images: string[];
+  tagline?: string;
+  description: string;
+  establishedYear: number;
+  contactNumber: string;
+  email: string;
+  approved: boolean;
+  isActive: boolean;
+  verificationStatus: 'Pending' | 'Verified' | 'Rejected';
+  courses: Array<{
+    id: string;
+    courseName: string;
+    courseAmount: number;
+    rating?: number;
+    totalRatings?: number;
+  }>;
+  subjectsOffered: string[];
+  examsOffered: string[];
+  facilities: string[];
+}
+
+interface Coaching {
+  id: string;
+  coachingId: string;
+  organizationName: string;
+  approved: boolean;
+  isActive: boolean;
+  profiles: CoachingProfile[];
+}
+
+interface ApiResponse {
+  coachings: Coaching[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 const CoachingsPage = () => {
 	const [searchQuery, setSearchQuery] = useState('');
@@ -85,91 +64,81 @@ const CoachingsPage = () => {
 	const [sortBy, setSortBy] = useState('relevance');
 	const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 	const [showFilters, setShowFilters] = useState(false);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [coachings, setCoachings] = useState<Coaching[]>([]);
+	const [pagination, setPagination] = useState({
+		page: 1,
+		limit: 12,
+		total: 0,
+		totalPages: 0,
+	});
+	const [error, setError] = useState<string | null>(null);
 
-	// Filter and sort logic
-	const filteredCoachings = useMemo(() => {
-		let filtered = mockCoachings;
+	// Fetch coachings from API
+	const fetchCoachings = useCallback(async () => {
+		try {
+			setLoading(true);
+			setError(null);
 
-		// Search filter
-		if (searchQuery) {
-			filtered = filtered.filter(coaching =>
-				coaching.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				coaching.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				coaching.subjects.some(subject =>
-					subject.toLowerCase().includes(searchQuery.toLowerCase())
-				)
-			);
+			const params = new URLSearchParams({
+				page: pagination.page.toString(),
+				limit: pagination.limit.toString(),
+				sortBy,
+			});
+
+			if (searchQuery.trim()) {
+				params.append('search', searchQuery.trim());
+			}
+			if (location.trim()) {
+				params.append('location', location.trim());
+			}
+			if (selectedSubjects.length > 0) {
+				params.append('subjects', selectedSubjects.join(','));
+			}
+			if (selectedExams.length > 0) {
+				params.append('exams', selectedExams.join(','));
+			}
+			if (priceRange[0] > 0 || priceRange[1] < 100000) {
+				params.append('minPrice', priceRange[0].toString());
+				params.append('maxPrice', priceRange[1].toString());
+			}
+
+			const response = await fetch(`/api/coaching/public?${params.toString()}`);
+			if (!response.ok) {
+				throw new Error(`Failed to fetch coachings: ${response.statusText}`);
+			}
+
+			const data: ApiResponse = await response.json();
+			setCoachings(data.coachings);
+			setPagination(data.pagination);
+		} catch (err) {
+			console.error('Error fetching coachings:', err);
+			setError(err instanceof Error ? err.message : 'Failed to fetch coachings');
+		} finally {
+			setLoading(false);
 		}
-
-		// Location filter
-		if (location) {
-			filtered = filtered.filter(coaching =>
-				coaching.location.city.toLowerCase().includes(location.toLowerCase()) ||
-				coaching.location.area.toLowerCase().includes(location.toLowerCase())
-			);
-		}
-
-		// Subjects filter
-		if (selectedSubjects.length > 0) {
-			filtered = filtered.filter(coaching =>
-				selectedSubjects.some(subject => coaching.subjects.includes(subject))
-			);
-		}
-
-		// Exams filter
-		if (selectedExams.length > 0) {
-			filtered = filtered.filter(coaching =>
-				selectedExams.some(exam => coaching.exams.includes(exam))
-			);
-		}
-
-		// Modes filter
-		if (selectedModes.length > 0) {
-			filtered = filtered.filter(coaching =>
-				selectedModes.some(mode => coaching.modes.includes(mode as 'online' | 'offline'))
-			);
-		}
-
-		// Price filter
-		filtered = filtered.filter(coaching =>
-			coaching.price.from >= priceRange[0] && coaching.price.from <= priceRange[1]
-		);
-
-		// Sort
-		switch (sortBy) {
-			case 'rating':
-				filtered.sort((a, b) => b.rating - a.rating);
-				break;
-			case 'price-low':
-				filtered.sort((a, b) => a.price.from - b.price.from);
-				break;
-			case 'price-high':
-				filtered.sort((a, b) => b.price.from - a.price.from);
-				break;
-			case 'newest':
-				filtered.sort((a, b) => (b.established || 0) - (a.established || 0));
-				break;
-			default:
-				// Featured first, then by rating
-				filtered.sort((a, b) => {
-					if (a.isFeatured && !b.isFeatured) return -1;
-					if (!a.isFeatured && b.isFeatured) return 1;
-					return b.rating - a.rating;
-				});
-		}
-
-		return filtered;
 	}, [
+		pagination.page,
+		pagination.limit,
 		searchQuery,
 		location,
 		selectedSubjects,
 		selectedExams,
-		selectedModes,
 		priceRange,
 		sortBy,
 	]);
 
+	// Fetch coachings on component mount and when filters change
+	useEffect(() => {
+		fetchCoachings();
+	}, [fetchCoachings]);
+
+	// Reset to page 1 when filters change
+	useEffect(() => {
+		if (pagination.page !== 1) {
+			setPagination(prev => ({ ...prev, page: 1 }));
+		}
+	}, [searchQuery, location, selectedSubjects, selectedExams, priceRange, sortBy]);
 	const clearFilters = () => {
 		setSearchQuery('');
 		setLocation('');
@@ -177,6 +146,11 @@ const CoachingsPage = () => {
 		setSelectedExams([]);
 		setSelectedModes([]);
 		setPriceRange([0, 100000]);
+	};
+
+	const handlePageChange = (newPage: number) => {
+		setPagination(prev => ({ ...prev, page: newPage }));
+		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};
 
 	return (
@@ -224,19 +198,23 @@ const CoachingsPage = () => {
 					</div>
 
 					{/* Main Content */}
-					<div className="flex-1">
-						{/* Results Header */}
+					<div className="flex-1">						{/* Results Header */}
 						<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
 							<div>
 								<h2 className="text-2xl font-bold">
-									{filteredCoachings.length} Coaching
-									{filteredCoachings.length !== 1 ? 's' : ''} Found
+									{loading ? 'Loading...' : `${pagination.total} Coaching${pagination.total !== 1 ? 's' : ''} Found`}
 								</h2>
 								<p className="text-muted-foreground">
 									{location &&
-										`in ${location} ${selectedSubjects.length > 0 &&
-											`for ${selectedSubjects.join(', ')}`}`}
+										`in ${location}${selectedSubjects.length > 0 
+											? ` for ${selectedSubjects.join(', ')}` 
+											: ''}`}
 								</p>
+								{error && (
+									<p className="text-red-500 text-sm mt-1">
+										{error}
+									</p>
+								)}
 							</div>
 
 							<div className="flex items-center gap-4">
@@ -289,10 +267,8 @@ const CoachingsPage = () => {
 							<div className="flex justify-center items-center py-16">
 								<Loader2 className="h-8 w-8 animate-spin text-coaching-primary" />
 							</div>
-						)}
-
-						{/* Results Grid */}
-						{!loading && (
+						)}						{/* Results Grid */}
+						{!loading && !error && coachings.length > 0 && (
 							<div
 								className={
 									viewMode === 'grid'
@@ -300,14 +276,41 @@ const CoachingsPage = () => {
 										: 'space-y-6'
 								}
 							>
-								{filteredCoachings.map(coaching => (
-									<CoachingCard key={coaching.id} {...coaching} />
+								{coachings.map((coaching: Coaching) => (
+									<PublicCoachingCard 
+										key={coaching.id} 
+										coaching={coaching}
+										variant={viewMode === 'list' ? 'compact' : 'default'}
+									/>
 								))}
 							</div>
 						)}
 
+						{/* Pagination */}
+						{!loading && !error && pagination.totalPages > 1 && (
+							<div className="flex justify-center items-center gap-4 mt-8">
+								<Button
+									variant="outline"
+									disabled={pagination.page === 1}
+									onClick={() => handlePageChange(pagination.page - 1)}
+								>
+									Previous
+								</Button>
+								<span className="text-sm text-muted-foreground">
+									Page {pagination.page} of {pagination.totalPages}
+								</span>
+								<Button
+									variant="outline"
+									disabled={pagination.page === pagination.totalPages}
+									onClick={() => handlePageChange(pagination.page + 1)}
+								>
+									Next
+								</Button>
+							</div>
+						)}
+
 						{/* No Results */}
-						{!loading && filteredCoachings.length === 0 && (
+						{!loading && !error && coachings.length === 0 && (
 							<div className="text-center py-16">
 								<div className="text-6xl mb-4">🔍</div>
 								<h3 className="text-xl font-semibold mb-2">
@@ -317,6 +320,20 @@ const CoachingsPage = () => {
 									Try adjusting your filters or search criteria
 								</p>
 								<Button onClick={clearFilters}>Clear All Filters</Button>
+							</div>
+						)}
+
+						{/* Error State */}
+						{!loading && error && (
+							<div className="text-center py-16">
+								<div className="text-6xl mb-4">⚠️</div>
+								<h3 className="text-xl font-semibold mb-2">
+									Something went wrong
+								</h3>
+								<p className="text-muted-foreground mb-4">
+									{error}
+								</p>
+								<Button onClick={fetchCoachings}>Try Again</Button>
 							</div>
 						)}
 					</div>

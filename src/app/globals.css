@@ -45,7 +45,63 @@
 
 :root {
   --radius: 0.625rem;
-    /* 🌟 VIBRANT DARK THEME - Pure black with electric accents */
+  /* 🌞 LIGHT THEME - Now default */
+  
+  /* Background and text */
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  
+  /* Cards and surfaces */
+  --card: #f8f9fa;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  
+  /* Primary: same vibrant green works on light */
+  --primary: #00ff88;
+  --primary-foreground: #0a0a0a;
+  
+  /* Secondary: subtle backgrounds */
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0a0a0a;
+  
+  /* Muted elements */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  /* Accent: brilliant blue */
+  --accent: #0099ff;
+  --accent-foreground: #ffffff;
+  
+  /* Borders and inputs */
+  --border: #e2e8f0;
+  --input: #f8fafc;
+  --ring: #00ff88;
+  
+  /* Destructive actions */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  /* Chart colors */
+  --chart-1: #00ff88;
+  --chart-2: #0099ff;
+  --chart-3: #ff0088;
+  --chart-4: #0a0a0a;
+  --chart-5: #64748b;
+  
+  /* Sidebar colors */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #00ff88;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #f8fafc;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #00ff88;
+}
+
+.dark {
+  /* 🌟 VIBRANT DARK THEME - Pure black with electric accents */
   
   /* Background and text - Maximum contrast */
   --background: #000000;
@@ -81,7 +137,8 @@
   /* Destructive: bright red */
   --destructive: #ff4444;
   --destructive-foreground: #ffffff;
-    /* Chart colors - vibrant palette */
+  
+  /* Chart colors - vibrant palette */
   --chart-1: #00ff88;
   --chart-2: #0099ff;
   --chart-3: #ff0088;
@@ -96,61 +153,6 @@
   --sidebar-accent: #1a1a1a;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #333333;
-  --sidebar-ring: #00ff88;
-}
-
-.light {
-  /* 🌞 OPTIONAL LIGHT THEME */
-  /* Light mode alternative for those who prefer it */
-  
-  /* Background and text */
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  
-  /* Cards and surfaces */
-  --card: #f8f9fa;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  
-  /* Primary: same vibrant green works on light */
-  --primary: #00ff88;
-  --primary-foreground: #0a0a0a;
-  
-  /* Secondary: subtle backgrounds */
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0a0a0a;
-  
-  /* Muted elements */
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-    /* Accent: brilliant blue */
-  --accent: #0099ff;
-  --accent-foreground: #ffffff;
-  
-  /* Borders and inputs */
-  --border: #e2e8f0;
-  --input: #f8fafc;
-  --ring: #00ff88;
-  
-  /* Destructive actions */
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-    /* Chart colors */
-  --chart-1: #00ff88;
-  --chart-2: #0099ff;
-  --chart-3: #ff0088;
-  --chart-4: #0a0a0a;
-  --chart-5: #64748b;
-  
-  /* Sidebar colors */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-primary: #00ff88;
-  --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #f8fafc;
-  --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #e2e8f0;
   --sidebar-ring: #00ff88;
 }
 

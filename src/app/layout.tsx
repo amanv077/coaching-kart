@@ -32,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >        <AuthProvider>
-          <ThemeProvider defaultTheme="system" storageKey="coaching-kart-theme">
+          <ThemeProvider defaultTheme="light" storageKey="coaching-kart-theme">
             <Navbar />
             {children}
             <Footer/>

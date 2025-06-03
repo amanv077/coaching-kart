@@ -45,7 +45,7 @@ function ThemeScript({ defaultTheme, storageKey }: { defaultTheme: Theme; storag
 
 export function ThemeProvider({ 
   children,
-  defaultTheme = 'dark',  // Changed default to 'dark' to avoid flash
+  defaultTheme = 'light',  // Changed default to 'light'
   storageKey = 'coaching-kart-theme'
 }: {
   children: React.ReactNode;
@@ -53,7 +53,7 @@ export function ThemeProvider({
   storageKey?: string;
 }) {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark'); // Default to dark
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light'); // Default to light
 
   useEffect(() => {
     // Load theme from localStorage

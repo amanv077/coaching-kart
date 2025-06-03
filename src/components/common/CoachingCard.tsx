@@ -1,8 +1,7 @@
-import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Award, MapPin, Star, Wifi, WifiOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Star, Users, Clock, BookOpen, Wifi, WifiOff, Award } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface CoachingCardProps {
   id: string;

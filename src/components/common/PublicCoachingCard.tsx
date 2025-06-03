@@ -1,26 +1,25 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getOptimizedImageUrl, getImageAlt } from '@/utils/image-utils';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Calendar, 
-  Users, 
-  Star, 
-  Eye,
-  Building2,
-  Clock,
-  Lock,
-  BookOpen,
-  Award
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { getImageAlt, getOptimizedImageUrl } from '@/utils/image-utils';
+import {
+    Award,
+    BookOpen,
+    Building2,
+    Calendar,
+    Clock,
+    Eye,
+    Lock,
+    Mail,
+    MapPin,
+    Phone,
+    Star
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import React from 'react';
 
 interface PublicCoachingCardProps {
   coaching: {

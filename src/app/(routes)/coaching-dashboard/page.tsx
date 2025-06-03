@@ -1,27 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { PageLoader, CardLoader } from '@/components/ui/loader';
-import Link from 'next/link';
-import { 
-  Plus, 
-  Users, 
-  BookOpen, 
-  TrendingUp, 
-  Settings,
-  FileText,
-  Calendar,
-  DollarSign,
-  Building2,
-  Award,
-  Eye
-} from 'lucide-react';
 import CoachingCard from '@/components/common/coaching-card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CardLoader, PageLoader } from '@/components/ui/loader';
+import {
+  Award,
+  BookOpen,
+  Building2,
+  DollarSign,
+  FileText,
+  Plus,
+  Settings,
+  TrendingUp,
+  Users
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 interface DashboardStats {
   totalCoachings: number;

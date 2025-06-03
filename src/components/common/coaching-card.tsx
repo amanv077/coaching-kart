@@ -1,0 +1,294 @@
+"use client";
+
+import React from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Calendar, 
+  Users, 
+  Star, 
+  Edit, 
+  Eye,
+  Building2,
+  Clock,
+  CheckCircle,
+  XCircle
+} from 'lucide-react';
+
+interface CoachingCardProps {
+  coaching: {
+    id: string;
+    coachingId: string;
+    organizationName: string;
+    profiles: Array<{
+      id: string;
+      profileId: string;
+      name: string;
+      branchName?: string;
+      city: string;
+      state: string;
+      logo?: string;
+      images: string[];
+      tagline?: string;
+      description: string;
+      establishedYear: number;
+      contactNumber: string;
+      email: string;
+      rating?: number;
+      totalRatings?: number;
+      approved: boolean;
+      isActive: boolean;
+      verificationStatus: 'Pending' | 'Verified' | 'Rejected';
+      courses: Array<{
+        id: string;
+        courseName: string;
+        courseAmount: number;
+      }>;
+      subjectsOffered: string[];
+      examsOffered: string[];
+      facilities: string[];
+    }>;
+  };
+  showActions?: boolean;
+  variant?: 'default' | 'compact';
+}
+
+const CoachingCard: React.FC<CoachingCardProps> = ({ 
+  coaching, 
+  showActions = false, 
+  variant = 'default' 
+}) => {
+  const mainProfile = coaching.profiles[0]; // Show first profile as main
+  const totalCourses = coaching.profiles.reduce((acc, profile) => acc + profile.courses.length, 0);
+
+  const getStatusBadge = (status: string, approved: boolean, isActive: boolean) => {
+    if (!isActive) {
+      return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Inactive</Badge>;
+    }
+    if (!approved) {
+      return <Badge variant="destructive">Pending Approval</Badge>;
+    }
+    switch (status) {
+      case 'Verified':
+        return <Badge variant="default" className="bg-green-100 text-green-700">Verified</Badge>;
+      case 'Rejected':
+        return <Badge variant="destructive">Rejected</Badge>;
+      default:
+        return <Badge variant="secondary">Pending</Badge>;
+    }
+  };
+
+  if (variant === 'compact') {
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-4">
+            {/* Logo */}
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              {mainProfile.logo ? (
+                <img 
+                  src={mainProfile.logo} 
+                  alt={coaching.organizationName}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <Building2 className="h-8 w-8 text-white" />
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-900 truncate">
+                    {coaching.organizationName}
+                  </h3>
+                  <p className="text-sm text-gray-600">{mainProfile.name}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <MapPin className="h-3 w-3 text-gray-400" />
+                    <span className="text-sm text-gray-500">{mainProfile.city}, {mainProfile.state}</span>
+                  </div>
+                </div>
+                {getStatusBadge(mainProfile.verificationStatus, mainProfile.approved, mainProfile.isActive)}
+              </div>
+              
+              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                <span>{coaching.profiles.length} Branch{coaching.profiles.length > 1 ? 'es' : ''}</span>
+                <span>{totalCourses} Course{totalCourses > 1 ? 's' : ''}</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            {showActions && (
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                    <Edit className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="hover:shadow-lg transition-all duration-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-start gap-4">
+          {/* Logo */}
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+            {mainProfile.logo ? (
+              <img 
+                src={mainProfile.logo} 
+                alt={coaching.organizationName}
+                className="w-full h-full object-cover rounded-xl"
+              />
+            ) : (
+              <Building2 className="h-10 w-10 text-white" />
+            )}
+          </div>
+
+          {/* Header Info */}
+          <div className="flex-1">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  {coaching.organizationName}
+                </h3>
+                <p className="text-gray-600 font-medium">{mainProfile.name}</p>
+                {mainProfile.tagline && (
+                  <p className="text-sm text-gray-500 italic mt-1">{mainProfile.tagline}</p>
+                )}
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                {getStatusBadge(mainProfile.verificationStatus, mainProfile.approved, mainProfile.isActive)}
+                {mainProfile.rating && (
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                    <span className="text-sm font-medium">{mainProfile.rating}</span>
+                    <span className="text-xs text-gray-500">({mainProfile.totalRatings})</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="flex items-center gap-6 mt-3 text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>Est. {mainProfile.establishedYear}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Building2 className="h-4 w-4" />
+                <span>{coaching.profiles.length} Branch{coaching.profiles.length > 1 ? 'es' : ''}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                <span>{totalCourses} Course{totalCourses > 1 ? 's' : ''}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        {/* Description */}
+        <p className="text-gray-600 text-sm line-clamp-2">{mainProfile.description}</p>
+
+        {/* Location & Contact */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div className="flex items-center gap-2 text-gray-600">
+            <MapPin className="h-4 w-4 text-gray-400" />
+            <span>{mainProfile.city}, {mainProfile.state}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <Phone className="h-4 w-4 text-gray-400" />
+            <span>{mainProfile.contactNumber}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <Mail className="h-4 w-4 text-gray-400" />
+            <span className="truncate">{mainProfile.email}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <Clock className="h-4 w-4 text-gray-400" />
+            <span>Active</span>
+          </div>
+        </div>
+
+        {/* Subjects & Exams */}
+        <div className="space-y-2">
+          <div>
+            <span className="text-sm font-medium text-gray-700">Subjects: </span>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {mainProfile.subjectsOffered.slice(0, 4).map((subject) => (
+                <Badge key={subject} variant="secondary" className="text-xs">
+                  {subject}
+                </Badge>
+              ))}
+              {mainProfile.subjectsOffered.length > 4 && (
+                <Badge variant="secondary" className="text-xs">
+                  +{mainProfile.subjectsOffered.length - 4} more
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <span className="text-sm font-medium text-gray-700">Exams: </span>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {mainProfile.examsOffered.slice(0, 3).map((exam) => (
+                <Badge key={exam} variant="outline" className="text-xs">
+                  {exam}
+                </Badge>
+              ))}
+              {mainProfile.examsOffered.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{mainProfile.examsOffered.length - 3} more
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Course Price Range */}
+        {mainProfile.courses.length > 0 && (
+          <div className="text-sm">
+            <span className="text-gray-700 font-medium">Course Fees: </span>
+            <span className="text-green-600 font-semibold">
+              ₹{Math.min(...mainProfile.courses.map(c => c.courseAmount)).toLocaleString()} - 
+              ₹{Math.max(...mainProfile.courses.map(c => c.courseAmount)).toLocaleString()}
+            </span>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex gap-2 pt-2">
+          <Button variant="outline" size="sm" className="flex-1" asChild>
+            <Link href={`/coaching/${coaching.coachingId}`}>
+              <Eye className="h-4 w-4 mr-2" />
+              View Details
+            </Link>
+          </Button>
+          {showActions && (
+            <Button variant="default" size="sm" className="flex-1" asChild>
+              <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                <Edit className="h-4 w-4 mr-2" />
+                Manage
+              </Link>
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default CoachingCard;

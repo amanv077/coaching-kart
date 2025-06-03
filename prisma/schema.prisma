@@ -103,16 +103,15 @@ enum LookingFor {
 model Coaching {
   id              String   @id @default(cuid())
   coachingId      String   @unique @default(cuid())
-  coachingName    String
-  contactNumber   String
-  alternateNumber String?
-  address         String
-  city            String
-  pincode         String
-  landmark        String?
-  email           String
-  images          String[] // Array of image URLs
+  organizationName String  // Main organization/brand name
+  ownerName       String
+  ownerEmail      String
+  ownerPhone      String
+  businessType    BusinessType @default(Individual)
+  gstNumber       String?
+  panNumber       String?
   approved        Boolean  @default(false)
+  isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
@@ -120,22 +119,129 @@ model Coaching {
   ownerUserId     String
   owner           User     @relation("CoachingOwner", fields: [ownerUserId], references: [id])
   
-  // Courses offered by this coaching
-  courses         Course[]
+  // Multiple coaching profiles/branches
+  profiles        CoachingProfile[]
   
-  // Reviews for this coaching
+  // Reviews for this coaching organization
   reviews         Review[]
   
-  // Demo sessions
-  demoSessions    DemoSession[]
-  
   @@map("coachings")
+}
+
+enum BusinessType {
+  Individual
+  Partnership
+  Company
+  Trust
+}
+
+model CoachingProfile {
+  id                String   @id @default(cuid())
+  profileId         String   @unique @default(cuid())
+  name              String   // Branch/Profile name
+  branchName        String?  // Specific branch identifier
+  establishedYear   Int
+  tagline           String?
+  description       String
+  logo              String?
+  images            String[] // Array of coaching images
+  
+  // Location details
+  address           String
+  landmark          String?
+  city              String
+  state             String
+  pincode           String
+  country           String   @default("India")
+  
+  // Contact details
+  contactNumber     String
+  alternateNumber   String?
+  email             String
+  website           String?
+  
+  // Social media links
+  facebookUrl       String?
+  instagramUrl      String?
+  youtubeUrl        String?
+  twitterUrl        String?
+  
+  // Operating details
+  operatingDays     String[] // Array of days ["Monday", "Tuesday", etc.]
+  operatingHours    String   // "9:00 AM - 6:00 PM"
+  facilities        String[] // Array of facilities
+  
+  // Teaching staff
+  totalTeachers     Int      @default(0)
+  teachers          Teacher[]
+  
+  // Subjects and exams offered
+  subjectsOffered   String[] // Array of subjects
+  examsOffered      String[] // Array of exams like "JEE", "NEET", etc.
+  
+  // Approval and status
+  approved          Boolean  @default(false)
+  isActive          Boolean  @default(true)
+  verificationStatus VerificationStatus @default(Pending)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Parent coaching relation
+  coachingId        String
+  coaching          Coaching @relation(fields: [coachingId], references: [id])
+  
+  // Courses offered by this profile
+  courses           Course[]
+  
+  // Demo sessions
+  demoSessions      DemoSession[]
+  
+  // Profile-specific reviews
+  profileReviews    Review[] @relation("ProfileReviews")
+  
+  @@unique([coachingId, name])
+  @@map("coaching_profiles")
+}
+
+enum VerificationStatus {
+  Pending
+  Verified
+  Rejected
+}
+
+model Teacher {
+  id              String   @id @default(cuid())
+  teacherId       String   @unique @default(cuid())
+  name            String
+  qualification   String
+  specialization  String[] // Array of subjects they specialize in
+  experience      Int      // Years of experience
+  profileImage    String?
+  bio             String?
+  
+  // Contact (optional)
+  email           String?
+  phone           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Coaching profile relation
+  profileId       String
+  profile         CoachingProfile @relation(fields: [profileId], references: [id])
+  
+  // Courses taught
+  courses         Course[]
+  
+  @@map("teachers")
 }
 
 model Course {
   id                String   @id @default(cuid())
   courseId          String   @unique @default(cuid())
   courseName        String
+  courseCode        String?  // Optional course code
   courseDuration    String
   courseDescription String
   courseAmount      Float
@@ -143,14 +249,37 @@ model Course {
   courseMRP         Float
   image             String?
   rating            Float    @default(0)
-  courseTeacher     String
+  totalRatings      Int      @default(0)
+  
+  // Course details
   subjects          String[] // Array of subjects
+  examsPrepared     String[] // Array of exams this course prepares for
+  classLevel        String   // "Class 11", "Class 12", "Graduation", etc.
+  courseType        CourseType @default(Regular)
+  mode              CourseMode @default(Both)
+  
+  // Batch information
+  batchSize         Int?
+  totalSeats        Int?
+  availableSeats    Int?
+  
+  // Schedule
+  schedule          String?  // "Mon-Fri 10AM-12PM"
+  startDate         DateTime?
+  endDate           DateTime?
+  
+  // Features
+  features          String[] // Array of course features
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   
-  // Coaching relation
-  coachingId        String
-  coaching          Coaching @relation(fields: [coachingId], references: [id])
+  // Relations
+  profileId         String
+  profile           CoachingProfile @relation(fields: [profileId], references: [id])
+  
+  // Teacher assignments
+  teachers          Teacher[]
   
   // Course enrollments
   enrollments       CourseEnrollment[]
@@ -164,8 +293,22 @@ model Course {
   // Demo sessions for this course
   demoSessions      DemoSession[]
   
-  @@unique([coachingId, courseName])
+  @@unique([profileId, courseName])
   @@map("courses")
+}
+
+enum CourseType {
+  Regular
+  Crash
+  Test_Series
+  Doubt_Session
+  Personal_Coaching
+}
+
+enum CourseMode {
+  Online
+  Offline
+  Both
 }
 
 model CourseEnrollment {
@@ -173,6 +316,7 @@ model CourseEnrollment {
   userId     String
   courseId   String
   enrolledAt DateTime @default(now())
+  status     EnrollmentStatus @default(Active)
   
   user       User     @relation(fields: [userId], references: [id])
   course     Course   @relation(fields: [courseId], references: [id])
@@ -181,18 +325,29 @@ model CourseEnrollment {
   @@map("course_enrollments")
 }
 
+enum EnrollmentStatus {
+  Active
+  Completed
+  Dropped
+  Suspended
+}
+
 model Review {
   id        String   @id @default(cuid())
   reviewId  String   @unique @default(cuid())
   userId    String
   coachingId String
-  courseId  String?  // Optional - can review coaching without specific course
+  profileId String?  // Optional - for profile-specific reviews
+  courseId  String?  // Optional - can review coaching/profile without specific course
   rating    Int      // 1-5
   comment   String
+  title     String?  // Optional review title
+  helpfulCount Int   @default(0)
   createdAt DateTime @default(now())
   
   user      User     @relation(fields: [userId], references: [id])
   coaching  Coaching @relation(fields: [coachingId], references: [id])
+  profile   CoachingProfile? @relation("ProfileReviews", fields: [profileId], references: [id])
   course    Course?  @relation(fields: [courseId], references: [id])
   
   @@map("reviews")
@@ -205,8 +360,12 @@ model Order {
   courseId        String
   amountPaid      Float
   discountApplied Float         @default(0)
+  taxAmount       Float         @default(0)
+  totalAmount     Float
   paymentStatus   PaymentStatus @default(pending)
   paymentMethod   PaymentMethod
+  transactionId   String?
+  paymentGateway  String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   
@@ -220,6 +379,7 @@ enum PaymentStatus {
   pending
   completed
   failed
+  refunded
 }
 
 enum PaymentMethod {
@@ -227,21 +387,30 @@ enum PaymentMethod {
   upi
   card
   wallet
+  cash
 }
 
 model DemoSession {
   id              String   @id @default(cuid())
   sessionId       String   @unique @default(cuid())
-  coachingId      String
+  profileId       String
   courseId        String
+  title           String
+  description     String?
   mode            SessionMode
   dateTime        DateTime
   durationMinutes Int
+  maxParticipants Int      @default(50)
   location        String?  // Required if offline
+  meetingLink     String?  // Required if online
+  instructor      String
+  topics          String[] // Array of topics to be covered
+  
+  status          SessionStatus @default(Scheduled)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
-  coaching        Coaching @relation(fields: [coachingId], references: [id])
+  profile         CoachingProfile @relation(fields: [profileId], references: [id])
   course          Course   @relation(fields: [courseId], references: [id])
   
   // Attendees (many-to-many relation)
@@ -253,6 +422,14 @@ model DemoSession {
 enum SessionMode {
   online
   offline
+  hybrid
+}
+
+enum SessionStatus {
+  Scheduled
+  Live
+  Completed
+  Cancelled
 }
 
 model DemoSessionBooking {
@@ -261,6 +438,9 @@ model DemoSessionBooking {
   sessionId   String
   bookedAt    DateTime    @default(now())
   status      BookingStatus @default(confirmed)
+  attended    Boolean     @default(false)
+  feedback    String?
+  rating      Int?        // 1-5
   
   user        User        @relation(fields: [userId], references: [id])
   session     DemoSession @relation(fields: [sessionId], references: [id])
@@ -273,6 +453,7 @@ enum BookingStatus {
   confirmed
   cancelled
   completed
+  no_show
 }
 
 model VerificationToken {

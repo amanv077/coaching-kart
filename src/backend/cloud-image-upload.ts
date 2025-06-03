@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { writeFile, mkdir } from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
 
@@ -136,7 +137,6 @@ export async function uploadMultipleImages(
 
 export function deleteImage(filePath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const fs = require('fs');
     const fullPath = path.join(process.cwd(), 'public', filePath);
     
     fs.unlink(fullPath, (err: any) => {

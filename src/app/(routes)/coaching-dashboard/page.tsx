@@ -75,8 +75,19 @@ const CoachDashboard = () => {
     totalStudents: 0,
     pendingApprovals: 0,
     monthlyEarnings: 0
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  });  const [isLoading, setIsLoading] = useState(true);
+    // Move useEffect to top level to follow rules of hooks
+  useEffect(() => {
+    // Only fetch if we have a session and user has COACH role
+    if (session && status === 'authenticated') {
+      const userRoles = session.user?.roles || [session.user?.role];
+      const hasCoachRole = userRoles.includes('COACH');
+      if (hasCoachRole) {
+        fetchCoachings();
+      }
+    }
+  }, [session, status]);
+
   if (status === 'loading') {
     return <PageLoader text="Loading your dashboard..." />;
   }
@@ -99,10 +110,6 @@ const CoachDashboard = () => {
       redirect('/');
     }
   }
-
-  useEffect(() => {
-    fetchCoachings();
-  }, []);
 
   const fetchCoachings = async () => {
     try {

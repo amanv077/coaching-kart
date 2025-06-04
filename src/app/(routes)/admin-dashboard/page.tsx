@@ -1,27 +1,87 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { PageLoader } from '@/components/ui/loader';
-import Link from 'next/link';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AdminStats from '@/components/admin/AdminStats';
+import PendingApprovalsContainer from '@/components/admin/PendingApprovalsContainer';
+import UserManagementContainer from '@/components/admin/UserManagementContainer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  BarChart3, 
+  Users, 
+  Clock, 
+  Settings, 
+  Shield,
+  TrendingUp,
+  CheckCircle2,
+  Database,
+  Server
+} from 'lucide-react';
 
 const AdminDashboard = () => {
+  // All hooks must be called at the top, before any conditional logic
   const { data: session, status } = useSession();
-  if (status === 'loading') {
+  const [stats, setStats] = useState<{
+    totalUsers: number;
+    totalCoaches: number;
+    totalStudents: number;
+    totalAdmins: number;
+    totalCoachings: number;
+    pendingApprovals: number;
+    totalRevenue: number;
+    monthlyGrowth: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch admin stats - this hook must be called before any conditional returns
+  useEffect(() => {
+    const fetchStats = async () => {
+      // Only fetch if user is authenticated and has admin role
+      if (status === 'authenticated' && session?.user) {
+        const userRoles = session.user?.roles || [session.user?.role];
+        const hasAdminRole = userRoles.includes('ADMIN');
+        
+        if (hasAdminRole) {
+          try {
+            const response = await fetch('/api/admin/stats');
+            if (!response.ok) {
+              throw new Error('Failed to fetch admin stats');
+            }
+            const data = await response.json();
+            setStats(data);
+          } catch (err) {
+            console.error('Error fetching admin stats:', err);
+            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+          }
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchStats();
+  }, [session, status]);
+
+  // Session loading check
+  if (status === 'loading' || loading) {
     return <PageLoader text="Loading admin dashboard..." />;
   }
+  
+  // Authentication check
   if (!session) {
     redirect('/login');
   }
 
-  // Check if user has ADMIN role (users can have multiple roles)
+  // Authorization check
   const userRoles = session.user?.roles || [session.user?.role];
   const hasAdminRole = userRoles.includes('ADMIN');
   
   if (!hasAdminRole) {
-    // Redirect to appropriate dashboard based on primary role
     const primaryRole = session.user?.role;
     if (primaryRole === 'STUDENT') {
       redirect('/dashboard');
@@ -31,170 +91,250 @@ const AdminDashboard = () => {
       redirect('/');
     }
   }
+  // Error handling
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-red-600">Error Loading Dashboard</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-8 space-y-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Admin Dashboard - {session.user?.name} ⚡
-          </h1>
-          <p className="text-muted-foreground">
-            Manage the entire platform and oversee all operations
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <Shield className="h-8 w-8 text-blue-600" />
+              Admin Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Welcome back, <span className="font-medium">{session.user?.name}</span>. 
+              Manage your platform and oversee all operations.
+            </p>
+          </div>
+          <Badge variant="secondary" className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            System Operational
+          </Badge>
         </div>
 
-        {/* Platform Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-coaching-primary mb-2">Total Users</h3>
-            <p className="text-3xl font-bold text-foreground">2,847</p>
-            <p className="text-sm text-muted-foreground">+127 this month</p>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-coaching-secondary mb-2">Active Coaches</h3>
-            <p className="text-3xl font-bold text-foreground">156</p>
-            <p className="text-sm text-muted-foreground">95% active rate</p>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-coaching-accent mb-2">Total Courses</h3>
-            <p className="text-3xl font-bold text-foreground">234</p>
-            <p className="text-sm text-muted-foreground">12 pending approval</p>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-coaching-primary mb-2">Platform Revenue</h3>
-            <p className="text-3xl font-bold text-foreground">$45K</p>
-            <p className="text-sm text-muted-foreground">This month</p>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-coaching-secondary mb-2">Support Tickets</h3>
-            <p className="text-3xl font-bold text-foreground">23</p>
-            <p className="text-sm text-muted-foreground">5 urgent</p>
-          </div>
-        </div>
+        {/* Admin Stats */}
+        {stats && <AdminStats stats={stats} />}
 
-        {/* Recent Activity & Pending Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="text-xl font-bold text-foreground mb-4">Pending Approvals</h2>
-            <div className="space-y-4">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-coaching-gradient rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">C{item}</span>
+        {/* Main Dashboard Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="approvals" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Pending Approvals
+            </TabsTrigger>
+            <TabsTrigger value="users" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              User Management
+            </TabsTrigger>
+            <TabsTrigger value="system" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              System Health
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Recent Activity Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Platform Overview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-blue-900 dark:text-blue-100">
+                          User Growth
+                        </p>
+                        <p className="text-sm text-blue-700 dark:text-blue-200">
+                          +{stats?.monthlyGrowth || 0}% this month
+                        </p>
+                      </div>
+                      <TrendingUp className="h-8 w-8 text-blue-600" />
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">New Course Submission</p>
-                      <p className="text-sm text-muted-foreground">Advanced Physics by Dr. Smith</p>
+                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900 dark:text-green-100">
+                          Active Coaches
+                        </p>
+                        <p className="text-sm text-green-700 dark:text-green-200">
+                          {stats?.totalCoaches || 0} verified coaches
+                        </p>
+                      </div>
+                      <Users className="h-8 w-8 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-orange-900 dark:text-orange-100">
+                          Pending Actions
+                        </p>
+                        <p className="text-sm text-orange-700 dark:text-orange-200">
+                          {stats?.pendingApprovals || 0} items need attention
+                        </p>
+                      </div>
+                      <Clock className="h-8 w-8 text-orange-600" />
                     </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="outline">
-                      Review
-                    </Button>
-                    <Button size="sm">
-                      Approve
-                    </Button>
+                </CardContent>
+              </Card>              {/* Quick System Health */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick System Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900 dark:text-green-100">System Status</p>
+                        <p className="text-sm text-green-700 dark:text-green-200">All systems operational</p>
+                      </div>
+                      <CheckCircle2 className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-blue-900 dark:text-blue-100">Performance</p>
+                        <p className="text-sm text-blue-700 dark:text-blue-200">Optimal response times</p>
+                      </div>
+                      <BarChart3 className="h-6 w-6 text-blue-600" />
+                    </div>
                   </div>
-                </div>
-              ))}
+                </CardContent>
+              </Card>
             </div>
-          </div>
+          </TabsContent>          <TabsContent value="approvals">
+            <PendingApprovalsContainer />
+          </TabsContent>
 
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="text-xl font-bold text-foreground mb-4">System Health</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div>
-                  <p className="font-medium text-green-800">Server Status</p>
-                  <p className="text-sm text-green-600">All systems operational</p>
-                </div>
-                <span className="text-green-500 text-2xl">✅</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div>
-                  <p className="font-medium text-blue-800">Database Performance</p>
-                  <p className="text-sm text-blue-600">Optimal response times</p>
-                </div>
-                <span className="text-blue-500 text-2xl">🚀</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div>
-                  <p className="font-medium text-yellow-800">Backup Status</p>
-                  <p className="text-sm text-yellow-600">Last backup: 2 hours ago</p>
-                </div>
-                <span className="text-yellow-500 text-2xl">💾</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          <TabsContent value="users">
+            <UserManagementContainer />
+          </TabsContent>
 
-        {/* User Management */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Recent User Registrations</h2>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((user) => (
-                <div key={user} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-coaching-gradient rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">U{user}</span>
+          <TabsContent value="system">
+            <Card>
+              <CardHeader>
+                <CardTitle>System Health & Monitoring</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Monitor system health, performance metrics, and admin controls.
+                  </p>
+                  {/* SystemHealth component will be implemented with self-contained data fetching */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900 dark:text-green-100">Server Status</p>
+                        <p className="text-sm text-green-700 dark:text-green-200">All systems operational</p>
+                      </div>
+                      <CheckCircle2 className="h-8 w-8 text-green-600" />
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">John Doe {user}</p>
-                      <p className="text-sm text-muted-foreground">john.doe{user}@email.com</p>
+                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div>
+                        <p className="font-medium text-blue-900 dark:text-blue-100">Database</p>
+                        <p className="text-sm text-blue-700 dark:text-blue-200">Optimal performance</p>
+                      </div>
+                      <Database className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <div>
+                        <p className="font-medium text-yellow-900 dark:text-yellow-100">Backup</p>
+                        <p className="text-sm text-yellow-700 dark:text-yellow-200">Last: 2 hours ago</p>
+                      </div>
+                      <Server className="h-8 w-8 text-yellow-600" />
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm bg-coaching-secondary/20 text-coaching-secondary px-2 py-1 rounded">
-                      STUDENT
-                    </span>
-                    <span className="text-xs text-muted-foreground">2 hours ago</span>
-                    <Button size="sm" variant="outline">
-                      View
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Platform Analytics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-blue-900 dark:text-blue-100">Daily Active Users</p>
+                        <p className="text-2xl font-bold text-blue-700 dark:text-blue-200">
+                          {stats ? Math.floor(stats.totalUsers * 0.15) : 0}
+                        </p>
+                      </div>
+                      <Users className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900 dark:text-green-100">Revenue Growth</p>
+                        <p className="text-2xl font-bold text-green-700 dark:text-green-200">
+                          +{stats?.monthlyGrowth || 0}%
+                        </p>
+                      </div>
+                      <TrendingUp className="h-8 w-8 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                      <div>
+                        <p className="font-medium text-purple-900 dark:text-purple-100">Course Completion Rate</p>
+                        <p className="text-2xl font-bold text-purple-700 dark:text-purple-200">87%</p>
+                      </div>
+                      <BarChart3 className="h-8 w-8 text-purple-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Admin Actions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button className="h-20 flex flex-col gap-2" variant="outline">
+                      <Settings className="h-6 w-6" />
+                      <span className="text-sm">System Settings</span>
+                    </Button>
+                    <Button className="h-20 flex flex-col gap-2" variant="outline">
+                      <Database className="h-6 w-6" />
+                      <span className="text-sm">Database Backup</span>
+                    </Button>
+                    <Button className="h-20 flex flex-col gap-2" variant="outline">
+                      <Shield className="h-6 w-6" />
+                      <span className="text-sm">Security Audit</span>
+                    </Button>
+                    <Button className="h-20 flex flex-col gap-2" variant="outline">
+                      <BarChart3 className="h-6 w-6" />
+                      <span className="text-sm">Generate Report</span>
                     </Button>
                   </div>
-                </div>
-              ))}
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Button asChild className="h-20 flex flex-col space-y-2">
-            <Link href="/admin/users">
-              <span className="text-2xl">👥</span>
-              <span>Manage Users</span>
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-20 flex flex-col space-y-2">
-            <Link href="/admin/courses">
-              <span className="text-2xl">📚</span>
-              <span>Course Management</span>
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-20 flex flex-col space-y-2">
-            <Link href="/admin/analytics">
-              <span className="text-2xl">📊</span>
-              <span>Analytics</span>
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-20 flex flex-col space-y-2">
-            <Link href="/admin/settings">
-              <span className="text-2xl">⚙️</span>
-              <span>Settings</span>
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-20 flex flex-col space-y-2">
-            <Link href="/admin/reports">
-              <span className="text-2xl">📄</span>
-              <span>Reports</span>
-            </Link>
-          </Button>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

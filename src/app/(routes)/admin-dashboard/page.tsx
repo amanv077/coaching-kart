@@ -48,13 +48,12 @@ const AdminDashboard = () => {
         const hasAdminRole = userRoles.includes('ADMIN');
         
         if (hasAdminRole) {
-          try {
-            const response = await fetch('/api/admin/stats');
+          try {            const response = await fetch('/api/admin/stats');
             if (!response.ok) {
               throw new Error('Failed to fetch admin stats');
             }
             const data = await response.json();
-            setStats(data);
+            setStats(data.stats);
           } catch (err) {
             console.error('Error fetching admin stats:', err);
             setError(err instanceof Error ? err.message : 'An unknown error occurred');

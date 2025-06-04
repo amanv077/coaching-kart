@@ -1,14 +1,15 @@
 "use client";
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import ClickableStatCard from './ClickableStatCard';
 import { 
   Users, 
   GraduationCap, 
   Building2, 
   TrendingUp, 
   AlertCircle,
-  DollarSign 
+  DollarSign,
+  Shield
 } from 'lucide-react';
 
 interface AdminStatsProps {
@@ -31,68 +32,77 @@ const AdminStats: React.FC<AdminStatsProps> = ({ stats }) => {
       value: stats.totalUsers,
       icon: Users,
       color: 'bg-blue-500',
-      description: 'All registered users'
+      description: 'All registered users',
+      href: '/admin-dashboard/users',
+      singular: 'user',
+      plural: 'users'
     },
     {
       title: 'Active Coaches',
       value: stats.totalCoaches,
       icon: GraduationCap,
       color: 'bg-green-500',
-      description: 'Verified coaches'
+      description: 'Verified coaches',
+      href: '/admin-dashboard/coaches',
+      singular: 'coach',
+      plural: 'coaches'
     },
     {
       title: 'Students',
       value: stats.totalStudents,
       icon: Users,
       color: 'bg-purple-500',
-      description: 'Active students'
+      description: 'Active students',
+      href: '/admin-dashboard/students',
+      singular: 'student',
+      plural: 'students'
+    },
+    {
+      title: 'Admins',
+      value: stats.totalAdmins,
+      icon: Shield,
+      color: 'bg-indigo-500',
+      description: 'Platform administrators',
+      href: '/admin-dashboard/admins',
+      singular: 'admin',
+      plural: 'admins'
     },
     {
       title: 'Coaching Institutes',
       value: stats.totalCoachings,
       icon: Building2,
       color: 'bg-orange-500',
-      description: 'Total institutes'
+      description: 'Total institutes',
+      href: '/admin-dashboard/coaching-institutes',
+      singular: 'institute',
+      plural: 'institutes'
     },
     {
       title: 'Pending Approvals',
       value: stats.pendingApprovals,
       icon: AlertCircle,
       color: 'bg-red-500',
-      description: 'Awaiting review'
-    },
-    {
-      title: 'Platform Revenue',
-      value: `₹${(stats.totalRevenue / 1000).toFixed(1)}K`,
-      icon: DollarSign,
-      color: 'bg-emerald-500',
-      description: 'This month'
+      description: 'Awaiting review',
+      href: '/admin-dashboard/pending-approvals',
+      singular: 'approval',
+      plural: 'approvals'
     }
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       {statCards.map((stat, index) => (
-        <Card key={index} className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">
-                  {stat.title}
-                </p>
-                <p className="text-3xl font-bold text-foreground">
-                  {stat.value}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stat.description}
-                </p>
-              </div>
-              <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
-                <stat.icon className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <ClickableStatCard
+          key={index}
+          title={stat.title}
+          value={stat.value}
+          icon={stat.icon}
+          color={stat.color}
+          description={stat.description}
+          href={stat.href}
+          singular={stat.singular}
+          plural={stat.plural}
+        />
       ))}
     </div>
   );

@@ -10,13 +10,17 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+          "border-transparent bg-[hsl(205_100%_50%)] text-white [a&]:hover:bg-[hsl(205_100%_45%)]",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+          "border-input text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground dark:text-foreground dark:border-muted",
+        premium:
+          "border border-[hsl(205_100%_85%)] bg-[hsl(205_100%_98%)] text-[hsl(205_100%_40%)] dark:bg-[hsl(205_100%_20%)] dark:text-[hsl(205_100%_80%)] dark:border-[hsl(205_100%_30%)] shadow-sm",
+        verified:
+          "border-transparent bg-[hsl(205_100%_90%)] text-[hsl(205_100%_40%)] dark:bg-[hsl(205_100%_20%)] dark:text-[hsl(205_100%_80%)]",
       },
     },
     defaultVariants: {

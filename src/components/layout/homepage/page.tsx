@@ -174,8 +174,7 @@ const HomePage = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-            <div className="text-center group relative">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-coaching-primary to-coaching-primary/80 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-coaching-primary/30">
+            <div className="text-center group relative">              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-coaching-primary to-coaching-primary/80 rounded-full flex items-center justify-center text-black dark:text-white text-2xl md:text-3xl font-bold mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-coaching-primary/30">
                 1
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">🔍 Search & Compare</h3>
@@ -185,8 +184,7 @@ const HomePage = () => {
               </div>
             </div>
             
-            <div className="text-center group relative">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-coaching-secondary to-coaching-secondary/80 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-coaching-secondary/30">
+            <div className="text-center group relative">              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-coaching-secondary to-coaching-secondary/80 rounded-full flex items-center justify-center text-black dark:text-white text-2xl md:text-3xl font-bold mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-coaching-secondary/30">
                 2
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">🎁 Book Free Demos</h3>
@@ -196,8 +194,7 @@ const HomePage = () => {
               </div>
             </div>
             
-            <div className="text-center group">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-coaching-accent to-coaching-accent/80 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-coaching-accent/30">
+            <div className="text-center group">              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-coaching-accent to-coaching-accent/80 rounded-full flex items-center justify-center text-black dark:text-white text-2xl md:text-3xl font-bold mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-coaching-accent/30">
                 3
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">💰 Get Best Price</h3>

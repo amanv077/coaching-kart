@@ -16,9 +16,14 @@ const CTASection = ({
   description, 
   buttonText, 
   buttonHref, 
-  backgroundColor = "bg-coaching-gradient", 
+  backgroundColor = "bg-gradient-to-r from-[hsl(205_100%_50%)] to-[hsl(220_100%_45%)]", 
   pattern = true 
 }: CTASectionProps) => {
+  // Determine if we're on a dark background (gradient) where white text is appropriate
+  const isDarkBackground = backgroundColor.includes('gradient') || backgroundColor.includes('dark');
+  const textColorClass = isDarkBackground ? 'text-white' : 'text-foreground';
+  const subtextColorClass = isDarkBackground ? 'text-white/90' : 'text-muted-foreground';
+
   return (
     <section className={`relative py-16 md:py-20 px-4 overflow-hidden ${backgroundColor}`}>
       {/* Background Pattern */}
@@ -34,12 +39,11 @@ const CTASection = ({
       )}
       
       <div className="container mx-auto text-center relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
+        <div className="max-w-4xl mx-auto">          <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 animate-fade-in ${textColorClass}`}>
             {title}
           </h2>
           
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up">
+          <p className={`text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up ${subtextColorClass}`}>
             {description}
           </p>
           
@@ -47,7 +51,7 @@ const CTASection = ({
             <Button 
               variant="outline" 
               size="lg" 
-              className="bg-white text-coaching-primary hover:bg-white/90 border-white shadow-lg hover:shadow-xl transition-all duration-300" 
+              className="bg-white text-[hsl(205_100%_50%)] hover:bg-white/90 border-white shadow-lg hover:shadow-blue transition-all duration-300" 
               asChild
             >
               <Link href={buttonHref} className="group">

@@ -21,10 +21,26 @@ function DropdownMenuPortal({
 }
 
 function DropdownMenuTrigger({
+  className,
+  asChild = false,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger> & {
+  asChild?: boolean
+}) {
+  if (asChild) {
+    return (
+      <DropdownMenuPrimitive.Trigger
+        className={cn(className)}
+        data-slot="dropdown-menu-trigger"
+        asChild
+        {...props}
+      />
+    )
+  }
+  
   return (
     <DropdownMenuPrimitive.Trigger
+      className={cn(className)}
       data-slot="dropdown-menu-trigger"
       {...props}
     />

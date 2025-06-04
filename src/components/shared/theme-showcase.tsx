@@ -11,31 +11,29 @@ const ThemeShowcase = () => {
         <h1 className="text-3xl font-bold text-foreground mb-2">Theme Showcase</h1>
         <p className="text-muted-foreground">Demonstrating the Coaching Kart color palette and components</p>
       </div>      {/* Color Palette */}
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-foreground">Neon Color Palette</h2>
+      <section className="space-y-4">        <h2 className="text-2xl font-semibold text-foreground">Premium Blue Palette</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <ColorSwatch 
-            color="#00FF85" 
-            name="Neon Green (Primary)" 
+            color="hsl(205 100% 50%)" 
+            name="Premium Blue (Primary)" 
             className="bg-coaching-primary" 
           />
           <ColorSwatch 
-            color="#1E90FF" 
-            name="Electric Blue" 
+            color="hsl(220 70% 45%)" 
+            name="Deep Blue (Secondary)" 
             className="bg-coaching-secondary" 
           />
           <ColorSwatch 
-            color="#FF0099" 
-            name="Vivid Pink (Hover)" 
+            color="hsl(245 100% 60%)" 
+            name="Rich Purple (Accent)" 
             className="bg-coaching-accent" 
-          />
-          <ColorSwatch 
-            color="#0D0D0D" 
+          /><ColorSwatch 
+            color="hsl(0 0% 5%)" 
             name="Almost Black" 
-            className="bg-coaching-background" 
+            className="bg-card dark:bg-card" 
           />
           <ColorSwatch 
-            color="#FFFFFF" 
+            color="hsl(0 0% 100%)" 
             name="Pure White" 
             className="bg-coaching-text" 
           />
@@ -44,12 +42,11 @@ const ThemeShowcase = () => {
 
       {/* Button Variants */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-foreground">Button Variants</h2>
-        <div className="flex flex-wrap gap-4">
-          <Button variant="default">Primary (Neon Green)</Button>
-          <Button variant="secondary">Secondary (Blue)</Button>
-          <Button variant="accent">Accent (Pink)</Button>
-          <Button variant="outline">Outline</Button>
+        <h2 className="text-2xl font-semibold text-foreground">Button Variants</h2>        <div className="flex flex-wrap gap-4">
+          <Button variant="default">Premium Blue</Button>
+          <Button variant="secondary">Deep Blue</Button>
+          <Button variant="accent">Rich Purple</Button>
+          <Button variant="outline">Outline Blue</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="gradient">Gradient</Button>
           <Button variant="neon">Neon Glow</Button>
@@ -67,10 +64,9 @@ const ThemeShowcase = () => {
           <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-coaching-hover">
             <h3 className="font-semibold mb-2">Enhanced Card</h3>
             <p className="text-muted-foreground">Card with enhanced shadow effect</p>
-          </div>
-          <div className="bg-coaching-gradient text-white p-6 rounded-lg">
+          </div>          <div className="bg-coaching-gradient text-background dark:text-white p-6 rounded-lg">
             <h3 className="font-semibold mb-2">Gradient Card</h3>
-            <p className="text-white/90">Card with gradient background</p>
+            <p className="text-background/90 dark:text-white/90">Card with gradient background</p>
           </div>
         </div>
       </section>

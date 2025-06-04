@@ -102,16 +102,15 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
     return (
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
-          <div className="flex items-start gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Building2 className="h-8 w-8 text-white" />
+          <div className="flex items-start gap-4">            <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted-foreground rounded-lg flex items-center justify-center flex-shrink-0">
+              <Building2 className="h-8 w-8 text-background" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg text-gray-900 truncate">
+              <h3 className="font-semibold text-lg text-foreground truncate">
                 {coaching.organizationName}
               </h3>
-              <p className="text-sm text-gray-500">No profile data available</p>
-              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">No profile data available</p>
+              <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                 <span>0 Branches</span>
                 <span>0 Courses</span>
               </div>
@@ -121,7 +120,6 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
       </Card>
     );
   }
-
   const ContactInfo = ({ icon: Icon, value, isProtected = false }: {
     icon: React.ElementType;
     value: string;
@@ -129,8 +127,8 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
   }) => {
     if (isProtected && !session) {
       return (
-        <div className="flex items-center gap-2 text-gray-600">
-          <Icon className="h-4 w-4 text-gray-400" />
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Icon className="h-4 w-4 text-muted" />
           <div className="flex items-center gap-2">
             <Lock className="h-3 w-3" />
             <span className="text-sm">Login to view</span>
@@ -143,8 +141,8 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
     }
 
     return (
-      <div className="flex items-center gap-2 text-gray-600">
-        <Icon className="h-4 w-4 text-gray-400" />
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Icon className="h-4 w-4 text-muted" />
         <span className="text-sm">{value}</span>
       </div>
     );
@@ -154,9 +152,8 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
     return (
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
-          <div className="flex items-start gap-4">
-            {/* Logo */}
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="flex items-start gap-4">            {/* Logo */}
+            <div className="w-16 h-16 bg-gradient-to-br from-[hsl(205_100%_50%)] to-[hsl(226_70%_55%)] rounded-lg flex items-center justify-center flex-shrink-0">
               {mainProfile?.logo ? (
                 <img 
                   src={getOptimizedImageUrl(mainProfile.logo, 64, 64, 'auto')} 
@@ -165,38 +162,35 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
                   loading="lazy"
                 />
               ) : (
-                <Building2 className="h-8 w-8 text-white" />
+                <Building2 className="h-8 w-8 text-background" />
               )}
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900 truncate">
+              <div className="flex items-start justify-between">                <div>
+                  <h3 className="font-semibold text-lg text-foreground truncate">
                     {coaching.organizationName}
                   </h3>
-                  <p className="text-sm text-gray-600">{mainProfile?.name || 'No profile name'}</p>
+                  <p className="text-sm text-muted-foreground">{mainProfile?.name || 'No profile name'}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <MapPin className="h-3 w-3 text-gray-400" />
-                    <span className="text-sm text-gray-500">
+                    <MapPin className="h-3 w-3 text-muted" />
+                    <span className="text-sm text-muted-foreground">
                       {mainProfile?.city && mainProfile?.state ? `${mainProfile.city}, ${mainProfile.state}` : 'Location not specified'}
                     </span>
-                  </div>
-                </div>
+                  </div>                </div>
                 {mainProfile?.verificationStatus === 'Verified' && (
-                  <Badge variant="default" className="bg-green-100 text-green-700">
+                  <Badge variant="default" className="bg-[hsl(142_76%_90%)] text-[hsl(142_76%_25%)] dark:bg-[hsl(142_76%_30%)] dark:text-[hsl(142_76%_95%)]">
                     <Award className="h-3 w-3 mr-1" />
                     Verified
                   </Badge>
                 )}
-              </div>
-                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+              </div>                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                 <span>{coaching.profiles?.length || 0} Branch{(coaching.profiles?.length || 0) > 1 ? 'es' : ''}</span>
                 <span>{totalCourses} Course{totalCourses > 1 ? 's' : ''}</span>
                 {rating > 0 && (
                   <div className="flex items-center gap-1">
-                    <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                    <Star className="h-3 w-3 text-[hsl(48_100%_50%)] fill-current" />
                     <span>{rating}</span>
                   </div>
                 )}
@@ -211,9 +205,8 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
   return (
     <Card className="hover:shadow-lg transition-all duration-300">
       <CardHeader className="pb-3">
-        <div className="flex items-start gap-4">
-          {/* Logo */}
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+        <div className="flex items-start gap-4">          {/* Logo */}
+          <div className="w-20 h-20 bg-gradient-to-br from-[hsl(205_100%_50%)] to-[hsl(226_70%_55%)] rounded-xl flex items-center justify-center flex-shrink-0">
             {mainProfile?.logo ? (
               <img 
                 src={getOptimizedImageUrl(mainProfile.logo, 80, 80, 'auto')} 
@@ -222,20 +215,19 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
                 loading="lazy"
               />
             ) : (
-              <Building2 className="h-10 w-10 text-white" />
+              <Building2 className="h-10 w-10 text-background" />
             )}
           </div>
 
           {/* Header Info */}
           <div className="flex-1">
             <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">
+              <div>                <h3 className="text-xl font-bold text-foreground mb-1">
                   {coaching.organizationName}
                 </h3>
-                <p className="text-gray-600 font-medium">{mainProfile?.name || 'No profile name'}</p>
+                <p className="text-muted-foreground font-medium">{mainProfile?.name || 'No profile name'}</p>
                 {mainProfile?.tagline && (
-                  <p className="text-sm text-gray-500 italic mt-1">{mainProfile.tagline}</p>
+                  <p className="text-sm text-muted italic mt-1">{mainProfile.tagline}</p>
                 )}
               </div>
               <div className="flex flex-col items-end gap-2">
@@ -246,18 +238,16 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
                   </Badge>
                 )}                {rating > 0 && (
                   <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                    <Star className="h-4 w-4 text-[hsl(48_100%_50%)] fill-current" />
                     <span className="text-sm font-medium">{rating}</span>
                     {totalRatings > 0 && (
-                      <span className="text-xs text-gray-500">({totalRatings})</span>
+                      <span className="text-xs text-muted-foreground">({totalRatings})</span>
                     )}
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="flex items-center gap-6 mt-3 text-sm text-gray-600">
+            </div>            {/* Quick Stats */}
+            <div className="flex items-center gap-6 mt-3 text-sm text-muted-foreground">
               {mainProfile?.establishedYear && (
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
@@ -277,16 +267,14 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        {/* Description */}
+      <CardContent className="space-y-4">        {/* Description */}
         {mainProfile?.description && (
-          <p className="text-gray-600 text-sm line-clamp-2">{mainProfile.description}</p>
+          <p className="text-muted-foreground text-sm line-clamp-2">{mainProfile.description}</p>
         )}
 
         {/* Location & Contact */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
-            <MapPin className="h-4 w-4 text-gray-400" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">          <div className="flex items-center gap-2 text-muted-foreground">
+            <MapPin className="h-4 w-4 text-muted" />
             <span>
               {mainProfile?.city && mainProfile?.state 
                 ? `${mainProfile.city}, ${mainProfile.state}` 
@@ -314,8 +302,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
         {mainProfile && (
           <div className="space-y-2">
             {mainProfile.subjectsOffered && mainProfile.subjectsOffered.length > 0 && (
-              <div>
-                <span className="text-sm font-medium text-gray-700">Subjects: </span>
+              <div>                <span className="text-sm font-medium text-foreground">Subjects: </span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {mainProfile.subjectsOffered.slice(0, 4).map((subject) => (
                     <Badge key={subject} variant="secondary" className="text-xs">
@@ -333,7 +320,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
 
             {mainProfile.examsOffered && mainProfile.examsOffered.length > 0 && (
               <div>
-                <span className="text-sm font-medium text-gray-700">Exams: </span>
+                <span className="text-sm font-medium text-foreground">Exams: </span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {mainProfile.examsOffered.slice(0, 3).map((exam) => (
                     <Badge key={exam} variant="outline" className="text-xs">
@@ -349,13 +336,11 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
               </div>
             )}
           </div>
-        )}
-
-        {/* Course Price Range */}
+        )}        {/* Course Price Range */}
         {mainProfile?.courses && mainProfile.courses.length > 0 && (
           <div className="text-sm">
-            <span className="text-gray-700 font-medium">Course Fees: </span>
-            <span className="text-green-600 font-semibold">
+            <span className="text-foreground font-medium">Course Fees: </span>
+            <span className="text-[hsl(142_76%_36%)] dark:text-[hsl(142_76%_50%)] font-semibold">
               ₹{Math.min(...mainProfile.courses.map(c => c.courseAmount)).toLocaleString()} - 
               ₹{Math.max(...mainProfile.courses.map(c => c.courseAmount)).toLocaleString()}
             </span>

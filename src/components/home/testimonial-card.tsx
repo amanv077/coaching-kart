@@ -31,8 +31,7 @@ const TestimonialCard = ({ quote, author, role, avatar, rating = 5 }: Testimonia
       </blockquote>
       
       {/* Author */}
-      <div className="flex items-center justify-center space-x-4">
-        <div className="w-12 h-12 bg-coaching-gradient rounded-full flex items-center justify-center text-white font-bold text-lg">
+      <div className="flex items-center justify-center space-x-4">        <div className="w-12 h-12 bg-coaching-gradient rounded-full flex items-center justify-center text-foreground dark:text-white font-bold text-lg">
           {avatar || author.charAt(0)}
         </div>
         <div className="text-center">

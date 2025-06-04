@@ -48,10 +48,9 @@ const Loader: React.FC<LoaderProps> = ({
 
     return (
       <div className={cn('flex items-center justify-center', className)}>
-        <div className="relative">
-          {/* Optimized outer glow ring */}
+        <div className="relative">          {/* Optimized outer glow ring - enhanced blue */}
           <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/15 to-blue-600/15 blur-lg"
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-[hsl(205_100%_50%)/0.25] to-[hsl(215_100%_40%)/0.25] blur-lg"
             animate={{
               scale: [1, 1.1, 1],
               opacity: [0.4, 0.7, 0.4],
@@ -67,7 +66,7 @@ const Loader: React.FC<LoaderProps> = ({
           <motion.div
             className={cn('border-[2px] rounded-full shadow-md', ringSize[size])}
             style={{
-              background: "conic-gradient(from 0deg, #3b82f6, #1d4ed8, #1e40af, #3b82f6)",
+              background: "conic-gradient(from 0deg, hsl(217 91% 60%), hsl(221 83% 48%), hsl(224 76% 38%), hsl(217 91% 60%))",
               padding: "2px",
             }}
             animate={{ rotate: 360 }}
@@ -77,7 +76,7 @@ const Loader: React.FC<LoaderProps> = ({
               ease: "linear",
             }}
           >
-            <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full" />
+            <div className="w-full h-full bg-background rounded-full" />
           </motion.div>
 
           {/* Center logo */}
@@ -93,7 +92,7 @@ const Loader: React.FC<LoaderProps> = ({
             }}
           >
             <div className={cn(
-              'bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-lg flex items-center justify-center shadow-lg border border-blue-400/20',
+              'bg-gradient-to-br from-[hsl(217_91%_60%)] via-[hsl(214_90%_45%)] to-[hsl(224_76%_38%)] rounded-lg flex items-center justify-center shadow-lg border border-[hsl(217_91%_60%)/0.2]',
               logoSize[size]
             )}>
               <span className="text-white font-bold tracking-tight">C</span>
@@ -102,23 +101,20 @@ const Loader: React.FC<LoaderProps> = ({
         </div>
       </div>
     );
-  };
-
-  const SpinnerLoader = () => (
+  };  const SpinnerLoader = () => (
     <div className={cn(
-      'animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 dark:border-gray-700 dark:border-t-blue-500',
+      'animate-spin rounded-full border-4 border-muted border-t-[hsl(205_100%_50%)] dark:border-muted dark:border-t-[hsl(205_100%_50%)]',
       sizeClasses[size],
       className
     )} />
   );
-
   const DotsLoader = () => (
     <div className={cn('flex space-x-1', className)}>
       {[0, 1, 2].map((i) => (
         <div
           key={i}
           className={cn(
-            'bg-blue-600 dark:bg-blue-500 rounded-full animate-pulse',
+            'bg-[hsl(205_100%_50%)] dark:bg-[hsl(205_100%_50%)] rounded-full animate-pulse',
             {
               'w-2 h-2': size === 'sm',
               'w-3 h-3': size === 'md',
@@ -133,11 +129,9 @@ const Loader: React.FC<LoaderProps> = ({
         />
       ))}
     </div>
-  );
-
-  const PulseLoader = () => (
+  );  const PulseLoader = () => (
     <div className={cn(
-      'bg-blue-600 dark:bg-blue-500 rounded-full animate-ping',
+      'bg-[hsl(205_100%_50%)] dark:bg-[hsl(205_100%_50%)] rounded-full animate-ping',
       sizeClasses[size],
       className
     )} />
@@ -149,7 +143,7 @@ const Loader: React.FC<LoaderProps> = ({
         <div
           key={i}
           className={cn(
-            'bg-blue-600 dark:bg-blue-500 animate-pulse',
+            'bg-[hsl(205_100%_50%)] dark:bg-[hsl(205_100%_50%)] animate-pulse',
             {
               'w-1 h-4': size === 'sm',
               'w-1.5 h-6': size === 'md',
@@ -183,10 +177,9 @@ const Loader: React.FC<LoaderProps> = ({
   };
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
-      {renderLoader()}
-      {text && (
+      {renderLoader()}      {text && (
         <p className={cn(
-          'text-gray-600 dark:text-gray-400 font-medium',
+          'text-muted-foreground font-medium',
           textSizes[size]
         )}>
           {text}
@@ -205,11 +198,10 @@ interface PageLoaderProps {
 export const PageLoader: React.FC<PageLoaderProps> = ({ 
   text = "Loading...", 
   variant = 'spinner' 
-}) => (
-  <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
-    <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center space-y-4">
+}) => (  <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="bg-card rounded-lg shadow-lg p-8 flex flex-col items-center space-y-4">
       <Loader size="lg" variant={variant} />
-      <p className="text-gray-700 font-medium">{text}</p>
+      <p className="text-foreground font-medium">{text}</p>
     </div>
   </div>
 );
@@ -229,9 +221,8 @@ export const CardLoader: React.FC<CardLoaderProps> = ({
   <div className={cn(
     "flex flex-col items-center justify-center py-16 px-4",
     className
-  )}>
-    <Loader size="lg" variant={variant} />
-    <p className="text-gray-600 font-medium mt-4">{text}</p>
+  )}>    <Loader size="lg" variant={variant} />
+    <p className="text-muted-foreground font-medium mt-4">{text}</p>
   </div>
 );
 
@@ -247,7 +238,7 @@ export const ButtonLoader: React.FC<ButtonLoaderProps> = ({
   variant = 'spinner',
   className 
 }) => (
-  <Loader size={size} variant={variant} className={cn('text-white', className)} />
+  <Loader size={size} variant={variant} className={cn('text-foreground dark:text-white', className)} />
 );
 
 export default Loader;

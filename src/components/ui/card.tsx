@@ -2,12 +2,23 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, variant, ...props }: React.ComponentProps<"div"> & { 
+  variant?: "default" | "premium" | "gradient"
+}) {
+  const baseStyles = "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6";
+  
+  const variantStyles = {
+    default: "shadow-sm hover:shadow-md transition-all duration-300",
+    premium: "border-[hsl(205_100%_85%)] shadow-[0_4px_12px_-2px_hsl(205_100%_50%/0.15)] hover:shadow-[0_8px_20px_-4px_hsl(205_100%_50%/0.25)] transition-all duration-300 hover:border-[hsl(205_100%_70%)]",
+    gradient: "bg-gradient-to-br from-[hsl(205_100%_98%)] to-[hsl(220_100%_96%)] dark:from-[hsl(205_100%_20%)] dark:to-[hsl(220_100%_15%)] border-[hsl(205_100%_80%)] dark:border-[hsl(205_100%_30%)]",
+  };
+  
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        baseStyles,
+        variant && variantStyles[variant] || variantStyles.default,
         className
       )}
       {...props}

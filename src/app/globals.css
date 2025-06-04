@@ -1,9 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* Dark mode variant */
 
-@theme inline {
+/* Theme variables */
+:root {
+  /* Map color variables to their base equivalents for consistency */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -41,127 +43,135 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
 
-:root {
+  /* Base radius */
   --radius: 0.625rem;
-  /* 🌞 LIGHT THEME - Now default */
   
-  /* Background and text */
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* 🌞 LIGHT THEME - Now default */
+    /* Background and text - improved for better visibility */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%; /* Darker, more visible text in light mode */
   
   /* Cards and surfaces */
-  --card: #f8f9fa;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
+  --card: 210 20% 98%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
   
-  /* Primary: same vibrant green works on light */
-  --primary: #00ff88;
-  --primary-foreground: #0a0a0a;
+  /* Primary: shifted to blue for premium look */
+  --primary: 205 100% 50%;
+  --primary-foreground: 0 0% 100%;
+    /* Secondary: subtle backgrounds */
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
   
-  /* Secondary: subtle backgrounds */
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0a0a0a;
-  
-  /* Muted elements */
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  /* Muted elements - darker for better visibility */
+  --muted: 210 25% 94%;
+  --muted-foreground: 215 25% 40%;
   
   /* Accent: brilliant blue */
-  --accent: #0099ff;
-  --accent-foreground: #ffffff;
+  --accent: 205 100% 50%;
+  --accent-foreground: 0 0% 100%;
   
-  /* Borders and inputs */
-  --border: #e2e8f0;
-  --input: #f8fafc;
-  --ring: #00ff88;
+  /* Borders and inputs - darker for visibility */
+  --border: 214 32% 80%;
+  --input: 214 32% 91%;
+  --ring: 205 100% 50%;
   
   /* Destructive actions */
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  
-  /* Chart colors */
-  --chart-1: #00ff88;
-  --chart-2: #0099ff;
-  --chart-3: #ff0088;
-  --chart-4: #0a0a0a;
-  --chart-5: #64748b;
-  
-  /* Sidebar colors */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-primary: #00ff88;
-  --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #f8fafc;
-  --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #00ff88;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+    /* Chart colors - premium blue theme */
+  --chart-1: 205 100% 50%; /* Primary blue */
+  --chart-2: 220 100% 45%; /* Darker blue */
+  --chart-3: 245 100% 60%; /* Rich purple */
+  --chart-4: 0 0% 4%; /* #0a0a0a */
+  --chart-5: 215 20% 65%; /* #64748b */
+    /* Sidebar colors - improved for visibility */
+  --sidebar: 214 35% 98%; /* Subtle blue tint for better contrast */
+  --sidebar-foreground: 222 47% 11%; /* Darker text for readability */
+  --sidebar-primary: 205 100% 50%; /* Premium blue */
+  --sidebar-primary-foreground: 0 0% 100%; /* White text on blue */
+  --sidebar-accent: 214 38% 92%; /* Slightly darker accent for visibility */
+  --sidebar-accent-foreground: 222 47% 11%; /* Darker text */
+  --sidebar-border: 214 32% 80%; /* Darker border for visibility */
+  --sidebar-ring: 205 100% 50%; /* Blue ring */
+    /* Coaching theme colors - light mode - premium blue-focused */
+  --coaching-background: 214 35% 98%; /* Subtle blue tint background */
+  --coaching-foreground: 222 47% 11%; /* Dark readable text */
+  --coaching-primary: 205 100% 50%; /* Premium blue primary */
+  --coaching-secondary: 205 100% 45%; /* Slightly darker blue secondary */
+  --coaching-accent: 245 100% 60%; /* Vibrant purple accent */
 }
 
 .dark {
   /* 🌟 VIBRANT DARK THEME - Pure black with electric accents */
   
   /* Background and text - Maximum contrast */
-  --background: #000000;
-  --foreground: #ffffff;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
   
   /* Cards and surfaces - Subtle dark contrast */
-  --card: #0d0d0d;
-  --card-foreground: #ffffff;
-  --popover: #0d0d0d;
-  --popover-foreground: #ffffff;
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 5%;
+  --popover-foreground: 0 0% 100%;
+  /* Primary: Premium blue - main accent */
+  --primary: 205 100% 50%;
+  --primary-foreground: 0 0% 100%;
   
-  /* Primary: Electric neon green - main accent */
-  --primary: #00ff88;
-  --primary-foreground: #000000;
+  /* Secondary: deeper blue elements */
+  --secondary: 220 70% 45%;
+  --secondary-foreground: 0 0% 100%;
   
-  /* Secondary: subtle dark elements */
-  --secondary: #1a1a1a;
-  --secondary-foreground: #ffffff;
+  /* Muted: visible grays with blue tint for better UX */
+  --muted: 215 20% 29%;
+  --muted-foreground: 210 20% 88%;
   
-  /* Muted: visible grays for better UX */
-  --muted: #4a4a4a;
-  --muted-foreground: #e0e0e0;
-  
-  /* Accent: Brilliant blue */
-  --accent: #0099ff;
-  --accent-foreground: #ffffff;
+  /* Accent: Rich purple */
+  --accent: 245 100% 60%;
+  --accent-foreground: 0 0% 100%;
   
   /* Borders and inputs */
-  --border: #333333;
-  --input: #1a1a1a;
-  --ring: #00ff88;
+  --border: 0 0% 20%;
+  --input: 0 0% 10%;
+  --ring: 147 100% 50%;
   
   /* Destructive: bright red */
-  --destructive: #ff4444;
-  --destructive-foreground: #ffffff;
+  --destructive: 0 84% 63%;
+  --destructive-foreground: 0 0% 100%;
   
   /* Chart colors - vibrant palette */
-  --chart-1: #00ff88;
-  --chart-2: #0099ff;
-  --chart-3: #ff0088;
-  --chart-4: #ffffff;
-  --chart-5: #e0e0e0;
+  --chart-1: 147 100% 50%; /* #00ff88 */
+  --chart-2: 205 100% 50%; /* #0099ff */
+  --chart-3: 326 100% 50%; /* #ff0088 */
+  --chart-4: 0 0% 100%; /* #ffffff */
+  --chart-5: 0 0% 88%; /* #e0e0e0 */    /* Sidebar colors - premium blue theme */
+  --sidebar: 215 30% 12%; /* Dark blue-gray for sidebar */
+  --sidebar-foreground: 210 15% 100%; /* #ffffff with slight blue tint */
+  --sidebar-primary: 205 100% 50%; /* Premium blue */
+  --sidebar-primary-foreground: 0 0% 100%; /* Pure white text on blue */
+  --sidebar-accent: 215 30% 18%; /* Slightly lighter accent for depth */
+  --sidebar-accent-foreground: 210 15% 100%; /* Matching text color */
+  --sidebar-border: 215 30% 25%; /* Visible borders with blue tint */
+  --sidebar-ring: 205 100% 50%; /* Premium blue ring */
   
-  /* Sidebar colors */
-  --sidebar: #000000;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #00ff88;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1a1a1a;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333333;
-  --sidebar-ring: #00ff88;
+  /* Coaching theme colors - dark mode with premium blue */
+  --coaching-background: 215 30% 10%; /* Deep blue-black background */
+  --coaching-foreground: 210 15% 100%; /* White text with subtle blue tint */
+  --coaching-primary: 205 100% 50%; /* Premium blue primary */
+  --coaching-secondary: 220 70% 45%; /* Deeper blue secondary */
+  --coaching-accent: 245 100% 60%; /* Rich purple accent */
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: hsl(var(--border));
+    outline-color: hsl(var(--ring) / 0.5);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 
@@ -173,27 +183,27 @@
 
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3),
-                0 0 40px rgba(0, 255, 136, 0.2),
-                0 0 60px rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 20px hsl(205 100% 50% / 0.3),
+                0 0 40px hsl(205 100% 50% / 0.2),
+                0 0 60px hsl(205 100% 50% / 0.1);
   }
   50% { 
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5),
-                0 0 60px rgba(0, 255, 136, 0.3),
-                0 0 90px rgba(0, 255, 136, 0.2);
+    box-shadow: 0 0 30px hsl(205 100% 50% / 0.5),
+                0 0 60px hsl(205 100% 50% / 0.3),
+                0 0 90px hsl(205 100% 50% / 0.2);
   }
 }
 
 @keyframes blue-glow {
   0%, 100% { 
-    box-shadow: 0 0 20px rgba(0, 153, 255, 0.3),
-                0 0 40px rgba(0, 153, 255, 0.2),
-                0 0 60px rgba(0, 153, 255, 0.1);
+    box-shadow: 0 0 20px hsl(205 100% 50% / 0.4),
+                0 0 40px hsl(205 100% 50% / 0.25),
+                0 0 60px hsl(205 100% 50% / 0.15);
   }
   50% { 
-    box-shadow: 0 0 30px rgba(0, 153, 255, 0.5),
-                0 0 60px rgba(0, 153, 255, 0.3),
-                0 0 90px rgba(0, 153, 255, 0.2);
+    box-shadow: 0 0 30px hsl(205 100% 50% / 0.65),
+                0 0 60px hsl(205 100% 50% / 0.4),
+                0 0 90px hsl(205 100% 50% / 0.25);
   }
 }
 
@@ -256,19 +266,34 @@
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.2);
+  box-shadow: 0 8px 25px hsl(205 100% 50% / 0.2);
 }
 
 .hover-glow {
   transition: all 0.3s ease;
 }
 
+/* Light mode specific hover styles */
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  box-shadow: 0 0 20px hsl(205 100% 50% / 0.35);
 }
 
 .hover-blue-glow:hover {
-  box-shadow: 0 0 20px rgba(0, 153, 255, 0.4);
+  box-shadow: 0 0 20px hsl(205 100% 50% / 0.35);
+}
+
+/* Additional premium effects */
+.hover-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+}
+
+.hover-premium:hover {
+  border-color: hsl(205 100% 50% / 0.5);
+  box-shadow: 
+    0 0 0 1px hsl(205 100% 70% / 0.1),
+    0 10px 20px -10px hsl(205 100% 50% / 0.3);
+  transform: translateY(-2px);
 }
 
 /* Mobile-first responsive utilities */
@@ -287,38 +312,96 @@
   }
 }
 
-/* Vibrant button styles */
+/* Premium blue button styles */
+.btn-premium {
+  background: linear-gradient(135deg, hsl(205 100% 50%), hsl(220 100% 45%));
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px hsl(205 100% 50% / 0.3);
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px hsl(205 100% 50% / 0.4);
+}
+
+/* Vibrant button styles - premium blue variant */
 .btn-vibrant {
-  background: linear-gradient(135deg, #00ff88, #0080ff);
-  color: #0a0a0a;
+  background: linear-gradient(135deg, hsl(205 100% 50%), hsl(220 100% 45%));
+  color: white;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
 .btn-vibrant:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+  box-shadow: 0 8px 25px hsl(205 100% 50% / 0.3);
 }
 
-/* Vibrant card styles */
+/* Vibrant card styles - light theme aware */
 .card-vibrant {
-  background: #111111;
-  border: 1px solid #2a2a2a;
+  background: hsl(0 0% 100%);
+  border: 1px solid hsl(210 20% 90%);
   transition: all 0.3s ease;
 }
 
+.dark .card-vibrant {
+  background: hsl(0 0% 7%);
+  border: 1px solid hsl(0 0% 16.5%);
+}
+
 .card-vibrant:hover {
-  border-color: #00ff88;
-  box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+  border-color: hsl(205 100% 50%);
+  box-shadow: 0 4px 20px hsl(205 100% 50% / 0.15);
 }
 
 /* Text glow effects */
-.text-glow-green {
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+.text-glow-premium {
+  text-shadow: 0 0 10px hsl(205 100% 50% / 0.5);
 }
 
 .text-glow-blue {
-  text-shadow: 0 0 10px rgba(0, 128, 255, 0.5);
+  text-shadow: 0 0 10px hsl(205 100% 50% / 0.5);
+}
+
+/* Premium UI Elements - Blue focused */
+.premium-card {
+  border: 1px solid hsl(205 100% 85%);
+  box-shadow: 
+    0 4px 12px -2px hsl(205 100% 50% / 0.2),
+    0 0 0 1px hsl(205 100% 70% / 0.1);
+  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    hsl(0 0% 100%),
+    hsl(205 100% 98%)
+  );
+}
+
+.premium-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 30px -5px hsl(205 100% 50% / 0.25),
+    0 0 0 1px hsl(205 100% 70% / 0.2);
+}
+
+.dark .premium-card {
+  border: 1px solid hsl(205 100% 50% / 0.3);
+  background: linear-gradient(
+    135deg, 
+    hsl(205 100% 15% / 0.5),
+    hsl(220 100% 10% / 0.7)
+  );
+}
+
+.premium-text {
+  background: linear-gradient(90deg, hsl(205 100% 40%), hsl(245 100% 60%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 600;
 }
 
 /* Loading spinner with vibrant colors */
@@ -330,7 +413,7 @@
 
 .animate-spin-vibrant {
   animation: spin-vibrant 1s linear infinite;
-  border: 2px solid #2a2a2a;
-  border-top: 2px solid #00ff88;
+  border: 2px solid hsl(0 0% 16.5%);
+  border-top: 2px solid hsl(205 100% 50%);
   border-radius: 50%;
 }

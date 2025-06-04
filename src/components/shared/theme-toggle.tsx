@@ -23,24 +23,23 @@ export function ThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-card border-border">
-        <DropdownMenuItem 
+      <DropdownMenuContent align="end" className="bg-card border-border">        <DropdownMenuItem 
           onClick={() => setTheme('light')}
-          className="hover:bg-coaching-primary/10 focus:bg-coaching-primary/10"
+          className="hover:bg-[hsl(205_100%_50%)]/10 focus:bg-[hsl(205_100%_50%)]/10"
         >
-          <Sun className="mr-2 h-4 w-4" />
+          <Sun className="mr-2 h-4 w-4 text-[hsl(205_100%_50%)]" />
           <span>Light</span>
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setTheme('dark')}
-          className="hover:bg-coaching-primary/10 focus:bg-coaching-primary/10"
+          className="hover:bg-[hsl(205_100%_50%)]/10 focus:bg-[hsl(205_100%_50%)]/10"
         >
-          <Moon className="mr-2 h-4 w-4" />
+          <Moon className="mr-2 h-4 w-4 text-[hsl(205_100%_50%)]" />
           <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setTheme('system')}
-          className="hover:bg-coaching-primary/10 focus:bg-coaching-primary/10"
+          className="hover:bg-[hsl(205_100%_50%)]/10 focus:bg-[hsl(205_100%_50%)]/10"
         >
           <Monitor className="mr-2 h-4 w-4" />
           <span>System</span>

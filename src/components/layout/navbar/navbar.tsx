@@ -50,18 +50,20 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          {/* <div className="w-8 h-8 bg-coaching-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">CK</span>
-          </div> */}
-          <span className="font-bold text-xl text-foreground">Coaching Kart</span>
+        <Link href="/" className="flex items-center space-x-2">          
+          <div className=" ml-2 h-10 md:h-14">
+            <img 
+              src="/assets/logo.png" 
+              alt="Coaching Kart Logo" 
+              className="h-full w-auto object-contain"
+            />
+          </div>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link 
+        <div className="hidden md:flex items-center space-x-6">          <Link 
             href="/coaching" 
-            className="text-muted-foreground hover:text-coaching-primary transition-colors"
+            className="text-muted-foreground hover:text-[hsl(205_100%_50%)] transition-colors"
           >
             Coachings
           </Link>
@@ -70,7 +72,7 @@ const Navbar = () => {
           {session && (
             <Link 
               href={getDashboardLink(session.user?.role as UserRole)}
-              className="text-coaching-primary hover:text-coaching-primary/80 font-medium transition-colors"
+              className="text-[hsl(205_100%_50%)] hover:text-[hsl(205_100%_60%)] font-medium transition-colors"
             >
               Dashboard
             </Link>
@@ -78,13 +80,13 @@ const Navbar = () => {
           
           <Link 
             href="/about" 
-            className="text-muted-foreground hover:text-coaching-primary transition-colors"
+            className="text-muted-foreground hover:text-[hsl(205_100%_50%)] transition-colors"
           >
             About Us
           </Link>
           <Link 
             href="/contact-us" 
-            className="text-muted-foreground hover:text-coaching-primary transition-colors"
+            className="text-muted-foreground hover:text-[hsl(205_100%_50%)] transition-colors"
           >
             Contact Us
           </Link>
@@ -96,11 +98,10 @@ const Navbar = () => {
             {status === 'loading' ? (
             <Loader size="sm" />
           ) : session ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <DropdownMenu>              <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-coaching-gradient rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">
+                    <span className="text-black dark:text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </div>
@@ -174,11 +175,10 @@ const Navbar = () => {
             {status === 'loading' ? (
             <Loader size="sm" />
           ) : session ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <DropdownMenu>              <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="p-2">
                   <div className="w-6 h-6 bg-coaching-gradient rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">
+                    <span className="text-foreground dark:text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </div>

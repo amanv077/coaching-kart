@@ -19,6 +19,11 @@ const CTASection = ({
   backgroundColor = "bg-coaching-gradient", 
   pattern = true 
 }: CTASectionProps) => {
+  // Determine if we're on a dark background (gradient) where white text is appropriate
+  const isDarkBackground = backgroundColor.includes('gradient') || backgroundColor.includes('dark');
+  const textColorClass = isDarkBackground ? 'text-white' : 'text-foreground';
+  const subtextColorClass = isDarkBackground ? 'text-white/90' : 'text-muted-foreground';
+
   return (
     <section className={`relative py-16 md:py-20 px-4 overflow-hidden ${backgroundColor}`}>
       {/* Background Pattern */}
@@ -32,14 +37,12 @@ const CTASection = ({
           </div>
         </div>
       )}
-      
-      <div className="container mx-auto text-center relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-in">
+        <div className="container mx-auto text-center relative z-10">
+        <div className="max-w-4xl mx-auto">          <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 animate-fade-in ${textColorClass}`}>
             {title}
           </h2>
           
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up">
+          <p className={`text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up ${subtextColorClass}`}>
             {description}
           </p>
           

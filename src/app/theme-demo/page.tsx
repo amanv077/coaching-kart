@@ -5,7 +5,7 @@ export default function ThemeDemo() {
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold text-foreground text-glow-green">
+          <h1 className="text-5xl font-bold text-foreground text-glow-premium">
             ⚡ VIBRANT DARK THEME ⚡
           </h1>
           <p className="text-muted-foreground text-xl">
@@ -16,30 +16,24 @@ export default function ThemeDemo() {
             <div className="w-4 h-4 bg-coaching-secondary rounded-full animate-blue-glow"></div>
             <div className="w-4 h-4 bg-coaching-accent rounded-full animate-glow-pulse"></div>
           </div>
-        </div>
-        <div className="bg-card p-8 rounded-xl border border-coaching-border space-y-6 card-vibrant">
-          <h2 className="text-3xl font-bold text-card-foreground text-glow-green">
-            Electric Color Palette
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 bg-coaching-primary rounded-xl text-center hover-lift">
-              <div className="text-4xl mb-2">⚡</div>
-              <p className="text-coaching-background font-bold text-lg">
-                #00FF88
+        </div>        <div className="bg-card p-8 rounded-xl border border-coaching-border space-y-6 card-vibrant">
+          <h2 className="text-3xl font-bold text-card-foreground text-glow-premium">
+            Premium Color Palette
+          </h2>          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">            <div className="p-6 bg-coaching-primary rounded-xl text-center hover-lift">              <div className="text-4xl mb-2">⚡</div>
+              <p className="text-black dark:text-white font-bold text-lg">
+                #0099FF
               </p>
-              <p className="text-coaching-background/80 text-sm">
-                Electric Neon Green
+              <p className="text-black/80 dark:text-white/80 text-sm">
+                Premium Blue
               </p>
-            </div>
-            <div className="p-6 bg-coaching-secondary rounded-xl text-center hover-lift">
+            </div>            <div className="p-6 bg-coaching-secondary rounded-xl text-center hover-lift">
               <div className="text-4xl mb-2">💫</div>
-              <p className="text-white font-bold text-lg">#0099FF</p>
-              <p className="text-white/80 text-sm">Brilliant Blue</p>
-            </div>
-            <div className="p-6 bg-coaching-accent rounded-xl text-center hover-lift">
+              <p className="text-black dark:text-white font-bold text-lg">#0099FF</p>
+              <p className="text-black/80 dark:text-white/80 text-sm">Brilliant Blue</p>
+            </div>            <div className="p-6 bg-coaching-accent rounded-xl text-center hover-lift">
               <div className="text-4xl mb-2">🔥</div>
-              <p className="text-white font-bold text-lg">#FF0088</p>
-              <p className="text-white/80 text-sm">Hot Pink</p>
+              <p className="text-black dark:text-white font-bold text-lg">#FF0088</p>
+              <p className="text-black/80 dark:text-white/80 text-sm">Hot Pink</p>
             </div>
           </div>
         </div>
@@ -51,15 +45,13 @@ export default function ThemeDemo() {
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-foreground">
                 Vibrant Buttons
-              </h3>
-              <div className="space-y-3">
-                <button className="w-full px-6 py-3 bg-coaching-primary text-coaching-background rounded-xl font-bold hover:scale-105 transition-all duration-300 hover-glow">
+              </h3>              <div className="space-y-3">                <button className="w-full px-6 py-3 bg-coaching-primary text-black dark:text-white rounded-xl font-bold hover:scale-105 transition-all duration-300 hover-glow">
                   ⚡ Primary Action
                 </button>
-                <button className="w-full px-6 py-3 bg-coaching-secondary text-white rounded-xl font-bold hover:scale-105 transition-all duration-300 hover-blue-glow">
+                <button className="w-full px-6 py-3 bg-coaching-secondary text-black dark:text-white rounded-xl font-bold hover:scale-105 transition-all duration-300 hover-blue-glow">
                   💫 Secondary Action
                 </button>
-                <button className="w-full px-6 py-3 bg-gradient-to-r from-coaching-primary to-coaching-secondary text-black rounded-xl font-bold hover:scale-105 transition-all duration-300 animate-rainbow">
+                <button className="w-full px-6 py-3 bg-gradient-to-r from-coaching-primary to-coaching-secondary text-black dark:text-white rounded-xl font-bold hover:scale-105 transition-all duration-300 animate-rainbow">
                   🌈 Gradient Action
                 </button>
               </div>
@@ -124,10 +116,8 @@ export default function ThemeDemo() {
               </p>
             </div>
           </div>
-        </div>
-
-        <div className="bg-card p-8 rounded-xl border border-coaching-border space-y-6 card-vibrant">
-          <h2 className="text-3xl font-bold text-card-foreground text-glow-green">
+        </div>        <div className="bg-card p-8 rounded-xl border border-coaching-border space-y-6 card-vibrant">
+          <h2 className="text-3xl font-bold text-card-foreground text-glow-premium">
             🚀 Theme Transformation Complete!
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -139,14 +129,13 @@ export default function ThemeDemo() {
                 <li className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-coaching-primary rounded-full"></span>
                   Pure black background (#000000) for maximum contrast
+                </li>                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-coaching-primary rounded-full"></span>
+                  Premium blue (#0099FF) primary accent
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-coaching-secondary rounded-full"></span>
-                  Electric neon green (#00FF88) primary accent
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-coaching-accent rounded-full"></span>
-                  Brilliant blue (#0099FF) secondary accent
+                  Deep blue (#0040CC) secondary accent
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
@@ -185,15 +174,13 @@ export default function ThemeDemo() {
                 src/lib/theme.ts
               </code>{' '}
               to customize further
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <span className="px-4 py-2 bg-coaching-primary text-coaching-background rounded-full font-semibold animate-glow-pulse">
+            </p>            <div className="flex flex-wrap justify-center gap-4">              <span className="px-4 py-2 bg-coaching-primary text-black dark:text-white rounded-full font-semibold animate-glow-pulse">
                 Electric
               </span>
-              <span className="px-4 py-2 bg-coaching-secondary text-white rounded-full font-semibold animate-blue-glow">
+              <span className="px-4 py-2 bg-coaching-secondary text-black dark:text-white rounded-full font-semibold animate-blue-glow">
                 Vibrant
               </span>
-              <span className="px-4 py-2 bg-gradient-to-r from-coaching-primary to-coaching-accent text-black rounded-full font-semibold animate-rainbow">
+              <span className="px-4 py-2 bg-gradient-to-r from-coaching-primary to-coaching-accent text-black dark:text-black rounded-full font-semibold animate-rainbow">
                 Dynamic
               </span>
             </div>

@@ -45,10 +45,19 @@ const config: Config = {
         },
         card: {
           DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },        
-        // 🎨 CENTRALIZED NEON THEME COLORS - Change THEME_COLORS in src/lib/theme.ts to update everywhere!
-        ...themeConfig.tailwindColors,
+          foreground: "hsl(var(--card-foreground))",        },          // 🎨 COACHING THEME COLORS - Theme-aware colors using CSS variables
+        'coaching-background': 'hsl(var(--background))',
+        'coaching-foreground': 'hsl(var(--foreground))',        'coaching-primary': 'hsl(205 100% 50%)', // #0099FF - Premium blue as primary
+        'coaching-secondary': 'hsl(220 100% 45%)', // Darker blue for secondary
+        'coaching-accent': 'hsl(245 100% 60%)', // Rich purple for accent
+        'coaching-hover': 'hsl(326 100% 50%)', // #FF0088
+        'coaching-card': 'hsl(var(--card))',
+        'coaching-border': 'hsl(var(--border))',
+        'coaching-muted': 'hsl(var(--muted))',
+        
+        // Legacy color mappings (for backward compatibility)
+        'coaching-bg': 'hsl(0 0% 0%)', // #000000
+        'coaching-text': 'hsl(0 0% 100%)', // #FFFFFF
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -84,37 +93,34 @@ const config: Config = {
         bounceGentle: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
-        },
-        neonPulse: {
+        },        neonPulse: {
           "0%, 100%": { 
-            boxShadow: `0 0 20px ${THEME_COLORS.accentGreen}40, 0 0 40px ${THEME_COLORS.accentGreen}20` 
+            boxShadow: `0 0 20px hsl(205 100% 50% / 0.25), 0 0 40px hsl(205 100% 50% / 0.12)`
           },
           "50%": { 
-            boxShadow: `0 0 30px ${THEME_COLORS.accentGreen}60, 0 0 60px ${THEME_COLORS.accentGreen}30` 
+            boxShadow: `0 0 30px hsl(205 100% 50% / 0.38), 0 0 60px hsl(205 100% 50% / 0.19)` 
           },
         },
         glow: {
           "0%": { 
-            textShadow: `0 0 10px ${THEME_COLORS.accentGreen}80` 
+            textShadow: `0 0 10px hsl(205 100% 50% / 0.5)` 
           },
           "100%": { 
-            textShadow: `0 0 20px ${THEME_COLORS.accentGreen}FF, 0 0 30px ${THEME_COLORS.accentGreen}80` 
+            textShadow: `0 0 20px hsl(205 100% 50% / 1.0), 0 0 30px hsl(205 100% 50% / 0.5)` 
           },
         },
-      },
-      boxShadow: {
-        "coaching-card": `0 4px 6px -1px ${THEME_COLORS.accentGreen}1A, 0 2px 4px -1px ${THEME_COLORS.accentGreen}0F`,
-        "coaching-button": `0 4px 14px 0 ${THEME_COLORS.accentGreen}40`,
-        "coaching-hover": `0 10px 25px -3px ${THEME_COLORS.accentGreen}33, 0 4px 6px -2px ${THEME_COLORS.accentGreen}1A`,
-        "neon": `0 0 20px ${THEME_COLORS.accentGreen}80, 0 0 40px ${THEME_COLORS.accentGreen}4D`,
-        "blue": `0 0 20px ${THEME_COLORS.accentBlue}80, 0 0 40px ${THEME_COLORS.accentBlue}4D`,
-        "pink": `0 0 20px ${THEME_COLORS.hoverPink}80, 0 0 40px ${THEME_COLORS.hoverPink}4D`,
-      },
-      backgroundImage: {
-        "coaching-gradient": `linear-gradient(135deg, ${THEME_COLORS.accentGreen} 0%, ${THEME_COLORS.accentBlue} 100%)`,
-        "coaching-gradient-reverse": `linear-gradient(135deg, ${THEME_COLORS.accentBlue} 0%, ${THEME_COLORS.accentGreen} 100%)`,
-        "coaching-accent-gradient": `linear-gradient(135deg, ${THEME_COLORS.hoverPink} 0%, ${THEME_COLORS.accentGreen} 100%)`,
-        "neon-gradient": `linear-gradient(135deg, ${THEME_COLORS.accentGreen} 0%, ${THEME_COLORS.accentBlue} 50%, ${THEME_COLORS.hoverPink} 100%)`,
+      },      boxShadow: {
+        "coaching-card": `0 4px 6px -1px hsl(205 100% 50% / 0.1), 0 2px 4px -1px hsl(205 100% 50% / 0.06)`,
+        "coaching-button": `0 4px 14px 0 hsl(205 100% 50% / 0.25)`,
+        "coaching-hover": `0 10px 25px -3px hsl(205 100% 50% / 0.2), 0 4px 6px -2px hsl(205 100% 50% / 0.1)`,
+        "neon": `0 0 20px hsl(205 100% 50% / 0.5), 0 0 40px hsl(205 100% 50% / 0.3)`,
+        "blue": `0 0 20px hsl(205 100% 50% / 0.5), 0 0 40px hsl(205 100% 50% / 0.3)`,
+        "pink": `0 0 20px hsl(326 100% 50% / 0.5), 0 0 40px hsl(326 100% 50% / 0.3)`,
+      },      backgroundImage: {
+        "coaching-gradient": `linear-gradient(135deg, hsl(205 100% 50%) 0%, hsl(220 100% 45%) 100%)`,
+        "coaching-gradient-reverse": `linear-gradient(135deg, hsl(220 100% 45%) 0%, hsl(205 100% 50%) 100%)`,
+        "coaching-accent-gradient": `linear-gradient(135deg, hsl(245 100% 60%) 0%, hsl(205 100% 50%) 100%)`,
+        "neon-gradient": `linear-gradient(135deg, hsl(205 100% 50%) 0%, hsl(220 100% 40%) 50%, hsl(245 100% 60%) 100%)`,
       },
     },
   },

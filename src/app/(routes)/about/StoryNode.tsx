@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface StoryNodeProps {
   year: string;
@@ -36,7 +37,7 @@ const StoryNode = ({
       <div className={`md:col-span-2 ${isLeft ? 'md:order-1' : 'md:order-2'}`}>
         <div className="aspect-video relative overflow-hidden rounded-2xl shadow-xl">
           <Image 
-            src={image} 
+            src={getImageUrl(image)} 
             alt={title}
             className="object-cover hover:scale-105 transition-transform duration-500"
             fill

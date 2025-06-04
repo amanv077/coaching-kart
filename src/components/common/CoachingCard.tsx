@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Award, MapPin, Star, Wifi, WifiOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface CoachingCardProps {
   id: string;
@@ -63,11 +64,10 @@ const CoachingCard = ({
         </div>
       )}
 
-      <div className="relative">
-        {/* Image */}
+      <div className="relative">      {/* Image */}
         <div className="relative h-48 overflow-hidden rounded-t-xl">
           <Image
-            src={image}
+            src={getImageUrl(image)}
             alt={name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"

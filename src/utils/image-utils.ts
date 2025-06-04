@@ -1,6 +1,7 @@
 // Utility functions for handling image URLs
 export function getImageUrl(imagePath: string | null | undefined): string {
-  if (!imagePath) return '';
+  // Use default image if no path provided or path is empty
+  if (!imagePath) return '/assets/default_image.jpg';
   
   // If it's already a full URL (Cloudinary or external), return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -29,9 +30,8 @@ export function getOptimizedImageUrl(
   const baseUrl = getImageUrl(imagePath);
   
   if (!baseUrl || !isCloudinaryUrl(baseUrl)) {
-    return baseUrl; // Return as is for local images
+    return baseUrl; // Return as is for local images (will be default image if imagePath is null/undefined)
   }
-  
   // For Cloudinary URLs, we can add transformations
   // This is a simple implementation - Cloudinary URLs have a specific structure
   try {

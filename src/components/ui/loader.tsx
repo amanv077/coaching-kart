@@ -170,4 +170,7 @@ export const ButtonLoader: React.FC<ButtonLoaderProps> = ({
   <Loader size={size} variant={variant} className={cn('text-white', className)} />
 );
 
+// Export the new CoachingLoader component
+export { CoachingLoader, PageCoachingLoader } from './coaching-loader';
+
 export default Loader;

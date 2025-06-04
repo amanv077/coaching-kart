@@ -1,10 +1,18 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
-export default function CoachingLoader() {
+export interface CoachingLoaderProps {
+  text?: string;
+  className?: string;
+}
+
+export const CoachingLoader: React.FC<CoachingLoaderProps> = ({ 
+  text,
+  className
+}) => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className={`flex items-center justify-center ${className}`}>
       <div className="relative">
         {/* Premium outer glow ring */}
         <motion.div
@@ -146,6 +154,25 @@ export default function CoachingLoader() {
           />
         ))}
       </motion.div>
+
+      {text && (
+        <p className="text-gray-700 font-medium mt-32">{text}</p>
+      )}
     </div>
-  )
+  );
+};
+
+// Full page coaching loader component
+interface PageCoachingLoaderProps {
+  text?: string;
 }
+
+export const PageCoachingLoader: React.FC<PageCoachingLoaderProps> = ({ 
+  text = "Loading..." 
+}) => (
+  <div className="fixed inset-0 bg-gradient-to-br from-slate-50 to-blue-50 backdrop-blur-sm z-50 flex items-center justify-center">
+    <CoachingLoader text={text} />
+  </div>
+);
+
+export default CoachingLoader;

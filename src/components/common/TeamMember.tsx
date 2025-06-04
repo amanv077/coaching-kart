@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface TeamMemberProps {
   name: string;
@@ -19,7 +20,7 @@ const TeamMember = ({ name, role, image, bio }: TeamMemberProps) => (
         </div>
       </div>
       <Image 
-        src={image} 
+        src={getImageUrl(image)} 
         alt={name}
         className="object-cover group-hover:scale-105 transition-transform duration-500"
         fill

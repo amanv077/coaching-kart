@@ -202,9 +202,11 @@ const CoachingsPage = () => {
 					<div className="flex-1">						{/* Results Header */}
 						<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
 							<div>
-								<h2 className="text-2xl font-bold">
-									{loading ? 'Loading...' : `${pagination.total} Coaching${pagination.total !== 1 ? 's' : ''} Found`}
-								</h2>
+								{!loading && (
+									<h2 className="text-2xl font-bold">
+										{`${pagination.total} Coaching${pagination.total !== 1 ? 's' : ''} Found`}
+									</h2>
+								)}
 								<p className="text-muted-foreground">
 									{location &&
 										`in ${location}${selectedSubjects.length > 0 

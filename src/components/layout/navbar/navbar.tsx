@@ -109,13 +109,12 @@ const Navbar = () => {
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               <span className="text-sm text-gray-600">Loading...</span>
             </div>
-          ) : session ? (
-            <DropdownMenu>
+          ) : session ? (            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center space-x-2 border-gray-200 hover:border-blue-300"
+                  className="flex items-center space-x-2 border-gray-200 hover:border-blue-300 cursor-pointer"
                 >
                   <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">
@@ -125,68 +124,108 @@ const Navbar = () => {
                   <span className="hidden sm:inline text-gray-700">{session.user?.name}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{session.user?.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {session.user?.email}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {(session.user?.roles || [session.user?.role]).map(
-                        (role: string) => (
-                          <p
-                            key={role}
-                            className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded"
-                          >
-                            {role}
-                          </p>
-                        )
-                      )}
+              <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 shadow-lg">
+                <DropdownMenuLabel className="px-4 py-3 border-b border-gray-100">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold">
+                        {session.user?.name?.charAt(0).toUpperCase() || "U"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-semibold text-gray-900">{session.user?.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {session.user?.email}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {(session.user?.roles || [session.user?.role]).map(
+                          (role: string) => (
+                            <span
+                              key={role}
+                              className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium"
+                            >
+                              {role}
+                            </span>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={getDashboardLink(session.user?.role as UserRole)}>
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-
-                {/* Show additional dashboard links for users with multiple roles */}
-                {(session.user?.roles || []).length > 1 && (
-                  <>
-                    {(session.user?.roles || [])
-                      .filter((role: string) => role !== session.user?.role)
-                      .map((role: string) => (
-                        <DropdownMenuItem key={role} asChild>
-                          <Link href={getDashboardLink(role as UserRole)}>
-                            {role.charAt(0) + role.slice(1).toLowerCase()}{" "}
-                            Dashboard
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">Profile</Link>
-                </DropdownMenuItem>
-                {(session.user?.roles || [session.user?.role]).includes(
-                  "STUDENT"
-                ) && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/cart">Cart</Link>
+                <div className="py-2">
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link 
+                      href={getDashboardLink(session.user?.role as UserRole)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v0a2 2 0 01-2 2H10a2 2 0 01-2-2z" />
+                      </svg>
+                      Dashboard
+                    </Link>
                   </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="text-red-600"
-                >
-                  Sign Out
-                </DropdownMenuItem>
+
+                  {/* Show additional dashboard links for users with multiple roles */}
+                  {(session.user?.roles || []).length > 1 && (
+                    <>
+                      {(session.user?.roles || [])
+                        .filter((role: string) => role !== session.user?.role)
+                        .map((role: string) => (
+                          <DropdownMenuItem key={role} asChild className="cursor-pointer">
+                            <Link 
+                              href={getDashboardLink(role as UserRole)}
+                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                            >
+                              <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              {role.charAt(0) + role.slice(1).toLowerCase()} Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      <DropdownMenuSeparator className="my-1" />
+                    </>
+                  )}
+
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link 
+                      href="/profile"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  {(session.user?.roles || [session.user?.role]).includes("STUDENT") && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link 
+                        href="/cart"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L6 5H3m4 8v6a1 1 0 001 1h10a1 1 0 001-1v-6M9 19a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
+                        </svg>
+                        Cart
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                </div>
+                <DropdownMenuSeparator className="my-0" />
+                <div className="py-2">
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer"
+                  >
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -203,10 +242,9 @@ const Navbar = () => {
         <div className="flex md:hidden items-center space-x-2">
           {isLoading ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-          ) : session ? (
-            <DropdownMenu>
+          ) : session ? (            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="p-2 border-gray-200">
+                <Button variant="outline" size="sm" className="p-2 border-gray-200 cursor-pointer">
                   <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || "U"}
@@ -214,68 +252,108 @@ const Navbar = () => {
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{session.user?.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {session.user?.email}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {(session.user?.roles || [session.user?.role]).map(
-                        (role: string) => (
-                          <p
-                            key={role}
-                            className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded"
-                          >
-                            {role}
-                          </p>
-                        )
-                      )}
+              <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 shadow-lg">
+                <DropdownMenuLabel className="px-4 py-3 border-b border-gray-100">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">
+                        {session.user?.name?.charAt(0).toUpperCase() || "U"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-semibold text-gray-900">{session.user?.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {session.user?.email}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {(session.user?.roles || [session.user?.role]).map(
+                          (role: string) => (
+                            <span
+                              key={role}
+                              className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium"
+                            >
+                              {role}
+                            </span>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={getDashboardLink(session.user?.role as UserRole)}>
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-
-                {/* Show additional dashboard links for users with multiple roles */}
-                {(session.user?.roles || []).length > 1 && (
-                  <>
-                    {(session.user?.roles || [])
-                      .filter((role: string) => role !== session.user?.role)
-                      .map((role: string) => (
-                        <DropdownMenuItem key={role} asChild>
-                          <Link href={getDashboardLink(role as UserRole)}>
-                            {role.charAt(0) + role.slice(1).toLowerCase()}{" "}
-                            Dashboard
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">Profile</Link>
-                </DropdownMenuItem>
-                {(session.user?.roles || [session.user?.role]).includes(
-                  "STUDENT"
-                ) && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/cart">Cart</Link>
+                <div className="py-2">
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link 
+                      href={getDashboardLink(session.user?.role as UserRole)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v0a2 2 0 01-2 2H10a2 2 0 01-2-2z" />
+                      </svg>
+                      Dashboard
+                    </Link>
                   </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="text-red-600"
-                >
-                  Sign Out
-                </DropdownMenuItem>
+
+                  {/* Show additional dashboard links for users with multiple roles */}
+                  {(session.user?.roles || []).length > 1 && (
+                    <>
+                      {(session.user?.roles || [])
+                        .filter((role: string) => role !== session.user?.role)
+                        .map((role: string) => (
+                          <DropdownMenuItem key={role} asChild className="cursor-pointer">
+                            <Link 
+                              href={getDashboardLink(role as UserRole)}
+                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                            >
+                              <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              {role.charAt(0) + role.slice(1).toLowerCase()} Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      <DropdownMenuSeparator className="my-1" />
+                    </>
+                  )}
+
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link 
+                      href="/profile"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  {(session.user?.roles || [session.user?.role]).includes("STUDENT") && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link 
+                        href="/cart"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L6 5H3m4 8v6a1 1 0 001 1h10a1 1 0 001-1v-6M9 19a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z" />
+                        </svg>
+                        Cart
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                </div>
+                <DropdownMenuSeparator className="my-0" />
+                <div className="py-2">
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer"
+                  >
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

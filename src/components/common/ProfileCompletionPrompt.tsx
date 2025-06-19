@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,6 +12,15 @@ interface ProfileCompletionPromptProps {
 }
 
 export function ProfileCompletionPrompt({ onDismiss, className }: ProfileCompletionPromptProps) {
+  const { data: session } = useSession();
+  
+  // Don't show profile completion prompt for ADMIN users
+  const userRoles = session?.user?.roles || [session?.user?.role];
+  const isAdmin = userRoles.includes('ADMIN');
+  
+  if (isAdmin) {
+    return null;
+  }
   return (
     <Card className={`border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 ${className}`}>
       <CardHeader className="pb-3">

@@ -54,6 +54,228 @@ const ProfilePage = () => {
   }
 
   const userRole = session.user?.role as UserRole;
+  const userRoles = session.user?.roles || [session.user?.role];
+  const isAdmin = userRoles.includes('ADMIN');
+
+  // Admin-specific profile view
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-8 max-w-6xl">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                  <Shield className="h-8 w-8 text-blue-600" />
+                  Admin Profile
+                </h1>
+                <p className="text-muted-foreground">Manage your admin account and system access</p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="icon">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column - Admin Profile Card */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Admin Profile Summary */}
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+                <CardHeader className="text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="relative">
+                      <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center border-4 border-blue-200">
+                        <Shield className="h-12 w-12 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                  <CardTitle className="text-xl text-gray-900">{session.user?.name}</CardTitle>
+                  <p className="text-gray-600">{session.user?.email}</p>
+                  <div className="flex justify-center mt-2">
+                    <Badge className="bg-blue-600 text-white">
+                      <Shield className="h-3 w-3 mr-1" />
+                      System Administrator
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>Full System Access</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Users className="h-4 w-4 text-blue-600" />
+                      <span>User Management</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Settings className="h-4 w-4 text-gray-600" />
+                      <span>System Configuration</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Admin Actions */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-card-foreground flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" />
+                    Admin Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button asChild variant="ghost" className="w-full justify-start">
+                    <Link href="/admin-dashboard">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin Dashboard
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" className="w-full justify-start">
+                    <Link href="/admin-dashboard/users">
+                      <Users className="h-4 w-4 mr-2" />
+                      Manage Users
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" className="w-full justify-start">
+                    <Link href="/admin-dashboard/approvals">
+                      <Clock className="h-4 w-4 mr-2" />
+                      Pending Approvals
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Data
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Admin Details */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* System Access */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-card-foreground flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    System Access & Permissions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900">User Management</p>
+                        <p className="text-sm text-green-700">Full Access</p>
+                      </div>
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900">Content Management</p>
+                        <p className="text-sm text-green-700">Full Access</p>
+                      </div>
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900">System Settings</p>
+                        <p className="text-sm text-green-700">Full Access</p>
+                      </div>
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-green-900">Analytics</p>
+                        <p className="text-sm text-green-700">Full Access</p>
+                      </div>
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Account Information */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-card-foreground flex items-center gap-2">
+                    <User className="h-5 w-5 text-primary" />
+                    Account Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                      <p className="text-card-foreground font-medium">{session.user?.name}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Email Address</label>
+                      <p className="text-card-foreground font-medium">{session.user?.email}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Role</label>
+                      <p className="text-card-foreground font-medium">System Administrator</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Account Status</label>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-green-600 font-medium">Active</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Security Settings */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-card-foreground flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Security & Privacy
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium">Two-Factor Authentication</p>
+                      <p className="text-sm text-muted-foreground">Add extra security to your account</p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Enable
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium">Change Password</p>
+                      <p className="text-sm text-muted-foreground">Update your account password</p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Change
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium">Login History</p>
+                      <p className="text-sm text-muted-foreground">View recent account activity</p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-background">

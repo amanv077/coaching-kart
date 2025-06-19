@@ -424,10 +424,8 @@ const CoachingDetailPage = () => {
                   </Button>
                 )}
               </CardContent>
-            </Card>
-
-            {/* Contact Information */}
-            {mainProfile && (
+            </Card>            {/* Contact Information - Only show if logged in */}
+            {session?.user && mainProfile && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -456,7 +454,29 @@ const CoachingDetailPage = () => {
                         Visit Website
                       </a>
                     </div>
-                  )}
+                  )}                </CardContent>
+              </Card>
+            )}
+
+            {/* Contact Information prompt for non-logged in users */}
+            {!session?.user && (
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-blue-600" />
+                    Contact Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-3">
+                    Login to view contact details and connect with the coaching center directly.
+                  </p>
+                  <Button asChild className="w-full">
+                    <Link href="/login">
+                      <User className="h-4 w-4 mr-2" />
+                      Login to View Contact Details
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             )}

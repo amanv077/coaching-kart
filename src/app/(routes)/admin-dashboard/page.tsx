@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
 import { PageLoader } from '@/components/ui/loader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminStats from '@/components/admin/AdminStats';
@@ -24,8 +23,7 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  // All hooks must be called at the top, before any conditional logic
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [stats, setStats] = useState<{
     totalUsers: number;
     totalCoaches: number;
@@ -36,60 +34,34 @@ const AdminDashboard = () => {
     totalRevenue: number;
     monthlyGrowth: number;
   } | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch admin stats - this hook must be called before any conditional returns
   useEffect(() => {
     const fetchStats = async () => {
-      // Only fetch if user is authenticated and has admin role
-      if (status === 'authenticated' && session?.user) {
-        const userRoles = session.user?.roles || [session.user?.role];
-        const hasAdminRole = userRoles.includes('ADMIN');
-        
-        if (hasAdminRole) {
-          try {            const response = await fetch('/api/admin/stats');
-            if (!response.ok) {
-              throw new Error('Failed to fetch admin stats');
-            }
-            const data = await response.json();
-            setStats(data.stats);
-          } catch (err) {
-            console.error('Error fetching admin stats:', err);
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
-          }
+      try {
+        const response = await fetch('/api/admin/stats');
+        if (!response.ok) {
+          throw new Error('Failed to fetch admin stats');
         }
+        const data = await response.json();
+        setStats(data.stats);
+      } catch (err) {
+        console.error('Error fetching admin stats:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchStats();
-  }, [session, status]);
+  }, []);
 
-  // Session loading check
-  if (status === 'loading' || loading) {
+  // Loader while checking auth and fetching data
+  if (loading) {
     return <PageLoader text="Loading admin dashboard..." />;
   }
-  
-  // Authentication check
-  if (!session) {
-    redirect('/login');
-  }
 
-  // Authorization check
-  const userRoles = session.user?.roles || [session.user?.role];
-  const hasAdminRole = userRoles.includes('ADMIN');
-  
-  if (!hasAdminRole) {
-    const primaryRole = session.user?.role;
-    if (primaryRole === 'STUDENT') {
-      redirect('/dashboard');
-    } else if (primaryRole === 'COACH') {
-      redirect('/coaching-dashboard');
-    } else {
-      redirect('/');
-    }
-  }
   // Error handling
   if (error) {
     return (
@@ -117,7 +89,7 @@ const AdminDashboard = () => {
               Admin Dashboard
             </h1>
             <p className="text-muted-foreground mt-2">
-              Welcome back, <span className="font-medium">{session.user?.name}</span>. 
+              Welcome back, <span className="font-medium">{session?.user?.name || 'Admin'}</span>. 
               Manage your platform and oversee all operations.
             </p>
           </div>

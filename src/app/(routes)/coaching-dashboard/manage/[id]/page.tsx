@@ -113,9 +113,10 @@ interface CoachingData {
 const ManageCoachingPage = () => {
   const params = useParams();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [coaching, setCoaching] = useState<CoachingData | null>(null);
-  const [loading, setLoading] = useState(true);  const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');

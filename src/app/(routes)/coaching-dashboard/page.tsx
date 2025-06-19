@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 interface DashboardStats {
@@ -75,41 +74,8 @@ const CoachDashboard = () => {
     totalStudents: 0,
     pendingApprovals: 0,
     monthlyEarnings: 0
-  });  const [isLoading, setIsLoading] = useState(true);
-    // Move useEffect to top level to follow rules of hooks
-  useEffect(() => {
-    // Only fetch if we have a session and user has COACH role
-    if (session && status === 'authenticated') {
-      const userRoles = session.user?.roles || [session.user?.role];
-      const hasCoachRole = userRoles.includes('COACH');
-      if (hasCoachRole) {
-        fetchCoachings();
-      }
-    }
-  }, [session, status]);
-
-  if (status === 'loading') {
-    return <PageLoader text="Loading your dashboard..." />;
-  }
-
-  if (!session) {
-    redirect('/login');
-  }
-
-  // Check if user has COACH role
-  const userRoles = session.user?.roles || [session.user?.role];
-  const hasCoachRole = userRoles.includes('COACH');
-  
-  if (!hasCoachRole) {
-    const primaryRole = session.user?.role;
-    if (primaryRole === 'STUDENT') {
-      redirect('/dashboard');
-    } else if (primaryRole === 'ADMIN') {
-      redirect('/admin-dashboard');
-    } else {
-      redirect('/');
-    }
-  }
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchCoachings = async () => {
     try {
@@ -125,6 +91,16 @@ const CoachDashboard = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (session?.user && status === 'authenticated') {
+      fetchCoachings();
+    }
+  }, [session, status]);
+
+  if (status === 'loading') {
+    return <PageLoader text="Loading your dashboard..." />;
+  }
 
   const StatCard = ({ title, value, icon: Icon, description, color = "blue" }: {
     title: string;
@@ -182,9 +158,8 @@ const CoachDashboard = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Coach Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Welcome back, {session.user?.name}! Manage your coaching institutes and courses.
+          </h1>          <p className="text-gray-600">
+            Welcome back, {session?.user?.name || 'Coach'}! Manage your coaching institutes and courses.
           </p>
         </div>
 

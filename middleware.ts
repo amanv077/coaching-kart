@@ -4,9 +4,32 @@ import type { UserRole } from "@/types/auth";
 
 // Define role-based route access
 const roleRoutes: Record<UserRole, string[]> = {
-  STUDENT: ["/dashboard", "/cart", "/profile", "/courses", "/payment"],
-  COACH: ["/coaching-dashboard", "/profile", "/courses", "/students"], 
-  ADMIN: ["/admin-dashboard", "/profile", "/users", "/courses", "/coaches", "/analytics"]
+  STUDENT: [
+    "/dashboard", 
+    "/cart", 
+    "/profile", 
+    "/courses", 
+    "/payment", 
+    "/review",
+    "/demo-booking",
+    "/complete-profile"
+  ],
+  COACH: [
+    "/coaching-dashboard", 
+    "/profile", 
+    "/courses", 
+    "/students",
+    "/complete-profile"
+  ], 
+  ADMIN: [
+    "/admin-dashboard", 
+    "/profile", 
+    "/users", 
+    "/courses", 
+    "/coaches", 
+    "/analytics",
+    "/complete-profile"
+  ]
 };
 
 export default withAuth(
@@ -26,9 +49,8 @@ export default withAuth(
       
       // Check if user has access to the requested route with any of their roles
       if (isProtectedRoute(pathname) && !hasAccessWithRoles(userRoles, pathname)) {
-        // Redirect to appropriate dashboard based on primary role
-        const redirectUrl = getDefaultDashboard(primaryRole);
-        return NextResponse.redirect(new URL(redirectUrl, req.url));
+        // Redirect to unauthorized page instead of dashboard for better UX
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
     }
     
@@ -63,7 +85,10 @@ function isProtectedRoute(pathname: string): boolean {
     "/students",
     "/users",
     "/coaches",
-    "/analytics"
+    "/analytics",
+    "/review",
+    "/demo-booking",
+    "/complete-profile"
   ];
   
   return protectedPaths.some(path => pathname.startsWith(path));
@@ -107,6 +132,9 @@ export const config = {
     "/students/:path*",
     "/users/:path*",
     "/coaches/:path*",
-    "/analytics/:path*"
+    "/analytics/:path*",
+    "/review/:path*",
+    "/demo-booking/:path*",
+    "/complete-profile/:path*"
   ]
 };

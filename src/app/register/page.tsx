@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ButtonLoader } from "@/components/ui/loader";
 import { UserRole } from "@/types/auth";
+import OTPVerification from "@/components/auth/OTPVerification";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,8 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
   const router = useRouter();
 
   const handleChange = (
@@ -44,9 +47,7 @@ export default function RegisterPage() {
       setError("Password must be at least 6 characters");
       setIsLoading(false);
       return;
-    }
-
-    try {
+    }    try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,16 +57,45 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
 
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/login?message=Registration successful! Please sign in.");
-      }, 2000);
+      // Check if OTP verification is required
+      if (data.requiresOTP) {
+        setPendingEmail(formData.email);
+        setShowOTPVerification(true);
+      } else {
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/login?message=Registration successful! Please sign in.");
+        }, 2000);
+      }
     } catch (err: any) {
       setError(err.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleOTPVerificationSuccess = () => {
+    setSuccess(true);
+    setTimeout(() => {
+      router.push("/login?message=Email verified successfully! Please sign in.");
+    }, 2000);
+  };
+
+  const handleBackToRegistration = () => {
+    setShowOTPVerification(false);
+    setPendingEmail("");
+  };
+
+  // Show OTP verification if needed
+  if (showOTPVerification && pendingEmail) {
+    return (
+      <OTPVerification
+        email={pendingEmail}
+        onVerificationSuccess={handleOTPVerificationSuccess}
+        onBack={handleBackToRegistration}
+      />
+    );
+  }
 
   if (success) {
     return (
@@ -88,6 +118,7 @@ export default function RegisterPage() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Modern Background */}
@@ -97,7 +128,8 @@ export default function RegisterPage() {
           <div className="absolute top-40 right-10 w-72 h-72 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
         </div>
-      </div>      {/* Content */}
+      </div>
+      {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-4">
         <div className="max-w-md w-full">
           {/* Modern Card */}
@@ -106,7 +138,7 @@ export default function RegisterPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 rounded-2xl opacity-75">
               <div className="absolute inset-[1px] bg-white rounded-2xl"></div>
             </div>
-            
+
             {/* Content */}
             <div className="relative z-10">
               {/* Header */}
@@ -120,7 +152,8 @@ export default function RegisterPage() {
                 <p className="mt-2 text-gray-600 text-sm">
                   Create your account and start your learning journey
                 </p>
-              </div>              {/* Register Form */}
+              </div>
+              {/* Register Form */}
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   {/* Name Input */}
@@ -163,11 +196,11 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, role: 'STUDENT' }))}
+                        onClick={() => setFormData((prev) => ({ ...prev, role: "STUDENT" }))}
                         className={`p-3 border-2 rounded-lg text-left transition-all duration-200 ${
-                          formData.role === 'STUDENT'
-                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                            : 'border-gray-200 bg-white hover:border-gray-300'
+                          formData.role === "STUDENT"
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                            : "border-gray-200 bg-white hover:border-gray-300"
                         }`}
                       >
                         <div className="text-lg mb-1">🎓</div>
@@ -175,11 +208,11 @@ export default function RegisterPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, role: 'COACH' }))}
+                        onClick={() => setFormData((prev) => ({ ...prev, role: "COACH" }))}
                         className={`p-3 border-2 rounded-lg text-left transition-all duration-200 ${
-                          formData.role === 'COACH'
-                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                            : 'border-gray-200 bg-white hover:border-gray-300'
+                          formData.role === "COACH"
+                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                            : "border-gray-200 bg-white hover:border-gray-300"
                         }`}
                       >
                         <div className="text-lg mb-1">👨‍🏫</div>
@@ -219,7 +252,8 @@ export default function RegisterPage() {
                       />
                     </div>
                   </div>
-                </div>                {error && (
+                </div>
+                {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
                     {error}
                   </div>
@@ -238,9 +272,7 @@ export default function RegisterPage() {
                   ) : (
                     "🎯 Create Account"
                   )}
-                </button>
-
-                <div className="text-center">
+                </button>                <div className="text-center">
                   <p className="text-gray-600 text-sm">
                     Already have an account?{" "}
                     <Link

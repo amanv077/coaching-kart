@@ -53,6 +53,11 @@ model User {
   emailVerified DateTime?
   image         String?
   
+  // OTP Verification Fields
+  otpVerified   Boolean         @default(false)
+  otp           String?         // Current OTP code
+  otpExpiry     DateTime?       // When OTP expires
+  
   // Enhanced Profile Fields
   profileCompleted Boolean        @default(false)
   bio              String?

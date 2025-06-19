@@ -47,6 +47,13 @@ const Navbar = () => {
         return '/dashboard';
     }
   };
+  const handleHomeClick = () => {
+    if (session?.user?.role) {
+      const dashboardLink = getDashboardLink(session.user.role as UserRole);
+      return dashboardLink;
+    }
+    return '/';
+  };
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' });
@@ -61,9 +68,8 @@ const Navbar = () => {
   };
 
   return (    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
+      <div className="container flex h-16 items-center justify-between">        {/* Logo */}
+        <Link href={handleHomeClick()} className="flex items-center space-x-2">
           <div className="ml-2 h-10 md:h-12">
             <img
               src="/assets/logo.png"
@@ -377,9 +383,16 @@ const Navbar = () => {
       </div>      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur">
-          <div className="container py-4 space-y-3">
-            {/* Navigation Links */}
+          <div className="container py-4 space-y-3">            {/* Navigation Links */}
             <div className="space-y-3">
+              <Link
+                href={handleHomeClick()}
+                className="block text-gray-600 hover:text-blue-600 transition-colors py-2 font-medium"
+                onClick={closeMobileMenu}
+              >
+                Home
+              </Link>
+              
               <Link
                 href="/coaching"
                 className="block text-gray-600 hover:text-blue-600 transition-colors py-2 font-medium"

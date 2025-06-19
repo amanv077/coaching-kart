@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/navbar/navbar";
 import Footer from "@/components/layout/footer/footer";
-import { ThemeProvider } from "@/context/theme-provider";
 import AuthProvider from "@/components/providers/auth-provider";
 import { Toaster } from "sonner";
 
@@ -32,14 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
         suppressHydrationWarning
-      >
-        <AuthProvider>
-          <ThemeProvider defaultTheme="light" storageKey="coaching-kart-theme">
-            <Navbar />
-            {children}
-            <Footer/>
-            <Toaster />
-          </ThemeProvider>
+      >        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer/>
+          <Toaster />
         </AuthProvider>
       </body>
     </html>

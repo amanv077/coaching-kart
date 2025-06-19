@@ -338,8 +338,7 @@ export default function EditAdminPage() {
           <Button 
             type="submit" 
             disabled={saving}
-          >
-            <Save className="h-4 w-4 mr-2" />
+          >            <Save className="h-4 w-4 mr-2" />
             {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>

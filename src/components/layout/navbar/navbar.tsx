@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { ThemeToggle } from '@/components/shared/theme-toggle';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/ui/loader';
 import {
@@ -55,7 +54,7 @@ const Navbar = () => {
             <img
               src="/assets/logo.png"
               alt="Coaching Kart Logo"
-              className="h-full w-auto object-contain dark:invert brightness-90"
+              className="h-full w-auto object-contain"
             />
           </div>
         </Link>
@@ -90,11 +89,8 @@ const Navbar = () => {
           >
             Contact Us
           </Link>
-        </div>
-
-        {/* Desktop Right Side Actions */}
+        </div>        {/* Desktop Right Side Actions */}
         <div className="hidden md:flex items-center space-x-4">
-          <ThemeToggle />
           {status === "loading" ? (
             <Loader size="sm" />
           ) : session ? (
@@ -107,7 +103,7 @@ const Navbar = () => {
                   className="flex items-center space-x-2"
                 >
                   <div className="w-6 h-6 bg-coaching-gradient rounded-full flex items-center justify-center">
-                    <span className="text-black dark:text-white text-xs font-bold">
+                    <span className="text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || "U"}
                     </span>
                   </div>
@@ -188,11 +184,8 @@ const Navbar = () => {
               </Button>
             </>
           )}
-        </div>
-
-        {/* Mobile Menu Button and User Actions */}
+        </div>        {/* Mobile Menu Button and User Actions */}
         <div className="flex md:hidden items-center space-x-2">
-          <ThemeToggle />
           {status === "loading" ? (
             <Loader size="sm" />
           ) : session ? (
@@ -201,7 +194,7 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="p-2">
                   <div className="w-6 h-6 bg-coaching-gradient rounded-full flex items-center justify-center">
-                    <span className="text-foreground dark:text-white text-xs font-bold">
+                    <span className="text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || "U"}
                     </span>
                   </div>

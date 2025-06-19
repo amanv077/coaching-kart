@@ -130,8 +130,7 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               placeholder="your@email.com"
-            />
-            <SelectField
+            />            <SelectField
               id="role"
               label="Account Type"
               value={formData.role}
@@ -142,7 +141,6 @@ export default function RegisterPage() {
                   label: "🎓 Student - Learn from expert coaches",
                 },
                 { value: "COACH", label: "👨‍🏫 Coach - Share your expertise" },
-                { value: "ADMIN", label: "⚙️ Admin - Manage the platform" },
               ]}
             />
             <InputField

@@ -52,6 +52,32 @@ model User {
   roles         UserRole[]      // Multiple roles allowed
   emailVerified DateTime?
   image         String?
+  
+  // Enhanced Profile Fields
+  profileCompleted Boolean        @default(false)
+  bio              String?
+  interests        String[]       @default([])
+  learningGoals    String[]       @default([])
+  
+  // Coaching Preferences for Students
+  coachingMode     CoachingMode?  // Online, Offline, Both
+  preferredSubjects String[]      @default([])
+  targetExams      String[]       @default([])
+  studyLevel       StudyLevel?    // School, College, Competitive
+  preferredCities  String[]       @default([])
+  budgetRange      String?        // e.g., "5000-10000", "10000-20000"
+  sessionTimings   String[]       @default([]) // e.g., ["Morning", "Evening"]
+  
+  // Additional preferences for online coaching
+  onlineClassFormat String?       // Live, Recorded, Both
+  devicePreference String?        // Mobile, Desktop, Tablet
+  internetSpeed    String?        // High, Medium, Low
+  
+  // Additional preferences for offline coaching  
+  maxTravelDistance String?       // e.g., "5km", "10km", "15km"
+  transportMode    String?        // Own, Public, Pickup
+  batchSize        BatchSizePreference? // Small, Medium, Large, Individual
+  
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   
@@ -98,6 +124,26 @@ enum LookingFor {
   Online
   Offline
   Both
+}
+
+enum CoachingMode {
+  Online
+  Offline
+  Both
+}
+
+enum StudyLevel {
+  School
+  College
+  Competitive
+  Professional
+}
+
+enum BatchSizePreference {
+  Individual
+  Small
+  Medium
+  Large
 }
 
 model Coaching {

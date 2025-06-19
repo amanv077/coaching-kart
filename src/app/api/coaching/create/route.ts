@@ -59,21 +59,55 @@ export async function POST(request: NextRequest) {
     const operatingDays = JSON.parse(formData.get('operatingDays') as string || '[]');
     const operatingHours = formData.get('operatingHours') as string;
     const facilities = JSON.parse(formData.get('facilities') as string || '[]');
-    
-    // Academic details
+      // Academic details
     const subjectsOffered = JSON.parse(formData.get('subjectsOffered') as string || '[]');
     const examsOffered = JSON.parse(formData.get('examsOffered') as string || '[]');
+    
+    // Handle teachers data
+    const teachers: any[] = [];
+    let teacherIndex = 0;
+    
+    while (formData.get(`teacher_${teacherIndex}`)) {
+      const teacherData = JSON.parse(formData.get(`teacher_${teacherIndex}`) as string);
+      const teacherImageFile = formData.get(`teacher_image_${teacherIndex}`) as File;
+      
+      let teacherImageUrl = '';
+      if (teacherImageFile && teacherImageFile.size > 0) {
+        const teacherImageResult = await uploadImage(teacherImageFile, 'teacher-images', 5 * 1024 * 1024, true);
+        teacherImageUrl = teacherImageResult.url;
+      }
+      
+      teachers.push({
+        ...teacherData,
+        profileImage: teacherImageUrl,
+        experience: parseInt(teacherData.experience) || 0
+      });
+      teacherIndex++;
+    }
 
     // Validate required fields
     if (!organizationName || !profileName || !description || !address || !city || !state || !pincode || !contactNumber || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }    // Handle file uploads with cloud storage
+    }// Handle file uploads with cloud storage
     const logoFile = formData.get('logo') as File;
     let logoUrl = '';
     
     if (logoFile && logoFile.size > 0) {
       const logoResult = await uploadImage(logoFile, 'logos', 5 * 1024 * 1024, true); // Use cloud storage
       logoUrl = logoResult.url;
+    }    // Handle teacher images
+    const teacherImages: { [key: number]: string } = {};
+    let teacherImgIndex = 0;
+    
+    while (formData.get(`teacher_image_${teacherImgIndex}`)) {
+      const teacherImageFile = formData.get(`teacher_image_${teacherImgIndex}`) as File;
+      if (teacherImageFile && teacherImageFile.size > 0) {
+        const uploadResults = await uploadMultipleImages([teacherImageFile], 'teacher-images', 2 * 1024 * 1024, true); // 2MB limit
+        if (uploadResults.length > 0) {
+          teacherImages[teacherImgIndex] = uploadResults[0].url;
+        }
+      }
+      teacherImgIndex++;
     }
 
     // Handle multiple images
@@ -146,15 +180,32 @@ export async function POST(request: NextRequest) {
           // Relations
           coachingId: coaching.id,
         },
-      });
+      });      // Create teachers
+      const createdTeachers = [];
+      for (let i = 0; i < teachers.length; i++) {
+        const teacher = teachers[i];
+        const teacherImageUrl = teacherImages[i] || null;
+        
+        const createdTeacher = await tx.teacher.create({
+          data: {
+            name: teacher.name,
+            qualification: teacher.qualification,
+            specialization: teacher.subjects || [],
+            experience: parseInt(teacher.experience) || 0,
+            profileImage: teacherImageUrl,
+            bio: teacher.description || null,
+            profileId: profile.id,
+          },
+        });
+        createdTeachers.push(createdTeacher);
+      }
 
-      return { coaching, profile };
-    });
-
-    return NextResponse.json({
+      return { coaching, profile, teachers: createdTeachers };
+    });    return NextResponse.json({
       message: 'Coaching created successfully',
       coaching: result.coaching,
       profile: result.profile,
+      teachers: result.teachers,
     });
   } catch (error) {
     console.error('Error creating coaching:', error);

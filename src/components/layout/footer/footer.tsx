@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">              <div className="w-8 h-8 bg-coaching-gradient rounded-lg flex items-center justify-center">
-                <span className="text-black dark:text-white font-bold text-lg">CK</span>
+                <span className="text-black font-bold text-lg">CK</span>
               </div>
               <span className="font-bold text-xl text-foreground">Coaching Kart</span>
             </div>

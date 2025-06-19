@@ -88,212 +88,174 @@ export default function RegisterPage() {
       </div>
     );
   }
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-coaching-primary/5 via-background to-coaching-accent/5 px-4 py-12 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-coaching-primary/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-coaching-accent/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-coaching-secondary/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="max-w-md w-full bg-card rounded-xl p-8 shadow-xl relative z-10 border border-muted/30 backdrop-blur-md">
-        <div className="absolute top-0 left-0 right-0 h-2 bg-coaching-gradient rounded-t-xl" />
-        <div className="absolute -right-2 top-8 bottom-8 w-2 bg-coaching-gradient/20 rounded-r-md" />
-
-        <div className="text-center">
-          <div className="w-16 h-16 bg-coaching-gradient rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <span className="text-white font-bold text-2xl">CK</span>
-          </div>
-          <h2 className="text-3xl font-bold text-foreground">
-            Join Coaching Kart! 🚀
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            Create your account and start your learning journey today
-          </p>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Modern Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
         </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <InputField
-              id="name"
-              label="Full Name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Your full name"
-            />
-            <InputField
-              id="email"
-              label="Email Address"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="your@email.com"
-            />            <SelectField
-              id="role"
-              label="Account Type"
-              value={formData.role}
-              onChange={handleChange}
-              options={[
-                {
-                  value: "STUDENT",
-                  label: "🎓 Student - Learn from expert coaches",
-                },
-                { value: "COACH", label: "👨‍🏫 Coach - Share your expertise" },
-              ]}
-            />
-            <InputField
-              id="password"
-              label="Password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a strong password"
-            />
-            <InputField
-              id="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
+      </div>      {/* Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-4">
+        <div className="max-w-md w-full">
+          {/* Modern Card */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 relative overflow-hidden">
+            {/* Gradient Border */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 rounded-2xl opacity-75">
+              <div className="absolute inset-[1px] bg-white rounded-2xl"></div>
             </div>
-          )}
+            
+            {/* Content */}
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <span className="text-white font-bold text-xl">CK</span>
+                </div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  Join Coaching Kart! 🚀
+                </h2>
+                <p className="mt-2 text-gray-600 text-sm">
+                  Create your account and start your learning journey
+                </p>
+              </div>              {/* Register Form */}
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  {/* Name Input */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 hover:bg-gray-50"
+                      placeholder="Your full name"
+                    />
+                  </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3 text-lg font-semibold transition-colors cursor-pointer"
-            variant="neon"
-          >
-            {isLoading ? (
-              <ButtonLoader />
-            ) : (
-              "🎯 Create Account"
-            )}
-          </Button>
+                  {/* Email Input */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 hover:bg-gray-50"
+                      placeholder="your@email.com"
+                    />
+                  </div>
 
-          <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-coaching-primary hover:underline font-medium"
-            >
-              Sign in here
-            </Link>
-          </p>
-        </form>
+                  {/* Compact Role Selection */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      I want to join as a:
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'STUDENT' }))}
+                        className={`p-3 border-2 rounded-lg text-left transition-all duration-200 ${
+                          formData.role === 'STUDENT'
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                            : 'border-gray-200 bg-white hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-lg mb-1">🎓</div>
+                        <div className="font-semibold text-sm">Student</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'COACH' }))}
+                        className={`p-3 border-2 rounded-lg text-left transition-all duration-200 ${
+                          formData.role === 'COACH'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 bg-white hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-lg mb-1">👨‍🏫</div>
+                        <div className="font-semibold text-sm">Coach</div>
+                      </button>
+                    </div>
+                  </div>
 
-        <div className="mt-8 p-6 bg-gradient-to-r from-coaching-primary/5 to-coaching-accent/5 border border-coaching-primary/20 rounded-lg">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
-            🌟 Choose Your Journey
-          </h3>
-          <ul className="space-y-3 text-sm">
-            <li className="flex gap-3 items-start">
-              <span>🎓</span>
-              <span>
-                <b className="text-foreground">Student:</b>
-                <span className="text-muted-foreground ml-1">
-                  Access courses, book sessions, track progress
-                </span>
-              </span>
-            </li>
-            <li className="flex gap-3 items-start">
-              <span>👨‍🏫</span>
-              <span>
-                <b className="text-foreground">Coach:</b>
-                <span className="text-muted-foreground ml-1">
-                  Create courses, manage students, earn income
-                </span>
-              </span>
-            </li>
-          </ul>
+                  {/* Password Inputs in Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Password
+                      </label>
+                      <input
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 hover:bg-gray-50"
+                        placeholder="Password"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Confirm
+                      </label>
+                      <input
+                        name="confirmPassword"
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 hover:bg-gray-50"
+                        placeholder="Confirm"
+                      />
+                    </div>
+                  </div>
+                </div>                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3 px-6 bg-gradient-to-r from-emerald-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover-scale transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <ButtonLoader />
+                      Creating Account...
+                    </div>
+                  ) : (
+                    "🎯 Create Account"
+                  )}
+                </button>
+
+                <div className="text-center">
+                  <p className="text-gray-600 text-sm">
+                    Already have an account?{" "}
+                    <Link
+                      href="/login"
+                      className="text-emerald-600 hover:text-blue-600 font-semibold transition-colors"
+                    >
+                      Sign in here
+                    </Link>
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-// Extracted input field
-function InputField({
-  id,
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-}: {
-  id: string;
-  label: string;
-  type: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium mb-2 text-foreground"
-      >
-        {label}
-      </label>
-      <input
-        id={id}
-        name={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        required
-        className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-coaching-primary focus:border-transparent transition-all"
-        placeholder={placeholder}
-      />
-    </div>
-  );
-}
-
-// Extracted select field
-function SelectField({
-  id,
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: { value: string; label: string }[];
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium mb-2 text-foreground"
-      >
-        {label}
-      </label>
-      <select
-        id={id}
-        name={id}
-        value={value}
-        onChange={onChange}
-        className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-coaching-primary focus:border-transparent transition-all"
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }

@@ -68,9 +68,41 @@ h3 {
   50% { transform: translateY(-20px); }
 }
 
+/* New floating animations for homepage elements */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+@keyframes floatDelay {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-25px) rotate(-2deg); }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
+}
+
 @keyframes glow {
   0%, 100% { box-shadow: 0 0 5px hsl(205 100% 50% / 0.5); }
   50% { box-shadow: 0 0 20px hsl(205 100% 50% / 0.8), 0 0 30px hsl(205 100% 50% / 0.6); }
+}
+
+/* Blob animations for login/register pages */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
 }
 
 /* Animation Classes */
@@ -80,6 +112,24 @@ h3 {
 
 .animate-slide-up {
   animation: slideUp 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: floatGentle 6s ease-in-out infinite;
+}
+
+.animate-float-delay {
+  animation: floatDelay 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-slow {
+  animation: floatSlow 10s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
 }
 
 .delay-300 {
@@ -100,6 +150,14 @@ h3 {
 
 .delay-2000 {
   animation-delay: 2s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }
 
 /* ============================================
@@ -130,6 +188,11 @@ h3 {
 /* Card hover effects */
 .hover-glow:hover {
   animation: glow 2s ease-in-out infinite;
+}
+
+/* Enhanced button hover effects */
+.hover-scale:hover {
+  transform: scale(1.02);
 }
 
 /* Scroll animations */

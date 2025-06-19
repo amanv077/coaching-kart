@@ -149,17 +149,47 @@ const CoachingDetailPage = () => {
                   <Badge variant="outline">
                     {mainProfile.city}, {mainProfile.state}
                   </Badge>
-                )}
-              </div>
+                )}              </div>
             </div>
-            {isOwner && (
-              <Button asChild>
-                <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Details
-                </Link>
-              </Button>
-            )}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* If not logged in, show Login to Apply */}
+              {!session?.user && (
+                <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                  <Link href="/login">
+                    <User className="h-4 w-4 mr-2" />
+                    Login to Apply
+                  </Link>
+                </Button>
+              )}
+              
+              {/* If logged in as user (student), show contact and demo buttons */}
+              {session?.user && !isOwner && (
+                <>
+                  <Button asChild variant="outline">
+                    <Link href={`tel:${mainProfile?.contactNumber}`}>
+                      <Phone className="h-4 w-4 mr-2" />
+                      Contact Now
+                    </Link>
+                  </Button>
+                  <Button asChild className="bg-green-600 hover:bg-green-700">
+                    <Link href={`/demo-booking/${coaching.coachingId}`}>
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Book a Demo
+                    </Link>
+                  </Button>
+                </>
+              )}
+              
+              {/* If owner, show Edit Details */}
+              {isOwner && (
+                <Button asChild>
+                  <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Details
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -339,10 +369,63 @@ const CoachingDetailPage = () => {
                   </div>
                 </CardContent>
               </Card>            )}
-          </div>
-
-          {/* Right Column - Contact & Details */}
+          </div>          {/* Right Column - Actions & Contact */}
           <div className="space-y-6">
+            {/* Action Buttons */}
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+              <CardHeader>
+                <CardTitle className="text-center text-blue-700">
+                  {!session?.user && "Join Us Today"}
+                  {session?.user && !isOwner && "Take Action"}
+                  {isOwner && "Manage Your Coaching"}
+                </CardTitle>
+                <CardDescription className="text-center">
+                  {!session?.user && "Login to apply and connect with us"}
+                  {session?.user && !isOwner && "Get in touch or book a demo session"}
+                  {isOwner && "Edit your coaching details"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {/* If not logged in, show Login to Apply */}
+                {!session?.user && (
+                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
+                    <Link href="/login">
+                      <User className="h-5 w-5 mr-2" />
+                      Login to Apply
+                    </Link>
+                  </Button>
+                )}
+                
+                {/* If logged in as user (student), show contact and demo buttons */}
+                {session?.user && !isOwner && (
+                  <>
+                    <Button asChild className="w-full bg-green-600 hover:bg-green-700" size="lg">
+                      <Link href={`/demo-booking/${coaching.coachingId}`}>
+                        <Calendar className="h-5 w-5 mr-2" />
+                        Book a Demo Now
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full" size="lg">
+                      <Link href={`tel:${mainProfile?.contactNumber}`}>
+                        <Phone className="h-5 w-5 mr-2" />
+                        Contact Now
+                      </Link>
+                    </Button>
+                  </>
+                )}
+                
+                {/* If owner, show Edit Details */}
+                {isOwner && (
+                  <Button asChild className="w-full" size="lg">
+                    <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                      <Edit className="h-5 w-5 mr-2" />
+                      Edit Details
+                    </Link>
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Contact Information */}
             {mainProfile && (
               <Card>

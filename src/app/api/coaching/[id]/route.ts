@@ -5,23 +5,17 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET /api/coaching/[id] - Get coaching details
+// GET /api/coaching/[id] - Get coaching details (public endpoint)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
     const coachingId = id;
 
     const coaching = await prisma.coaching.findUnique({
-      where: { coachingId },
+      where: { coachingId, isActive: true }, // Only show active coachings
       include: {
         profiles: {
           include: {

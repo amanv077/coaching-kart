@@ -448,14 +448,24 @@ model DemoSession {
   courseId        String
   title           String
   description     String?
-  mode            SessionMode
-  dateTime        DateTime
-  durationMinutes Int
-  maxParticipants Int      @default(50)
-  location        String?  // Required if offline
-  meetingLink     String?  // Required if online
+  mode            SessionMode @default(offline)
+  
+  // Date and time slots
+  availableDates  String[] // Array of available dates in YYYY-MM-DD format
+  timeSlots       String[] // Array of time slots like "10:00-11:00", "14:00-16:00"
+  demoDays        Int      @default(1) // Number of demo days (1-8)
+  
+  maxParticipants Int      @default(5)
   instructor      String
+  subjects        String[] // Array of subjects/courses offered
   topics          String[] // Array of topics to be covered
+  
+  // Address for offline demos
+  demoAddress     String   // Specific demo address
+  landmark        String?  // Landmark for easy location
+  
+  isFree          Boolean  @default(true)
+  price           Float?   @default(0)
   
   status          SessionStatus @default(Scheduled)
   createdAt       DateTime @default(now())
@@ -484,23 +494,36 @@ enum SessionStatus {
 }
 
 model DemoSessionBooking {
-  id          String      @id @default(cuid())
-  userId      String
-  sessionId   String
-  bookedAt    DateTime    @default(now())
-  status      BookingStatus @default(confirmed)
-  attended    Boolean     @default(false)
-  feedback    String?
-  rating      Int?        // 1-5
+  id             String      @id @default(cuid())
+  userId         String
+  sessionId      String
   
-  user        User        @relation(fields: [userId], references: [id])
-  session     DemoSession @relation(fields: [sessionId], references: [id])
+  // Selected booking details
+  selectedDate   String      // Selected date in YYYY-MM-DD format
+  selectedTime   String      // Selected time slot like "10:00-11:00"
+  selectedSubject String     // Selected subject/course
+  
+  bookedAt       DateTime    @default(now())
+  status         BookingStatus @default(pending)
+  attended       Boolean     @default(false)
+  feedback       String?
+  rating         Int?        // 1-5
+  
+  // Additional booking info
+  studentName    String?
+  studentPhone   String?
+  studentEmail   String?
+  specialRequest String?     // Any special requirements
+  
+  user           User        @relation(fields: [userId], references: [id])
+  session        DemoSession @relation(fields: [sessionId], references: [id])
   
   @@unique([userId, sessionId])
   @@map("demo_session_bookings")
 }
 
 enum BookingStatus {
+  pending
   confirmed
   cancelled
   completed

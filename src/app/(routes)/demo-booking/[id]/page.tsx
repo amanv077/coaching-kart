@@ -10,37 +10,76 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PageLoader } from '@/components/ui/loader';
+import { Badge } from '@/components/ui/badge';
 import { 
-  ArrowLeft, Calendar, Clock, User, Phone, Mail, BookOpen, CheckCircle
+  ArrowLeft, Calendar, Clock, MapPin, BookOpen, CheckCircle, 
+  Users, User, Phone, Mail
 } from 'lucide-react';
 import { toast } from 'sonner';
-import Link from 'next/link';
 
-interface DemoBookingData {
+interface DemoSession {
+  id: string;
+  sessionId: string;
+  title: string;
+  description?: string;
+  mode: 'offline';
+  availableDates: string[];
+  timeSlots: string[];
+  demoDays: number;
+  maxParticipants: number;
+  demoAddress: string;
+  landmark?: string;
+  instructor: string;
+  subjects: string[];
+  isFree: boolean;
+  price?: number;
+  status: 'Scheduled' | 'Live' | 'Completed' | 'Cancelled';
+  course: {
+    courseName: string;
+  };
+  profile: {
+    name: string;
+    city: string;
+    state: string;
+    contactNumber: string;
+    coaching: {
+      organizationName: string;
+    };
+  };
+  bookings: Array<{
+    id: string;
+    status: string;
+    selectedDate: string;
+    selectedTime: string;
+  }>;
+}
+
+interface BookingData {
+  selectedDate: string;
+  selectedTime: string;
+  selectedSubject: string;
   studentName: string;
   studentPhone: string;
   studentEmail: string;
-  preferredDate: string;
-  preferredTime: string;
-  subject: string;
-  message: string;
+  specialRequest: string;
 }
 
 const DemoBookingPage = () => {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const [coaching, setCoaching] = useState<any>(null);
+  const [demoSessions, setDemoSessions] = useState<DemoSession[]>([]);
+  const [selectedSession, setSelectedSession] = useState<DemoSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState<DemoBookingData>({
+  const [formData, setFormData] = useState<BookingData>({
+    selectedDate: '',
+    selectedTime: '',
+    selectedSubject: '',
     studentName: '',
     studentPhone: '',
     studentEmail: '',
-    preferredDate: '',
-    preferredTime: '',
-    subject: '',
-    message: ''
+    specialRequest: '',
   });
 
   const coachingId = params?.id as string;
@@ -52,73 +91,115 @@ const DemoBookingPage = () => {
     }
     
     if (coachingId) {
-      fetchCoachingDetails();
+      fetchDemoSessions();
     }
   }, [coachingId, session]);
 
-  const fetchCoachingDetails = async () => {
+  useEffect(() => {
+    if (session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        studentName: session.user.name || '',
+        studentEmail: session.user.email || '',
+      }));
+    }
+  }, [session]);
+
+  const fetchDemoSessions = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/coaching/${coachingId}`);
+      // Fetch available demo sessions for this coaching profile
+      const response = await fetch(`/api/demo-sessions/${coachingId}`);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch coaching details');
+        throw new Error('Failed to fetch demo sessions');
       }
 
       const data = await response.json();
-      setCoaching(data);
+      setDemoSessions(data.demoSessions || []);
       
-      // Pre-fill user data
-      if (session?.user) {
-        setFormData(prev => ({
-          ...prev,
-          studentName: session.user.name || '',
-          studentEmail: session.user.email || ''
-        }));
+      if (data.demoSessions && data.demoSessions.length > 0) {
+        setSelectedSession(data.demoSessions[0]);
       }
     } catch (error) {
-      console.error('Error fetching coaching details:', error);
-      toast.error('Failed to load coaching details');
+      console.error('Error fetching demo sessions:', error);
+      toast.error('Failed to load demo sessions');
     } finally {
       setLoading(false);
     }
   };
 
+  const getAvailableTimeSlots = (date: string) => {
+    if (!selectedSession) return [];
+    
+    // Filter out booked time slots for the selected date
+    const bookedSlots = selectedSession.bookings
+      .filter(booking => 
+        booking.selectedDate === date && 
+        (booking.status === 'pending' || booking.status === 'confirmed')
+      )
+      .map(booking => booking.selectedTime);
+    
+    return selectedSession.timeSlots.filter(slot => !bookedSlots.includes(slot));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!selectedSession || !formData.selectedDate || !formData.selectedTime || !formData.selectedSubject) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      // Here you would typically send the demo booking request to an API
-      // For now, we'll just show a success message
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      toast.success('Demo booking request submitted successfully!');
-      router.push(`/coaching/${coachingId}`);
+      const response = await fetch(`/api/offline-demo-bookings/${selectedSession.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast.success('Demo booking request submitted successfully!');
+        router.push('/user-demo-bookings');
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to submit booking request');
+      }
     } catch (error) {
-      console.error('Error submitting demo booking:', error);
-      toast.error('Failed to submit demo booking request');
+      console.error('Error submitting booking:', error);
+      toast.error('Failed to submit booking request');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: keyof DemoBookingData, value: string) => {
+  const handleInputChange = (field: keyof BookingData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Reset time slot when date changes
+    if (field === 'selectedDate') {
+      setFormData(prev => ({ ...prev, selectedTime: '' }));
+    }
   };
 
   if (loading) {
-    return <PageLoader text="Loading booking form..." />;
+    return <PageLoader text="Loading demo sessions..." />;
   }
 
-  if (!coaching) {
+  if (demoSessions.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Coaching Not Found</h2>
+            <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <h2 className="text-xl font-semibold mb-2">No Demo Sessions Available</h2>
             <p className="text-muted-foreground mb-4">
-              The coaching you're trying to book a demo for could not be found.
+              This coaching center hasn't set up any demo sessions yet.
             </p>
             <Button onClick={() => router.back()}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -130,7 +211,7 @@ const DemoBookingPage = () => {
     );
   }
 
-  const mainProfile = coaching?.profiles?.[0];
+  const availableTimeSlots = getAvailableTimeSlots(formData.selectedDate);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8">
@@ -143,202 +224,270 @@ const DemoBookingPage = () => {
           </Button>
           <div className="text-center">
             <h1 className="text-3xl font-bold text-foreground mb-2">Book a Demo Session</h1>
-            <p className="text-muted-foreground mb-4">
-              Schedule a free demo session with <span className="font-semibold">{coaching.organizationName}</span>
-            </p>
-            {mainProfile && (
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-sm text-gray-600">{mainProfile.city}, {mainProfile.state}</span>
-              </div>
+            {selectedSession && (
+              <p className="text-muted-foreground mb-4">
+                Schedule a demo session with <span className="font-semibold">{selectedSession.profile.coaching.organizationName}</span>
+              </p>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Session Selection */}
+          {demoSessions.length > 1 && (
+            <div className="lg:col-span-3">
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Select Demo Session</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {demoSessions.map((session) => (
+                      <Card 
+                        key={session.id} 
+                        className={`cursor-pointer transition-all ${
+                          selectedSession?.id === session.id 
+                            ? 'ring-2 ring-blue-500 bg-blue-50' 
+                            : 'hover:shadow-md'
+                        }`}
+                        onClick={() => setSelectedSession(session)}
+                      >
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-2">{session.title}</h3>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {session.course.courseName}
+                          </p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="h-4 w-4" />
+                            <span>Max {session.maxParticipants} students</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>{session.demoDays} day{session.demoDays > 1 ? 's' : ''}</span>
+                          </div>
+                          {session.isFree && (
+                            <Badge variant="secondary" className="mt-2">Free</Badge>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-blue-600" />
-                  Demo Booking Details
+                  Booking Details
                 </CardTitle>
                 <CardDescription>
-                  Fill in your details to book a free demo session
+                  Fill in your details to book the demo session
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {selectedSession && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Date Selection */}
                     <div>
-                      <Label htmlFor="studentName">Full Name *</Label>
-                      <Input
-                        id="studentName"
-                        value={formData.studentName}
-                        onChange={(e) => handleInputChange('studentName', e.target.value)}
-                        placeholder="Your full name"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="studentPhone">Phone Number *</Label>
-                      <Input
-                        id="studentPhone"
-                        value={formData.studentPhone}
-                        onChange={(e) => handleInputChange('studentPhone', e.target.value)}
-                        placeholder="+91 9876543210"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="studentEmail">Email Address *</Label>
-                    <Input
-                      id="studentEmail"
-                      type="email"
-                      value={formData.studentEmail}
-                      onChange={(e) => handleInputChange('studentEmail', e.target.value)}
-                      placeholder="your.email@example.com"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="preferredDate">Preferred Date *</Label>
-                      <Input
-                        id="preferredDate"
-                        type="date"
-                        value={formData.preferredDate}
-                        onChange={(e) => handleInputChange('preferredDate', e.target.value)}
-                        min={new Date().toISOString().split('T')[0]}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="preferredTime">Preferred Time *</Label>
-                      <Select value={formData.preferredTime} onValueChange={(value) => handleInputChange('preferredTime', value)}>
+                      <Label htmlFor="selectedDate">Select Date *</Label>
+                      <Select value={formData.selectedDate} onValueChange={(value) => handleInputChange('selectedDate', value)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select time" />
+                          <SelectValue placeholder="Choose a date" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="09:00">9:00 AM</SelectItem>
-                          <SelectItem value="10:00">10:00 AM</SelectItem>
-                          <SelectItem value="11:00">11:00 AM</SelectItem>
-                          <SelectItem value="14:00">2:00 PM</SelectItem>
-                          <SelectItem value="15:00">3:00 PM</SelectItem>
-                          <SelectItem value="16:00">4:00 PM</SelectItem>
-                          <SelectItem value="17:00">5:00 PM</SelectItem>
-                          <SelectItem value="18:00">6:00 PM</SelectItem>
+                          {selectedSession.availableDates.map((date) => (
+                            <SelectItem key={date} value={date}>
+                              {new Date(date).toLocaleDateString('en-IN', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
 
-                  <div>
-                    <Label htmlFor="subject">Subject of Interest</Label>
-                    <Select value={formData.subject} onValueChange={(value) => handleInputChange('subject', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a subject" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mainProfile?.subjectsOffered?.map((subject: string) => (
-                          <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    {/* Time Selection */}
+                    <div>
+                      <Label htmlFor="selectedTime">Select Time Slot *</Label>
+                      <Select 
+                        value={formData.selectedTime} 
+                        onValueChange={(value) => handleInputChange('selectedTime', value)}
+                        disabled={!formData.selectedDate}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a time slot" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableTimeSlots.map((slot) => (
+                            <SelectItem key={slot} value={slot}>
+                              {slot}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {formData.selectedDate && availableTimeSlots.length === 0 && (
+                        <p className="text-sm text-red-500 mt-1">No time slots available for this date</p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="message">Additional Message</Label>
-                    <Textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => handleInputChange('message', e.target.value)}
-                      placeholder="Any specific requirements or questions..."
-                      rows={3}
-                    />
-                  </div>
+                    {/* Subject Selection */}
+                    <div>
+                      <Label htmlFor="selectedSubject">Select Subject *</Label>
+                      <Select value={formData.selectedSubject} onValueChange={(value) => handleInputChange('selectedSubject', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a subject" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedSession.subjects.map((subject) => (
+                            <SelectItem key={subject} value={subject}>
+                              {subject}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-blue-600 hover:bg-blue-700" 
-                    size="lg"
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <Clock className="h-4 w-4 mr-2 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Book Demo Session
-                      </>
-                    )}
-                  </Button>
-                </form>
+                    {/* Personal Information */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="studentName">Full Name *</Label>
+                        <Input
+                          id="studentName"
+                          value={formData.studentName}
+                          onChange={(e) => handleInputChange('studentName', e.target.value)}
+                          placeholder="Your full name"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="studentPhone">Phone Number *</Label>
+                        <Input
+                          id="studentPhone"
+                          value={formData.studentPhone}
+                          onChange={(e) => handleInputChange('studentPhone', e.target.value)}
+                          placeholder="Your phone number"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="studentEmail">Email Address *</Label>
+                      <Input
+                        id="studentEmail"
+                        type="email"
+                        value={formData.studentEmail}
+                        onChange={(e) => handleInputChange('studentEmail', e.target.value)}
+                        placeholder="Your email address"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="specialRequest">Special Requirements (Optional)</Label>
+                      <Textarea
+                        id="specialRequest"
+                        value={formData.specialRequest}
+                        onChange={(e) => handleInputChange('specialRequest', e.target.value)}
+                        placeholder="Any special requirements or questions..."
+                      />
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      disabled={submitting || !formData.selectedDate || !formData.selectedTime || !formData.selectedSubject}
+                      className="w-full"
+                    >
+                      {submitting ? 'Submitting...' : 'Book Demo Session'}
+                    </Button>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Coaching Info Sidebar */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">{coaching.organizationName}</CardTitle>
-                {mainProfile?.tagline && (
-                  <CardDescription>{mainProfile.tagline}</CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {mainProfile && (
-                  <>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm">{mainProfile.contactNumber}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm">{mainProfile.email}</span>
-                      </div>
+          {/* Session Info Sidebar */}
+          <div className="lg:col-span-1">
+            {selectedSession && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Session Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-blue-600">{selectedSession.title}</h3>
+                    <p className="text-sm text-muted-foreground">{selectedSession.course.courseName}</p>
+                  </div>
+
+                  {selectedSession.description && (
+                    <div>
+                      <h4 className="font-medium mb-1">Description</h4>
+                      <p className="text-sm text-muted-foreground">{selectedSession.description}</p>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span>Instructor: {selectedSession.instructor}</span>
                     </div>
                     
-                    <div className="pt-4 border-t">
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <BookOpen className="h-4 w-4" />
-                        Subjects Available
-                      </h4>
-                      <div className="flex flex-wrap gap-1">
-                        {mainProfile.subjectsOffered?.slice(0, 5).map((subject: string, index: number) => (
-                          <span key={index} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                            {subject}
-                          </span>
-                        ))}
-                        {mainProfile.subjectsOffered?.length > 5 && (
-                          <span className="text-xs text-gray-500">+{mainProfile.subjectsOffered.length - 5} more</span>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span>Duration: {selectedSession.demoDays} day{selectedSession.demoDays > 1 ? 's' : ''}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-sm">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>Max participants: {selectedSession.maxParticipants}</span>
+                    </div>
+
+                    <div className="flex items-start gap-2 text-sm">
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p>{selectedSession.demoAddress}</p>
+                        {selectedSession.landmark && (
+                          <p className="text-xs text-muted-foreground">Near: {selectedSession.landmark}</p>
                         )}
                       </div>
                     </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
 
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 text-green-700 mb-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span className="font-semibold">Free Demo Session</span>
-                </div>
-                <p className="text-sm text-green-600">
-                  This is a completely free demo session. No payment required.
-                </p>
-              </CardContent>
-            </Card>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span>{selectedSession.profile.contactNumber}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">Subjects Covered</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedSession.subjects.map((subject) => (
+                        <Badge key={subject} variant="outline" className="text-xs">
+                          {subject}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedSession.isFree && (
+                    <div className="text-center">
+                      <Badge className="bg-green-100 text-green-800">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Free Demo Session
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

@@ -413,15 +413,22 @@ const CoachingDetailPage = () => {
                     </Button>
                   </>
                 )}
-                
-                {/* If owner, show Edit Details */}
+                  {/* If owner, show Edit Details */}
                 {isOwner && (
-                  <Button asChild className="w-full" size="lg">
-                    <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
-                      <Edit className="h-5 w-5 mr-2" />
-                      Edit Details
-                    </Link>
-                  </Button>
+                  <div className="space-y-3">
+                    <Button asChild className="w-full" size="lg">
+                      <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                        <Edit className="h-5 w-5 mr-2" />
+                        Edit Details
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full" size="lg">
+                      <Link href={`/coaching-dashboard/demo-slots/${coaching.coachingId}`}>
+                        <Calendar className="h-5 w-5 mr-2" />
+                        Manage Demo Booking
+                      </Link>
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>            {/* Contact Information - Only show if logged in */}

@@ -48,7 +48,7 @@ model User {
   classLevel    String?
   age           Int?
   schoolOrCollege String?
-  lookingFor    LookingFor?     @default(Both)
+  lookingFor    LookingFor?     @default(Offline)
   roles         UserRole[]      // Multiple roles allowed
   emailVerified DateTime?
   image         String?
@@ -65,7 +65,7 @@ model User {
   learningGoals    String[]       @default([])
   
   // Coaching Preferences for Students
-  coachingMode     CoachingMode?  // Online, Offline, Both
+  coachingMode     CoachingMode?  @default(Offline)  // Only Offline
   preferredSubjects String[]      @default([])
   targetExams      String[]       @default([])
   studyLevel       StudyLevel?    // School, College, Competitive
@@ -73,12 +73,7 @@ model User {
   budgetRange      String?        // e.g., "5000-10000", "10000-20000"
   sessionTimings   String[]       @default([]) // e.g., ["Morning", "Evening"]
   
-  // Additional preferences for online coaching
-  onlineClassFormat String?       // Live, Recorded, Both
-  devicePreference String?        // Mobile, Desktop, Tablet
-  internetSpeed    String?        // High, Medium, Low
-  
-  // Additional preferences for offline coaching  
+  // Offline coaching preferences
   maxTravelDistance String?       // e.g., "5km", "10km", "15km"
   transportMode    String?        // Own, Public, Pickup
   batchSize        BatchSizePreference? // Small, Medium, Large, Individual
@@ -126,15 +121,11 @@ enum Role {
 }
 
 enum LookingFor {
-  Online
   Offline
-  Both
 }
 
 enum CoachingMode {
-  Online
   Offline
-  Both
 }
 
 enum StudyLevel {
@@ -307,7 +298,7 @@ model Course {
   examsPrepared     String[] // Array of exams this course prepares for
   classLevel        String   // "Class 11", "Class 12", "Graduation", etc.
   courseType        CourseType @default(Regular)
-  mode              CourseMode @default(Both)
+  mode              CourseMode @default(Offline)
   
   // Batch information
   batchSize         Int?
@@ -357,9 +348,7 @@ enum CourseType {
 }
 
 enum CourseMode {
-  Online
   Offline
-  Both
 }
 
 model CourseEnrollment {
@@ -450,6 +439,9 @@ model DemoSession {
   description     String?
   mode            SessionMode @default(offline)
   
+  // Class levels and requirements
+  classLevels     String[] // Array of class levels like "Commerce", "12th", "NEET", "IIT", etc.
+  
   // Date and time slots
   availableDates  String[] // Array of available dates in YYYY-MM-DD format
   timeSlots       String[] // Array of time slots like "10:00-11:00", "14:00-16:00"
@@ -481,9 +473,7 @@ model DemoSession {
 }
 
 enum SessionMode {
-  online
   offline
-  hybrid
 }
 
 enum SessionStatus {

@@ -23,6 +23,7 @@ interface DemoSession {
   title: string;
   description?: string;
   mode: 'offline';
+  classLevels: string[];
   availableDates: string[];
   timeSlots: string[];
   demoDays: number;
@@ -257,6 +258,15 @@ const DemoBookingPage = () => {
                           <p className="text-sm text-muted-foreground mb-2">
                             {session.course.courseName}
                           </p>
+                          {session.classLevels && session.classLevels.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {session.classLevels.map((level, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {level}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Users className="h-4 w-4" />
                             <span>Max {session.maxParticipants} students</span>
@@ -426,6 +436,19 @@ const DemoBookingPage = () => {
                     <h3 className="font-semibold text-blue-600">{selectedSession.title}</h3>
                     <p className="text-sm text-muted-foreground">{selectedSession.course.courseName}</p>
                   </div>
+
+                  {selectedSession.classLevels && selectedSession.classLevels.length > 0 && (
+                    <div>
+                      <h4 className="font-medium mb-2">Class Levels</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedSession.classLevels.map((level, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {level}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {selectedSession.description && (
                     <div>

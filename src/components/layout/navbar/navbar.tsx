@@ -109,7 +109,7 @@ const Navbar = () => {
             Contact Us
           </Link>
         </div>        {/* Desktop Right Side Actions */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center space-x-4 m-2">
           {isLoading ? (
             <div className="flex items-center space-x-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>

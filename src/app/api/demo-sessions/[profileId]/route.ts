@@ -79,6 +79,7 @@ export async function POST(
       courseId,
       title,
       description,
+      classLevels,
       availableDates,
       timeSlots,
       demoDays,
@@ -93,9 +94,9 @@ export async function POST(
     } = await request.json();
 
     // Validate required fields
-    if (!courseId || !title || !availableDates || !timeSlots || !instructor || !demoAddress || !subjects) {
+    if (!courseId || !title || !classLevels || !availableDates || !timeSlots || !instructor || !demoAddress || !subjects) {
       return NextResponse.json(
-        { error: 'Missing required fields: courseId, title, availableDates, timeSlots, instructor, demoAddress, subjects' },
+        { error: 'Missing required fields: courseId, title, classLevels, availableDates, timeSlots, instructor, demoAddress, subjects' },
         { status: 400 }
       );
     }
@@ -121,11 +122,12 @@ export async function POST(
     
     await prisma.$executeRaw`
       INSERT INTO demo_sessions (
-        id, "sessionId", "profileId", "courseId", title, description, mode,
+        id, "sessionId", "profileId", "courseId", title, description, mode, "classLevels",
         "availableDates", "timeSlots", "demoDays", "maxParticipants", instructor,
         subjects, topics, "demoAddress", landmark, "isFree", price, status, "createdAt", "updatedAt"
       ) VALUES (
         ${demoSessionId}, ${sessionId}, ${profileId}, ${courseId}, ${title}, ${description || ''}, 'offline',
+        ${JSON.stringify(Array.isArray(classLevels) ? classLevels : [classLevels])},
         ${JSON.stringify(Array.isArray(availableDates) ? availableDates : [availableDates])},
         ${JSON.stringify(Array.isArray(timeSlots) ? timeSlots : [timeSlots])},
         ${parseInt(demoDays) || 1}, ${parseInt(maxParticipants) || 5}, ${instructor},

@@ -44,7 +44,7 @@ interface ProfileFormData {
   bio: string;
   interests: string[];
   learningGoals: string[];
-  coachingMode: 'Online' | 'Offline' | 'Both' | '';
+  coachingMode: 'Offline' | '';
   studyLevel: 'School' | 'College' | 'Competitive' | 'Professional' | '';
   preferredSubjects: string[];
   targetExams: string[];
@@ -52,9 +52,6 @@ interface ProfileFormData {
   maxTravelDistance: string;
   sessionTimings: string[];
   budgetRange: string;
-  onlineClassFormat: string;
-  devicePreference: string;
-  internetSpeed: string;
   transportMode: string;
   batchSize: 'Individual' | 'Small' | 'Medium' | 'Large' | '';
   city: string;
@@ -92,9 +89,6 @@ export default function EditProfilePage() {
     maxTravelDistance: '',
     sessionTimings: [],
     budgetRange: '',
-    onlineClassFormat: '',
-    devicePreference: '',
-    internetSpeed: '',
     transportMode: '',
     batchSize: '',
     city: '',
@@ -119,9 +113,6 @@ export default function EditProfilePage() {
         maxTravelDistance: profile.maxTravelDistance || '',
         sessionTimings: profile.sessionTimings || [],
         budgetRange: profile.budgetRange || '',
-        onlineClassFormat: profile.onlineClassFormat || '',
-        devicePreference: profile.devicePreference || '',
-        internetSpeed: profile.internetSpeed || '',
         transportMode: profile.transportMode || '',
         batchSize: profile.batchSize || '',
         city: profile.city || '',
@@ -536,9 +527,7 @@ export default function EditProfilePage() {
                           <SelectValue placeholder="Select coaching mode" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Online">Online</SelectItem>
                           <SelectItem value="Offline">Offline</SelectItem>
-                          <SelectItem value="Both">Both</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -571,49 +560,6 @@ export default function EditProfilePage() {
                           <SelectItem value="₹10,000 - ₹20,000">₹10,000 - ₹20,000</SelectItem>
                           <SelectItem value="₹20,000 - ₹50,000">₹20,000 - ₹50,000</SelectItem>
                           <SelectItem value="Above ₹50,000">Above ₹50,000</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="onlineClassFormat">Online Class Format</Label>
-                      <Select value={formData.onlineClassFormat} onValueChange={(value) => handleInputChange('onlineClassFormat', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select format" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Live Interactive">Live Interactive</SelectItem>
-                          <SelectItem value="Recorded Videos">Recorded Videos</SelectItem>
-                          <SelectItem value="Mixed">Mixed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="devicePreference">Device Preference</Label>
-                      <Select value={formData.devicePreference} onValueChange={(value) => handleInputChange('devicePreference', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select device" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Desktop/Laptop">Desktop/Laptop</SelectItem>
-                          <SelectItem value="Tablet">Tablet</SelectItem>
-                          <SelectItem value="Mobile">Mobile</SelectItem>
-                          <SelectItem value="Any">Any</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="internetSpeed">Internet Speed</Label>
-                      <Select value={formData.internetSpeed} onValueChange={(value) => handleInputChange('internetSpeed', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select speed" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="High Speed (50+ Mbps)">High Speed (50+ Mbps)</SelectItem>
-                          <SelectItem value="Medium Speed (10-50 Mbps)">Medium Speed (10-50 Mbps)</SelectItem>
-                          <SelectItem value="Low Speed (Below 10 Mbps)">Low Speed (Below 10 Mbps)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

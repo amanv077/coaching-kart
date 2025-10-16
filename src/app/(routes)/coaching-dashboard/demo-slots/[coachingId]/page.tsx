@@ -23,14 +23,19 @@ interface DemoSession {
   sessionId: string;
   title: string;
   description?: string;
-  mode: 'online' | 'offline' | 'hybrid';
-  dateTime: string;
-  durationMinutes: number;
+  mode: 'offline';
+  classLevels: string[];
+  availableDates: string[];
+  timeSlots: string[];
+  demoDays: number;
   maxParticipants: number;
-  location?: string;
-  meetingLink?: string;
+  demoAddress: string;
+  landmark?: string;
   instructor: string;
+  subjects: string[];
   topics: string[];
+  isFree: boolean;
+  price?: number;
   status: 'Scheduled' | 'Live' | 'Completed' | 'Cancelled';
   course: {
     courseName: string;
@@ -76,17 +81,23 @@ const DemoSlotManagementPage = () => {
     courseId: '',
     title: '',
     description: '',
-    mode: 'online' as 'online' | 'offline' | 'hybrid',
-    dateTime: '',
-    durationMinutes: 60,
-    maxParticipants: 50,
-    location: '',
-    meetingLink: '',
+    classLevels: [''],
+    availableDates: [''],
+    timeSlots: [''],
+    demoDays: 1,
+    maxParticipants: 5,
+    demoAddress: '',
+    landmark: '',
     instructor: '',
+    subjects: [''],
     topics: [] as string[],
+    isFree: true,
+    price: 0,
   });
 
   const [newTopic, setNewTopic] = useState('');
+  const [newCourse, setNewCourse] = useState('');
+  const [showAddCourse, setShowAddCourse] = useState(false);
 
   useEffect(() => {
     if (!session?.user) {
@@ -157,14 +168,18 @@ const DemoSlotManagementPage = () => {
         courseId: '',
         title: '',
         description: '',
-        mode: 'online',
-        dateTime: '',
-        durationMinutes: 60,
+        classLevels: [''],
+        availableDates: [''],
+        timeSlots: [''],
+        demoDays: 1,
         maxParticipants: 50,
-        location: '',
-        meetingLink: '',
+        demoAddress: '',
+        landmark: '',
         instructor: '',
+        subjects: [''],
         topics: [],
+        price: 0,
+        isFree: true,
       });
       fetchDemoSessions();
     } catch (error) {
@@ -189,6 +204,59 @@ const DemoSlotManagementPage = () => {
     setFormData(prev => ({
       ...prev,
       topics: prev.topics.filter(topic => topic !== topicToRemove)
+    }));
+  };
+
+  const addNewCourse = async () => {
+    if (!newCourse.trim()) return;
+    
+    try {
+      const response = await fetch(`/api/coaching/${coachingId}/courses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseName: newCourse.trim() }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add course');
+      
+      const data = await response.json();
+      
+      // Update the profiles with the new course
+      setProfiles(prev => prev.map(profile => 
+        profile.id === selectedProfile 
+          ? { ...profile, courses: [...profile.courses, data.course] }
+          : profile
+      ));
+      
+      // Select the new course
+      setFormData(prev => ({ ...prev, courseId: data.course.id }));
+      setNewCourse('');
+      setShowAddCourse(false);
+      toast.success('Course added successfully!');
+    } catch (error) {
+      console.error('Error adding course:', error);
+      toast.error('Failed to add course');
+    }
+  };
+
+  const addField = (fieldName: 'classLevels' | 'availableDates' | 'timeSlots' | 'subjects') => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: [...prev[fieldName], '']
+    }));
+  };
+
+  const removeField = (fieldName: 'classLevels' | 'availableDates' | 'timeSlots' | 'subjects', index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: prev[fieldName].filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateField = (fieldName: 'classLevels' | 'availableDates' | 'timeSlots' | 'subjects', index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: prev[fieldName].map((item, i) => i === index ? value : item)
     }));
   };
 
@@ -303,22 +371,59 @@ const DemoSlotManagementPage = () => {
                   {/* Course Selection */}
                   <div className="space-y-2">
                     <Label htmlFor="courseId">Course *</Label>
-                    <Select 
-                      value={formData.courseId} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, courseId: value }))}
-                      required
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a course" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {currentProfile?.courses.map((course) => (
-                          <SelectItem key={course.id} value={course.id}>
-                            {course.courseName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {!showAddCourse ? (
+                      <div className="flex gap-2">
+                        <Select 
+                          value={formData.courseId} 
+                          onValueChange={(value) => {
+                            if (value === 'add-new') {
+                              setShowAddCourse(true);
+                            } else {
+                              setFormData(prev => ({ ...prev, courseId: value }));
+                            }
+                          }}
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select or add a course" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {currentProfile?.courses.map((course) => (
+                              <SelectItem key={course.id} value={course.id}>
+                                {course.courseName}
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="add-new">
+                              <Plus className="h-4 w-4 mr-2 inline" />
+                              Add New Course
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Input
+                          value={newCourse}
+                          onChange={(e) => setNewCourse(e.target.value)}
+                          placeholder="Enter new course name"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addNewCourse())}
+                        />
+                        <Button type="button" onClick={addNewCourse} size="sm">
+                          Add
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setShowAddCourse(false);
+                            setNewCourse('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Session Title */}
@@ -333,48 +438,159 @@ const DemoSlotManagementPage = () => {
                     />
                   </div>
 
-                  {/* Mode */}
+                  {/* Class Levels */}
                   <div className="space-y-2">
-                    <Label htmlFor="mode">Mode *</Label>
-                    <Select 
-                      value={formData.mode} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, mode: value as any }))}
+                    <Label>Class Levels *</Label>
+                    {formData.classLevels.map((level, index) => (
+                      <div key={index} className="flex items-center space-x-2 mt-2">
+                        <Select 
+                          value={level} 
+                          onValueChange={(value) => updateField('classLevels', index, value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select class level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="10th">Class 10th</SelectItem>
+                            <SelectItem value="11th">Class 11th</SelectItem>
+                            <SelectItem value="12th">Class 12th</SelectItem>
+                            <SelectItem value="Commerce">Commerce</SelectItem>
+                            <SelectItem value="Science">Science</SelectItem>
+                            <SelectItem value="Arts">Arts</SelectItem>
+                            <SelectItem value="NEET">NEET Preparation</SelectItem>
+                            <SelectItem value="JEE">JEE Preparation</SelectItem>
+                            <SelectItem value="IIT">IIT Preparation</SelectItem>
+                            <SelectItem value="Engineering">Engineering</SelectItem>
+                            <SelectItem value="MBA">MBA</SelectItem>
+                            <SelectItem value="CA">CA (Chartered Accountancy)</SelectItem>
+                            <SelectItem value="CS">CS (Company Secretary)</SelectItem>
+                            <SelectItem value="CMA">CMA (Cost & Management Accountancy)</SelectItem>
+                            <SelectItem value="BBA">BBA</SelectItem>
+                            <SelectItem value="BCA">BCA</SelectItem>
+                            <SelectItem value="BSc">BSc</SelectItem>
+                            <SelectItem value="BCom">BCom</SelectItem>
+                            <SelectItem value="BA">BA</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => removeField('classLevels', index)}
+                          disabled={formData.classLevels.length === 1}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => addField('classLevels')}
+                      className="mt-2"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="offline">Offline</SelectItem>
-                        <SelectItem value="hybrid">Hybrid</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      Add Class Level
+                    </Button>
                   </div>
 
-                  {/* Date and Time */}
+                  {/* Available Dates */}
                   <div className="space-y-2">
-                    <Label htmlFor="dateTime">Date & Time *</Label>
-                    <Input
-                      id="dateTime"
-                      type="datetime-local"
-                      value={formData.dateTime}
-                      onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
-                      required
-                    />
+                    <Label>Available Dates *</Label>
+                    {formData.availableDates.map((date, index) => (
+                      <div key={index} className="flex items-center space-x-2 mt-2">
+                        <Input
+                          type="date"
+                          value={date}
+                          onChange={(e) => updateField('availableDates', index, e.target.value)}
+                          required
+                        />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => removeField('availableDates', index)}
+                          disabled={formData.availableDates.length === 1}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => addField('availableDates')}
+                      className="mt-2"
+                    >
+                      Add Date
+                    </Button>
                   </div>
 
-                  {/* Duration */}
+                  {/* Time Slots */}
                   <div className="space-y-2">
-                    <Label htmlFor="duration">Duration (minutes) *</Label>
-                    <Input
-                      id="duration"
-                      type="number"
-                      min="15"
-                      max="180"
-                      value={formData.durationMinutes}
-                      onChange={(e) => setFormData(prev => ({ ...prev, durationMinutes: parseInt(e.target.value) }))}
-                      required
-                    />
+                    <Label>Time Slots *</Label>
+                    {formData.timeSlots.map((timeSlot, index) => (
+                      <div key={index} className="flex items-center space-x-2 mt-2">
+                        <Input
+                          type="time"
+                          value={timeSlot}
+                          onChange={(e) => updateField('timeSlots', index, e.target.value)}
+                          required
+                        />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => removeField('timeSlots', index)}
+                          disabled={formData.timeSlots.length === 1}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => addField('timeSlots')}
+                      className="mt-2"
+                    >
+                      Add Time Slot
+                    </Button>
+                  </div>
+
+                  {/* Subjects */}
+                  <div className="space-y-2">
+                    <Label>Subjects *</Label>
+                    {formData.subjects.map((subject, index) => (
+                      <div key={index} className="flex items-center space-x-2 mt-2">
+                        <Input
+                          value={subject}
+                          onChange={(e) => updateField('subjects', index, e.target.value)}
+                          placeholder="Enter subject"
+                          required
+                        />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => removeField('subjects', index)}
+                          disabled={formData.subjects.length === 1}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => addField('subjects')}
+                      className="mt-2"
+                    >
+                      Add Subject
+                    </Button>
                   </div>
 
                   {/* Max Participants */}
@@ -402,32 +618,28 @@ const DemoSlotManagementPage = () => {
                     />
                   </div>
 
-                  {/* Location (if offline/hybrid) */}
-                  {(formData.mode === 'offline' || formData.mode === 'hybrid') && (
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location *</Label>
-                      <Input
-                        id="location"
-                        value={formData.location}
-                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                        placeholder="Classroom, address, etc."
-                        required={formData.mode === 'offline' || formData.mode === 'hybrid'}
-                      />
-                    </div>
-                  )}
+                  {/* Demo Address */}
+                  <div className="space-y-2">
+                    <Label htmlFor="demoAddress">Demo Address *</Label>
+                    <Input
+                      id="demoAddress"
+                      value={formData.demoAddress}
+                      onChange={(e) => setFormData(prev => ({ ...prev, demoAddress: e.target.value }))}
+                      placeholder="Full address for demo session"
+                      required
+                    />
+                  </div>
 
-                  {/* Meeting Link (if online/hybrid) */}
-                  {(formData.mode === 'online' || formData.mode === 'hybrid') && (
-                    <div className="space-y-2">
-                      <Label htmlFor="meetingLink">Meeting Link</Label>
-                      <Input
-                        id="meetingLink"
-                        value={formData.meetingLink}
-                        onChange={(e) => setFormData(prev => ({ ...prev, meetingLink: e.target.value }))}
-                        placeholder="Zoom, Google Meet, etc."
-                      />
-                    </div>
-                  )}
+                  {/* Landmark */}
+                  <div className="space-y-2">
+                    <Label htmlFor="landmark">Landmark</Label>
+                    <Input
+                      id="landmark"
+                      value={formData.landmark}
+                      onChange={(e) => setFormData(prev => ({ ...prev, landmark: e.target.value }))}
+                      placeholder="Nearby landmark"
+                    />
+                  </div>
                 </div>
 
                 {/* Description */}
@@ -534,15 +746,19 @@ const DemoSlotManagementPage = () => {
                   
                   <CardContent className="space-y-4">
                     {/* Session Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm">{formatDateTime(session.dateTime)}</span>
+                        <span className="text-sm">
+                          {session.availableDates.length} available date{session.availableDates.length !== 1 ? 's' : ''}
+                        </span>
                       </div>
                       
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm">{session.durationMinutes} minutes</span>
+                        <span className="text-sm">
+                          {session.timeSlots.length} time slot{session.timeSlots.length !== 1 ? 's' : ''}
+                        </span>
                       </div>
                       
                       <div className="flex items-center gap-2">
@@ -551,14 +767,61 @@ const DemoSlotManagementPage = () => {
                           {session.bookings.length}/{session.maxParticipants} participants
                         </span>
                       </div>
-                      
+                    </div>
+
+                    {/* Class Levels */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm text-gray-600">Class Levels:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {session.classLevels.map((level, index) => (
+                          <Badge key={index} variant="secondary">{level}</Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Subjects */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm text-gray-600">Subjects:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {session.subjects.map((subject, index) => (
+                          <Badge key={index} variant="outline">{subject}</Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Available Dates */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm text-gray-600">Available Dates:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {session.availableDates.map((date, index) => (
+                          <span key={index} className="text-sm bg-blue-50 px-2 py-1 rounded">
+                            {new Date(date).toLocaleDateString()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Time Slots */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm text-gray-600">Time Slots:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {session.timeSlots.map((timeSlot, index) => (
+                          <span key={index} className="text-sm bg-green-50 px-2 py-1 rounded">
+                            {timeSlot}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Demo Address */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm text-gray-600">Demo Address:</h4>
                       <div className="flex items-center gap-2">
-                        {session.mode === 'online' ? (
-                          <Video className="h-4 w-4 text-gray-400" />
-                        ) : (
-                          <MapPin className="h-4 w-4 text-gray-400" />
+                        <MapPin className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm">{session.demoAddress}</span>
+                        {session.landmark && (
+                          <span className="text-sm text-gray-500">• {session.landmark}</span>
                         )}
-                        <span className="text-sm capitalize">{session.mode}</span>
                       </div>
                     </div>
 
@@ -603,28 +866,6 @@ const DemoSlotManagementPage = () => {
                             </p>
                           )}
                         </div>
-                      </div>
-                    )}
-
-                    {/* Location/Meeting Link */}
-                    {session.location && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        <span>{session.location}</span>
-                      </div>
-                    )}
-                    
-                    {session.meetingLink && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Video className="h-4 w-4 text-gray-400" />
-                        <a 
-                          href={session.meetingLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          Join Meeting
-                        </a>
                       </div>
                     )}
                   </CardContent>

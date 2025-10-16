@@ -39,6 +39,7 @@ const DemoSlotForm: React.FC<DemoSlotFormProps> = ({ profileId, profileName }) =
     maxParticipants: 5,
     isFree: true,
     price: 0,
+    classLevels: [''], // New field for class levels (Commerce, 12th, NEET, IIT, etc.)
     availableDates: [''],
     timeSlots: [''],
     subjects: [''],
@@ -60,21 +61,21 @@ const DemoSlotForm: React.FC<DemoSlotFormProps> = ({ profileId, profileName }) =
     }
   };
 
-  const addField = (fieldName: 'availableDates' | 'timeSlots' | 'subjects') => {
+  const addField = (fieldName: 'availableDates' | 'timeSlots' | 'subjects' | 'classLevels') => {
     setFormData(prev => ({
       ...prev,
       [fieldName]: [...prev[fieldName], '']
     }));
   };
 
-  const removeField = (fieldName: 'availableDates' | 'timeSlots' | 'subjects', index: number) => {
+  const removeField = (fieldName: 'availableDates' | 'timeSlots' | 'subjects' | 'classLevels', index: number) => {
     setFormData(prev => ({
       ...prev,
       [fieldName]: prev[fieldName].filter((_, i) => i !== index)
     }));
   };
 
-  const updateField = (fieldName: 'availableDates' | 'timeSlots' | 'subjects', index: number, value: string) => {
+  const updateField = (fieldName: 'availableDates' | 'timeSlots' | 'subjects' | 'classLevels', index: number, value: string) => {
     setFormData(prev => ({
       ...prev,
       [fieldName]: prev[fieldName].map((item, i) => i === index ? value : item)
@@ -91,13 +92,14 @@ const DemoSlotForm: React.FC<DemoSlotFormProps> = ({ profileId, profileName }) =
 
     const filteredData = {
       ...formData,
+      classLevels: formData.classLevels.filter(level => level.trim() !== ''),
       availableDates: formData.availableDates.filter(date => date.trim() !== ''),
       timeSlots: formData.timeSlots.filter(slot => slot.trim() !== ''),
       subjects: formData.subjects.filter(subject => subject.trim() !== ''),
     };
 
-    if (filteredData.availableDates.length === 0 || filteredData.timeSlots.length === 0 || filteredData.subjects.length === 0) {
-      toast.error('Please provide at least one date, time slot, and subject');
+    if (filteredData.classLevels.length === 0 || filteredData.availableDates.length === 0 || filteredData.timeSlots.length === 0 || filteredData.subjects.length === 0) {
+      toast.error('Please provide at least one class level, date, time slot, and subject');
       return;
     }
 
@@ -176,6 +178,58 @@ const DemoSlotForm: React.FC<DemoSlotFormProps> = ({ profileId, profileName }) =
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Brief description of what will be covered in the demo"
             />
+          </div>
+
+          {/* Class Levels */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Class Levels
+            </h3>
+            
+            {formData.classLevels.map((level, index) => (
+              <div key={index} className="flex gap-2">
+                <Select
+                  value={level}
+                  onValueChange={(value) => updateField('classLevels', index, value)}
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select class level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Commerce">Commerce</SelectItem>
+                    <SelectItem value="Class 12">Class 12</SelectItem>
+                    <SelectItem value="Class 11">Class 11</SelectItem>
+                    <SelectItem value="Class 10">Class 10</SelectItem>
+                    <SelectItem value="NEET">NEET</SelectItem>
+                    <SelectItem value="IIT-JEE">IIT-JEE</SelectItem>
+                    <SelectItem value="UPSC">UPSC</SelectItem>
+                    <SelectItem value="Banking">Banking</SelectItem>
+                    <SelectItem value="SSC">SSC</SelectItem>
+                    <SelectItem value="Gate">Gate</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formData.classLevels.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => removeField('classLevels', index)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addField('classLevels')}
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Class Level
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

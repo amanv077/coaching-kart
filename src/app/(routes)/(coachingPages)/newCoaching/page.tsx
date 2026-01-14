@@ -292,6 +292,7 @@ const NewCoaching = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSubmit called', { session: session?.user?.id });
     if (!session?.user?.id) {
       toast.error('Please login to create a coaching');
       return;
@@ -300,6 +301,7 @@ const NewCoaching = () => {
     setIsLoading(true);
 
     try {
+      console.log('Preparing form data for submission...');
       // Create FormData for file uploads
       const submitData = new FormData();
       

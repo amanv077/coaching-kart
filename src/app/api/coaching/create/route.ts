@@ -57,55 +57,106 @@ export async function POST(request: NextRequest) {
     
     // Operating details
     const operatingDays = JSON.parse(formData.get('operatingDays') as string || '[]');
-    const operatingHours = formData.get('operatingHours') as string;
-    const facilities = JSON.parse(formData.get('facilities') as string || '[]');
-      // Academic details
-    const subjectsOffered = JSON.parse(formData.get('subjectsOffered') as string || '[]');
-    const examsOffered = JSON.parse(formData.get('examsOffered') as string || '[]');
-    
+    const operatingHours = (formData.get("operatingHours") as string) || "";
+    const facilities = JSON.parse(
+      (formData.get("facilities") as string) || "[]"
+    );
+    // Academic details
+    const subjectsOffered = JSON.parse(
+      (formData.get("subjectsOffered") as string) || "[]"
+    );
+    const examsOffered = JSON.parse(
+      (formData.get("examsOffered") as string) || "[]"
+    );
+
     // Handle teachers data
     const teachers: any[] = [];
     let teacherIndex = 0;
-    
+
     while (formData.get(`teacher_${teacherIndex}`)) {
-      const teacherData = JSON.parse(formData.get(`teacher_${teacherIndex}`) as string);
-      const teacherImageFile = formData.get(`teacher_image_${teacherIndex}`) as File;
-      
-      let teacherImageUrl = '';
+      const teacherData = JSON.parse(
+        formData.get(`teacher_${teacherIndex}`) as string
+      );
+      const teacherImageFile = formData.get(
+        `teacher_image_${teacherIndex}`
+      ) as File;
+
+      let teacherImageUrl = "";
       if (teacherImageFile && teacherImageFile.size > 0) {
-        const teacherImageResult = await uploadImage(teacherImageFile, 'teacher-images', 5 * 1024 * 1024, true);
+        const teacherImageResult = await uploadImage(
+          teacherImageFile,
+          "teacher-images",
+          5 * 1024 * 1024,
+          true
+        );
         teacherImageUrl = teacherImageResult.url;
       }
-      
+
       teachers.push({
         ...teacherData,
         profileImage: teacherImageUrl,
-        experience: parseInt(teacherData.experience) || 0
+        experience: parseInt(teacherData.experience) || 0,
       });
       teacherIndex++;
     }
 
     // Validate required fields
-    if (!organizationName || !profileName || !description || !address || !city || !state || !pincode || !contactNumber || !email) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }// Handle file uploads with cloud storage
-    const logoFile = formData.get('logo') as File;
-    let logoUrl = '';
-    
+    if (
+      !organizationName ||
+      !profileName ||
+      !description ||
+      !address ||
+      !city ||
+      !state ||
+      !pincode ||
+      !contactNumber ||
+      !email
+    ) {
+      console.log("Missing required fields for coaching creation");
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    console.log("Form validation passed, starting file uploads...");
+
+    // Handle file uploads with cloud storage
+    const logoFile = formData.get("logo") as File;
+    let logoUrl = "";
+
     if (logoFile && logoFile.size > 0) {
-      const logoResult = await uploadImage(logoFile, 'logos', 5 * 1024 * 1024, true); // Use cloud storage
+      console.log("Uploading logo...");
+      const logoResult = await uploadImage(
+        logoFile,
+        "logos",
+        5 * 1024 * 1024,
+        true
+      ); // Use cloud storage
+      console.log("Logo uploaded:", logoResult.url);
       logoUrl = logoResult.url;
-    }    // Handle teacher images
+    }
+
+    // Handle teacher images
     const teacherImages: { [key: number]: string } = {};
     let teacherImgIndex = 0;
-    
+
     while (formData.get(`teacher_image_${teacherImgIndex}`)) {
-      const teacherImageFile = formData.get(`teacher_image_${teacherImgIndex}`) as File;
+      const teacherImageFile = formData.get(
+        `teacher_image_${teacherImgIndex}`
+      ) as File;
       if (teacherImageFile && teacherImageFile.size > 0) {
-        const uploadResults = await uploadMultipleImages([teacherImageFile], 'teacher-images', 2 * 1024 * 1024, true); // 2MB limit
+        console.log(`Uploading teacher image ${teacherImgIndex}...`);
+        const uploadResults = await uploadMultipleImages(
+          [teacherImageFile],
+          "teacher-images",
+          2 * 1024 * 1024,
+          true
+        ); // 2MB limit
         if (uploadResults.length > 0) {
           teacherImages[teacherImgIndex] = uploadResults[0].url;
         }
+        console.log(`Teacher image ${teacherImgIndex} uploaded`);
       }
       teacherImgIndex++;
     }
@@ -113,7 +164,7 @@ export async function POST(request: NextRequest) {
     // Handle multiple images
     const imageFiles: File[] = [];
     let imageIndex = 0;
-    
+
     while (formData.get(`image_${imageIndex}`)) {
       const imageFile = formData.get(`image_${imageIndex}`) as File;
       if (imageFile && imageFile.size > 0) {
@@ -121,24 +172,37 @@ export async function POST(request: NextRequest) {
       }
       imageIndex++;
     }
-    
-    const imageResults = imageFiles.length > 0 
-      ? await uploadMultipleImages(imageFiles, 'coaching-images', 5 * 1024 * 1024, true) // Use cloud storage
-      : [];
-    const imageUrls = imageResults.map(result => result.url);// Create coaching and profile in a transaction
-    const result = await prisma.$transaction(async (tx: any) => {// Create the main coaching organization
+
+    console.log(`Uploading ${imageFiles.length} coaching images...`);
+    const imageResults =
+      imageFiles.length > 0
+        ? await uploadMultipleImages(
+            imageFiles,
+            "coaching-images",
+            5 * 1024 * 1024,
+            true
+          ) // Use cloud storage
+        : [];
+    console.log("Coaching images uploaded");
+    const imageUrls = imageResults.map((result) => result.url);
+
+    // Create coaching and profile in a transaction
+    console.log("Starting DB transaction...");
+    const result = await prisma.$transaction(async (tx: any) => {
+      // Create the main coaching organization
+      console.log("Creating coaching record...");
       const coaching = await tx.coaching.create({
         data: {
           organizationName,
-          ownerName: session.user.name || '',
-          ownerEmail: session.user.email || '',
+          ownerName: session.user.name || "",
+          ownerEmail: session.user.email || "",
           ownerPhone: contactNumber,
           businessType: businessType as any,
           gstNumber: gstNumber || null,
           panNumber: panNumber || null,
           ownerUserId: session.user.id,
         },
-      });      // Create the coaching profile (branch)
+      }); // Create the coaching profile (branch)
       const profile = await tx.coachingProfile.create({
         data: {
           name: profileName,
@@ -148,44 +212,48 @@ export async function POST(request: NextRequest) {
           description,
           logo: logoUrl || null,
           images: imageUrls,
-          
+
           // Location details
           address,
           landmark: landmark || null,
           city,
           state,
           pincode,
-          
+
           // Contact details
           contactNumber,
           alternateNumber: alternateNumber || null,
           email,
           website: website || null,
-          
+
           // Social media
           facebookUrl: facebookUrl || null,
           instagramUrl: instagramUrl || null,
           youtubeUrl: youtubeUrl || null,
           twitterUrl: twitterUrl || null,
-          
+
           // Operating details
           operatingDays,
           operatingHours,
           facilities,
-          
+
           // Academic details
           subjectsOffered,
           examsOffered,
-          
+
           // Relations
-          coachingId: coaching.id,
+          coaching: {
+            connect: {
+              id: coaching.id,
+            },
+          },
         },
-      });      // Create teachers
+      }); // Create teachers
       const createdTeachers = [];
       for (let i = 0; i < teachers.length; i++) {
         const teacher = teachers[i];
         const teacherImageUrl = teacherImages[i] || null;
-        
+
         const createdTeacher = await tx.teacher.create({
           data: {
             name: teacher.name,

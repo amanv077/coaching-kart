@@ -6,17 +6,17 @@ import { generateOTP, sendOTPEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
-    const { 
-      name, 
-      email, 
-      password, 
-      role = 'STUDENT',
+    const {
+      name,
+      email,
+      password,
+      role = "STUDENT",
       phoneNumber,
       city,
       classLevel,
       age,
       schoolOrCollege,
-      lookingFor = 'Both'
+      lookingFor = "Offline",
     } = await request.json();
 
     // Validate input

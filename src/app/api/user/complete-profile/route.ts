@@ -5,20 +5,20 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const completeProfileSchema = z.object({
-  bio: z.string().min(1, 'Bio is required'),
+  bio: z.string().min(1, "Bio is required"),
   interests: z.array(z.string()),
   learningGoals: z.array(z.string()),
-  coachingMode: z.enum(['Offline']),
+  coachingMode: z.enum(["Offline", "Online", "Both"]),
   preferredSubjects: z.array(z.string()),
   targetExams: z.array(z.string()),
-  studyLevel: z.enum(['School', 'College', 'Competitive', 'Professional']),
+  studyLevel: z.enum(["School", "College", "Competitive", "Professional"]),
   preferredCities: z.array(z.string()),
   budgetRange: z.string().optional(),
   sessionTimings: z.array(z.string()),
   // Offline specific
   maxTravelDistance: z.string().optional(),
   transportMode: z.string().optional(),
-  batchSize: z.enum(['Individual', 'Small', 'Medium', 'Large']).optional(),
+  batchSize: z.enum(["Individual", "Small", "Medium", "Large"]).optional(),
 });
 
 export async function POST(request: NextRequest) {

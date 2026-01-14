@@ -122,10 +122,14 @@ enum Role {
 
 enum LookingFor {
   Offline
+  Online
+  Both
 }
 
 enum CoachingMode {
   Offline
+  Online
+  Both
 }
 
 enum StudyLevel {

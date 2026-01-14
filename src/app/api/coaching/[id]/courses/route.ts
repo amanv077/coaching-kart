@@ -5,21 +5,24 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { courseName } = await request.json();
-    
-    if (!courseName || typeof courseName !== 'string') {
-      return NextResponse.json({ error: 'Course name is required' }, { status: 400 });
+
+    if (!courseName || typeof courseName !== "string") {
+      return NextResponse.json(
+        { error: "Course name is required" },
+        { status: 400 }
+      );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const coachingId = id;
 
     // Verify coaching ownership
@@ -31,7 +34,10 @@ export async function POST(
     });
 
     if (!coaching) {
-      return NextResponse.json({ error: 'Coaching not found or unauthorized' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Coaching not found or unauthorized" },
+        { status: 404 }
+      );
     }
 
     // Get the first profile for this coaching (you might want to specify which profile)
@@ -42,7 +48,10 @@ export async function POST(
     });
 
     if (!profile) {
-      return NextResponse.json({ error: 'No coaching profile found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "No coaching profile found" },
+        { status: 404 }
+      );
     }
 
     // Check if course already exists for this profile
@@ -54,7 +63,10 @@ export async function POST(
     });
 
     if (existingCourse) {
-      return NextResponse.json({ error: 'Course already exists' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Course already exists" },
+        { status: 400 }
+      );
     }
 
     // Create the new course
@@ -62,27 +74,26 @@ export async function POST(
       data: {
         courseName: courseName.trim(),
         profileId: profile.id,
-        courseDuration: '30 days', // Default duration
-        courseDescription: '', // Default empty description
+        courseDuration: "30 days", // Default duration
+        courseDescription: "", // Default empty description
         courseAmount: 0, // Default price
         courseMRP: 0, // Default MRP
-        classLevel: 'General', // Default class level
-        mode: 'Offline', // Default to offline mode
+        classLevel: "General", // Default class level
+        mode: "Offline", // Default to offline mode
       },
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       course: {
         id: course.id,
         courseName: course.courseName,
-      }
+      },
     });
-
   } catch (error) {
-    console.error('Error creating course:', error);
+    console.error("Error creating course:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

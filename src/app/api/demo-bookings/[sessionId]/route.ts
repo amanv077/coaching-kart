@@ -6,22 +6,44 @@ import { sendDemoBookingEmail } from '@/lib/email';
 // POST: Book a demo session
 export async function POST(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { sessionId } = params;    // Check if session exists and is available
+    const { sessionId } = await params;
+    const {
+      selectedDate,
+      selectedTime,
+      selectedSubject,
+      studentName,
+      studentPhone,
+      studentEmail,
+      specialRequest,
+    } = await request.json();
+
+    // Validate required fields
+    if (!selectedDate || !selectedTime || !selectedSubject) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing required fields: selectedDate, selectedTime, selectedSubject",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check if session exists and is available
     const demoSession = await prisma.demoSession.findUnique({
       where: { id: sessionId },
       include: {
         bookings: {
           where: {
-            status: 'confirmed'
-          }
+            status: { in: ["pending", "confirmed"] },
+          },
         },
         profile: {
           select: {
@@ -33,144 +55,146 @@ export async function POST(
             coaching: {
               select: {
                 organizationName: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         course: {
           select: {
             courseName: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!demoSession) {
       return NextResponse.json(
-        { error: 'Demo session not found' },
+        { error: "Demo session not found" },
         { status: 404 }
       );
     }
 
-    if (demoSession.status !== 'Scheduled') {
+    if (demoSession.status !== "Scheduled") {
       return NextResponse.json(
-        { error: 'Demo session is not available for booking' },
+        { error: "Demo session is not available for booking" },
         { status: 400 }
       );
     }
 
     // Check if user already booked this session
-    const existingBooking = await prisma.demoSessionBooking.findUnique({
+    const existingBooking = await prisma.demoSessionBooking.findFirst({
       where: {
-        userId_sessionId: {
-          userId: session.user.id,
-          sessionId: sessionId,
-        }
-      }
+        userId: session.user.id,
+        sessionId: sessionId,
+      },
     });
 
     if (existingBooking) {
       return NextResponse.json(
-        { error: 'You have already booked this demo session' },
+        { error: "You have already booked this demo session" },
         { status: 400 }
       );
     }
 
-    // Check if session is full
-    if (demoSession.bookings.length >= demoSession.maxParticipants) {
+    // Check if the selected time slot is available
+    const conflictingBookings = demoSession.bookings.filter(
+      (booking: any) =>
+        booking.selectedDate === selectedDate &&
+        booking.selectedTime === selectedTime
+    );
+
+    if (conflictingBookings.length >= demoSession.maxParticipants) {
       return NextResponse.json(
-        { error: 'Demo session is fully booked' },
+        { error: "This time slot is fully booked" },
         { status: 400 }
       );
-    }    // Create booking
-    const booking = await prisma.demoSessionBooking.create({
-      data: {
-        userId: session.user.id,
-        sessionId: sessionId,
-        status: 'confirmed',
-      },
+    }
+
+    // Create booking using raw query to handle enum types
+    const bookingId = crypto.randomUUID();
+    await prisma.$executeRaw`
+      INSERT INTO demo_session_bookings (
+        id, "userId", "sessionId", "selectedDate", "selectedTime", "selectedSubject",
+        "studentName", "studentPhone", "studentEmail", "specialRequest", status, "bookedAt"
+      ) VALUES (
+        ${bookingId}, ${
+      session.user.id
+    }, ${sessionId}, ${selectedDate}, ${selectedTime}, ${selectedSubject},
+        ${studentName || session.user.name || ""}, ${studentPhone || ""}, ${
+      studentEmail || session.user.email || ""
+    }, 
+        ${specialRequest || ""}, 'confirmed', NOW()
+      )
+    `;
+
+    // Fetch the created booking with user info
+    const booking = await prisma.demoSessionBooking.findUnique({
+      where: { id: bookingId },
       include: {
         user: {
           select: {
             name: true,
             email: true,
             phoneNumber: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
-    // Get the demo session details again with all includes for email
-    const sessionForEmail = await prisma.demoSession.findUnique({
-      where: { id: sessionId },
-      include: {
-        profile: {
-          select: {
-            name: true,
-            contactNumber: true,
-            address: true,
-            city: true,
-            state: true,
-            coaching: {
-              select: {
-                organizationName: true,
-              }
-            }
-          }
-        },
-        course: {
-          select: {
-            courseName: true,
-          }
-        }
-      }
-    });
+    if (!booking) {
+      return NextResponse.json(
+        { error: "Failed to create booking" },
+        { status: 500 }
+      );
+    }
 
     // Send confirmation email to user
     try {
-      await sendDemoBookingEmail(        booking.user.email,
-        booking.user.name,
-        {
-          sessionTitle: demoSession.title,
-          courseName: sessionForEmail?.course.courseName || '',
-          organizationName: sessionForEmail?.profile.coaching.organizationName || sessionForEmail?.profile.name || '',
-          dateTime: demoSession.dateTime,
-          duration: demoSession.durationMinutes,
-          mode: demoSession.mode,
-          location: demoSession.location,
-          meetingLink: demoSession.meetingLink,
-          contactNumber: sessionForEmail?.profile.contactNumber || null,
-          address: sessionForEmail?.profile.address || null,
-          city: sessionForEmail?.profile.city || null,
-          state: sessionForEmail?.profile.state || null,
-        }
-      );
+      await sendDemoBookingEmail(booking.user.email, booking.user.name, {
+        sessionTitle: demoSession.title,
+        courseName: demoSession.course.courseName || "",
+        organizationName:
+          demoSession.profile.coaching.organizationName ||
+          demoSession.profile.name ||
+          "",
+        dateTime: new Date(`${selectedDate}T${selectedTime.split("-")[0]}`),
+        duration: 60, // Default duration
+        mode: demoSession.mode,
+        location: demoSession.demoAddress,
+        meetingLink: null,
+        contactNumber: demoSession.profile.contactNumber || null,
+        address: demoSession.profile.address || null,
+        city: demoSession.profile.city || null,
+        state: demoSession.profile.state || null,
+      });
     } catch (emailError) {
-      console.error('Failed to send booking confirmation email:', emailError);
+      console.error("Failed to send booking confirmation email:", emailError);
       // Don't fail the booking if email fails
     }
 
     return NextResponse.json(
-      { 
-        message: 'Demo session booked successfully',
+      {
+        message: "Demo session booked successfully",
         booking: {
           id: booking.id,
           status: booking.status,
           bookedAt: booking.bookedAt,
+          selectedDate: (booking as any).selectedDate,
+          selectedTime: (booking as any).selectedTime,
+          selectedSubject: (booking as any).selectedSubject,
           session: {
             title: demoSession.title,
-            dateTime: demoSession.dateTime,
-            duration: demoSession.durationMinutes,
+            demoAddress: demoSession.demoAddress,
             mode: demoSession.mode,
-          }
-        }
+          },
+        },
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error booking demo session:', error);
+    console.error("Error booking demo session:", error);
     return NextResponse.json(
-      { error: 'Failed to book demo session' },
+      { error: "Failed to book demo session" },
       { status: 500 }
     );
   }
@@ -181,7 +205,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const bookings = await prisma.demoSessionBooking.findMany({
@@ -190,7 +214,8 @@ export async function GET(request: NextRequest) {
       },
       include: {
         session: {
-          include: {            profile: {
+          include: {
+            profile: {
               select: {
                 name: true,
                 city: true,
@@ -199,28 +224,28 @@ export async function GET(request: NextRequest) {
                 coaching: {
                   select: {
                     organizationName: true,
-                  }
-                }
-              }
+                  },
+                },
+              },
             },
             course: {
               select: {
                 courseName: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        bookedAt: 'desc',
+        bookedAt: "desc",
       },
     });
 
     return NextResponse.json({ bookings }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching user bookings:', error);
+    console.error("Error fetching user bookings:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch bookings' },
+      { error: "Failed to fetch bookings" },
       { status: 500 }
     );
   }

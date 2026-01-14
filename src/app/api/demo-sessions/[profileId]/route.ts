@@ -5,29 +5,30 @@ import { prisma } from '@/lib/prisma';
 // GET: Fetch demo sessions for a coaching profile
 export async function GET(
   request: NextRequest,
-  { params }: { params: { profileId: string } }
+  { params }: { params: Promise<{ profileId: string }> }
 ) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { profileId } = params;
+    const { profileId } = await params;
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status') || 'Scheduled';
+    const status = searchParams.get("status") || "Scheduled";
 
     const demoSessions = await prisma.demoSession.findMany({
       where: {
         profileId,
         status: status as any,
       },
-      include: {        course: {
+      include: {
+        course: {
           select: {
             id: true,
             courseName: true,
             courseDescription: true,
-          }
+          },
         },
         bookings: {
           include: {
@@ -37,28 +38,30 @@ export async function GET(
                 name: true,
                 email: true,
                 phoneNumber: true,
-              }
-            }
-          }
-        },        profile: {
+              },
+            },
+          },
+        },
+        profile: {
           include: {
             coaching: {
               select: {
                 organizationName: true,
-              }
-            }
-          }
-        }
-      },      orderBy: {
-        createdAt: 'desc',
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
     return NextResponse.json({ demoSessions }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching demo sessions:', error);
+    console.error("Error fetching demo sessions:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch demo sessions' },
+      { error: "Failed to fetch demo sessions" },
       { status: 500 }
     );
   }
@@ -67,15 +70,16 @@ export async function GET(
 // POST: Create a new demo session slot
 export async function POST(
   request: NextRequest,
-  { params }: { params: { profileId: string } }
+  { params }: { params: Promise<{ profileId: string }> }
 ) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { profileId } = params;    const {
+    const { profileId } = await params;
+    const {
       courseId,
       title,
       description,
@@ -94,9 +98,21 @@ export async function POST(
     } = await request.json();
 
     // Validate required fields
-    if (!courseId || !title || !classLevels || !availableDates || !timeSlots || !instructor || !demoAddress || !subjects) {
+    if (
+      !courseId ||
+      !title ||
+      !classLevels ||
+      !availableDates ||
+      !timeSlots ||
+      !instructor ||
+      !demoAddress ||
+      !subjects
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields: courseId, title, classLevels, availableDates, timeSlots, instructor, demoAddress, subjects' },
+        {
+          error:
+            "Missing required fields: courseId, title, classLevels, availableDates, timeSlots, instructor, demoAddress, subjects",
+        },
         { status: 400 }
       );
     }
@@ -107,33 +123,43 @@ export async function POST(
         id: profileId,
         coaching: {
           ownerUserId: session.user.id,
-        }
-      }
+        },
+      },
     });
 
     if (!profile) {
       return NextResponse.json(
-        { error: 'Coaching profile not found or unauthorized' },
+        { error: "Coaching profile not found or unauthorized" },
         { status: 404 }
       );
-    }    // Create demo session using raw query to handle enum types
+    } // Create demo session using raw query to handle enum types
     const demoSessionId = crypto.randomUUID();
     const sessionId = `DS${Date.now()}`;
-    
+
     await prisma.$executeRaw`
       INSERT INTO demo_sessions (
         id, "sessionId", "profileId", "courseId", title, description, mode, "classLevels",
         "availableDates", "timeSlots", "demoDays", "maxParticipants", instructor,
         subjects, topics, "demoAddress", landmark, "isFree", price, status, "createdAt", "updatedAt"
       ) VALUES (
-        ${demoSessionId}, ${sessionId}, ${profileId}, ${courseId}, ${title}, ${description || ''}, 'offline',
-        ${JSON.stringify(Array.isArray(classLevels) ? classLevels : [classLevels])},
-        ${JSON.stringify(Array.isArray(availableDates) ? availableDates : [availableDates])},
+        ${demoSessionId}, ${sessionId}, ${profileId}, ${courseId}, ${title}, ${
+      description || ""
+    }, 'offline',
+        ${JSON.stringify(
+          Array.isArray(classLevels) ? classLevels : [classLevels]
+        )},
+        ${JSON.stringify(
+          Array.isArray(availableDates) ? availableDates : [availableDates]
+        )},
         ${JSON.stringify(Array.isArray(timeSlots) ? timeSlots : [timeSlots])},
-        ${parseInt(demoDays) || 1}, ${parseInt(maxParticipants) || 5}, ${instructor},
+        ${parseInt(demoDays) || 1}, ${
+      parseInt(maxParticipants) || 5
+    }, ${instructor},
         ${JSON.stringify(Array.isArray(subjects) ? subjects : [subjects])},
-        ${JSON.stringify(topics || [])}, ${demoAddress}, ${landmark || ''},
-        ${isFree !== false}, ${isFree === false ? parseFloat(price) || 0 : 0}, 'Scheduled', NOW(), NOW()
+        ${JSON.stringify(topics || [])}, ${demoAddress}, ${landmark || ""},
+        ${isFree !== false}, ${
+      isFree === false ? parseFloat(price) || 0 : 0
+    }, 'Scheduled', NOW(), NOW()
       )
     `;
 
@@ -144,30 +170,31 @@ export async function POST(
         course: {
           select: {
             courseName: true,
-          }
+          },
         },
         profile: {
           include: {
             coaching: {
               select: {
                 organizationName: true,
-              }
-            }
-          }
-        }      }
+              },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json(
-      { 
-        message: 'Demo session created successfully',
-        demoSession 
+      {
+        message: "Demo session created successfully",
+        demoSession,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error creating demo session:', error);
+    console.error("Error creating demo session:", error);
     return NextResponse.json(
-      { error: 'Failed to create demo session' },
+      { error: "Failed to create demo session" },
       { status: 500 }
     );
   }

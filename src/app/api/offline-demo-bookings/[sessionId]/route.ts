@@ -6,16 +6,16 @@ import { authOptions } from '@/lib/auth';
 // POST: Book an offline demo session
 export async function POST(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { sessionId } = params;
-    
+    const { sessionId } = await params;
+
     const {
       selectedDate,
       selectedTime,
@@ -23,16 +23,19 @@ export async function POST(
       studentName,
       studentPhone,
       studentEmail,
-      specialRequest
+      specialRequest,
     } = await request.json();
 
     // Validate required fields
     if (!selectedDate || !selectedTime || !selectedSubject) {
       return NextResponse.json(
-        { error: 'Missing required fields: selectedDate, selectedTime, selectedSubject' },
+        {
+          error:
+            "Missing required fields: selectedDate, selectedTime, selectedSubject",
+        },
         { status: 400 }
       );
-    }    // Check if session exists and is available
+    } // Check if session exists and is available
     const demoSession = await prisma.demoSession.findUnique({
       where: { id: sessionId },
       include: {
@@ -42,28 +45,28 @@ export async function POST(
             coaching: {
               select: {
                 organizationName: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         course: {
           select: {
             courseName: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!demoSession) {
       return NextResponse.json(
-        { error: 'Demo session not found' },
+        { error: "Demo session not found" },
         { status: 404 }
       );
     }
 
-    if (demoSession.status !== 'Scheduled') {
+    if (demoSession.status !== "Scheduled") {
       return NextResponse.json(
-        { error: 'Demo session is not available for booking' },
+        { error: "Demo session is not available for booking" },
         { status: 400 }
       );
     }
@@ -73,23 +76,24 @@ export async function POST(
       where: {
         userId: session.user.id,
         sessionId: sessionId,
-      }
+      },
     });
 
     if (existingBooking) {
       return NextResponse.json(
-        { error: 'You have already booked this demo session' },
+        { error: "You have already booked this demo session" },
         { status: 400 }
       );
-    }    // Check if the selected time slot is available
+    } // Check if the selected time slot is available
     const conflictingBookings = ((demoSession as any).bookings || []).filter(
-      (booking: any) => booking.selectedDate === selectedDate && 
-                       booking.selectedTime === selectedTime &&
-                       ['pending', 'confirmed'].includes(booking.status)
+      (booking: any) =>
+        booking.selectedDate === selectedDate &&
+        booking.selectedTime === selectedTime &&
+        ["pending", "confirmed"].includes(booking.status)
     );
     if (conflictingBookings.length >= demoSession.maxParticipants) {
       return NextResponse.json(
-        { error: 'This time slot is fully booked' },
+        { error: "This time slot is fully booked" },
         { status: 400 }
       );
     }
@@ -101,36 +105,43 @@ export async function POST(
         id, "userId", "sessionId", "selectedDate", "selectedTime", "selectedSubject",
         "studentName", "studentPhone", "studentEmail", "specialRequest", status, "bookedAt"
       ) VALUES (
-        ${bookingId}, ${session.user.id}, ${sessionId}, ${selectedDate}, ${selectedTime}, ${selectedSubject},
-        ${studentName || session.user.name || ''}, ${studentPhone || ''}, ${studentEmail || session.user.email || ''}, 
-        ${specialRequest || ''}, 'pending', NOW()
+        ${bookingId}, ${
+      session.user.id
+    }, ${sessionId}, ${selectedDate}, ${selectedTime}, ${selectedSubject},
+        ${studentName || session.user.name || ""}, ${studentPhone || ""}, ${
+      studentEmail || session.user.email || ""
+    }, 
+        ${specialRequest || ""}, 'pending', NOW()
       )
     `;
 
     // Fetch the created booking
     const booking = await prisma.demoSessionBooking.findUnique({
-      where: { id: bookingId }
+      where: { id: bookingId },
     });
 
     return NextResponse.json(
-      { 
-        message: 'Demo session booking request submitted successfully. The coaching center will confirm your booking soon.',
+      {
+        message:
+          "Demo session booking request submitted successfully. The coaching center will confirm your booking soon.",
         booking: {
           id: booking?.id,
-          status: booking?.status,          selectedDate: (booking as any)?.selectedDate,
+          status: booking?.status,
+          selectedDate: (booking as any)?.selectedDate,
           selectedTime: (booking as any)?.selectedTime,
           selectedSubject: (booking as any)?.selectedSubject,
           bookedAt: booking?.bookedAt,
           demoAddress: (demoSession as any).demoAddress,
-          organizationName: (demoSession as any).profile?.coaching?.organizationName,
-        }
+          organizationName: (demoSession as any).profile?.coaching
+            ?.organizationName,
+        },
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error booking demo session:', error);
+    console.error("Error booking demo session:", error);
     return NextResponse.json(
-      { error: 'Failed to book demo session' },
+      { error: "Failed to book demo session" },
       { status: 500 }
     );
   }

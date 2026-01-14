@@ -5,15 +5,15 @@ import { prisma } from '@/lib/prisma';
 // PUT: Update booking status (cancel, etc.)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { bookingId: string } }
+  { params }: { params: Promise<{ bookingId: string }> }
 ) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { bookingId } = params;
+    const { bookingId } = await params;
     const { status, feedback, rating } = await request.json();
 
     // Verify user owns this booking
@@ -21,12 +21,12 @@ export async function PUT(
       where: {
         id: bookingId,
         userId: session.user.id,
-      }
+      },
     });
 
     if (!booking) {
       return NextResponse.json(
-        { error: 'Booking not found or unauthorized' },
+        { error: "Booking not found or unauthorized" },
         { status: 404 }
       );
     }
@@ -47,26 +47,26 @@ export async function PUT(
                 coaching: {
                   select: {
                     organizationName: true,
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json(
-      { 
-        message: 'Booking updated successfully',
-        booking: updatedBooking 
+      {
+        message: "Booking updated successfully",
+        booking: updatedBooking,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error updating booking:', error);
+    console.error("Error updating booking:", error);
     return NextResponse.json(
-      { error: 'Failed to update booking' },
+      { error: "Failed to update booking" },
       { status: 500 }
     );
   }
@@ -75,27 +75,27 @@ export async function PUT(
 // DELETE: Cancel booking
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { bookingId: string } }
+  { params }: { params: Promise<{ bookingId: string }> }
 ) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { bookingId } = params;
+    const { bookingId } = await params;
 
     // Verify user owns this booking
     const booking = await prisma.demoSessionBooking.findFirst({
       where: {
         id: bookingId,
         userId: session.user.id,
-      }
+      },
     });
 
     if (!booking) {
       return NextResponse.json(
-        { error: 'Booking not found or unauthorized' },
+        { error: "Booking not found or unauthorized" },
         { status: 404 }
       );
     }
@@ -103,17 +103,17 @@ export async function DELETE(
     // Update status to cancelled instead of deleting
     await prisma.demoSessionBooking.update({
       where: { id: bookingId },
-      data: { status: 'cancelled' }
+      data: { status: "cancelled" },
     });
 
     return NextResponse.json(
-      { message: 'Booking cancelled successfully' },
+      { message: "Booking cancelled successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error cancelling booking:', error);
+    console.error("Error cancelling booking:", error);
     return NextResponse.json(
-      { error: 'Failed to cancel booking' },
+      { error: "Failed to cancel booking" },
       { status: 500 }
     );
   }

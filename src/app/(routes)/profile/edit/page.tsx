@@ -44,7 +44,7 @@ interface ProfileFormData {
   bio: string;
   interests: string[];
   learningGoals: string[];
-  coachingMode: 'Offline' | '';
+  coachingMode: 'Offline' | 'Online' | 'Both' | '';
   studyLevel: 'School' | 'College' | 'Competitive' | 'Professional' | '';
   preferredSubjects: string[];
   targetExams: string[];

@@ -17,10 +17,7 @@ export async function GET(request: NextRequest) {
 
     // Build where clause
     const where: any = {
-      status: 'Scheduled',
-      dateTime: {
-        gt: new Date(), // Only future sessions
-      },
+      status: "Scheduled",
     };
 
     // Add filters if provided
@@ -30,7 +27,7 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    if (mode && mode !== 'all') {
+    if (mode && mode !== "all") {
       where.mode = mode;
     }
 
@@ -40,7 +37,7 @@ export async function GET(request: NextRequest) {
         course: {
           select: {
             courseName: true,
-          }
+          },
         },
         profile: {
           select: {
@@ -50,32 +47,41 @@ export async function GET(request: NextRequest) {
             coaching: {
               select: {
                 organizationName: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         bookings: {
           where: {
-            status: 'confirmed'
+            status: { in: ["pending", "confirmed"] },
           },
           select: {
             id: true,
             status: true,
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        dateTime: 'asc',
+        createdAt: "desc",
       },
     });
 
     // Filter by course if provided
     let filteredSessions = demoSessions;
-    if (course && course !== 'all') {
-      filteredSessions = demoSessions.filter(session => 
-        session.course.courseName === course
+    if (course && course !== "all") {
+      filteredSessions = demoSessions.filter(
+        (session) => session.course.courseName === course
       );
     }
+
+    // Filter out sessions with no future available dates
+    const today = new Date().toISOString().split("T")[0];
+    filteredSessions = filteredSessions.filter((session) => {
+      const futureDates = session.availableDates.filter(
+        (date: string) => date >= today
+      );
+      return futureDates.length > 0;
+    });
 
     return NextResponse.json({ 
       demoSessions: filteredSessions 

@@ -122,7 +122,7 @@ const Navbar = () => {
                   size="sm"
                   className="flex items-center space-x-2 border-gray-200 hover:border-blue-300 cursor-pointer"
                 >
-                  <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 bg-[#0F52BA] rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || "U"}
                     </span>
@@ -133,7 +133,7 @@ const Navbar = () => {
               <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 shadow-lg">
                 <DropdownMenuLabel className="px-4 py-3 border-b border-gray-100">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#0F52BA] rounded-full flex items-center justify-center">
                       <span className="text-white font-bold">
                         {session.user?.name?.charAt(0).toUpperCase() || "U"}
                       </span>
@@ -251,7 +251,7 @@ const Navbar = () => {
           ) : session ? (            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="p-2 border-gray-200 cursor-pointer">
-                  <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 bg-[#0F52BA] rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">
                       {session.user?.name?.charAt(0).toUpperCase() || "U"}
                     </span>
@@ -261,7 +261,7 @@ const Navbar = () => {
               <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 shadow-lg">
                 <DropdownMenuLabel className="px-4 py-3 border-b border-gray-100">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-[#0F52BA] rounded-full flex items-center justify-center">
                       <span className="text-white text-sm font-bold">
                         {session.user?.name?.charAt(0).toUpperCase() || "U"}
                       </span>

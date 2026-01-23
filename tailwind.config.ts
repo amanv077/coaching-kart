@@ -12,11 +12,11 @@ const config: Config = {
         // Standard shadcn/ui colors - Single light theme with blue accents
         border: "hsl(214 32% 80%)",
         input: "hsl(214 32% 91%)",
-        ring: "hsl(205 100% 50%)",
+        ring: "hsl(216 85% 39%)",
         background: "hsl(0 0% 100%)",
         foreground: "hsl(222 47% 11%)",
         primary: {
-          DEFAULT: "hsl(205 100% 50%)", // Premium blue
+          DEFAULT: "hsl(216 85% 39%)", // Sapphire Blue #0F52BA
           foreground: "hsl(0 0% 100%)",
         },
         secondary: {
@@ -32,7 +32,7 @@ const config: Config = {
           foreground: "hsl(215 25% 40%)",
         },
         accent: {
-          DEFAULT: "hsl(205 100% 50%)", // Blue accent
+          DEFAULT: "hsl(216 85% 39%)", // Sapphire Blue
           foreground: "hsl(0 0% 100%)",
         },
         popover: {
@@ -42,6 +42,20 @@ const config: Config = {
         card: {
           DEFAULT: "hsl(210 20% 98%)",
           foreground: "hsl(222 47% 11%)",
+        },
+        // Override standard blue to match Brand Sapphire Blue
+        blue: {
+          50: '#f0f5ff',
+          100: '#e0ebff',
+          200: '#c2d8ff',
+          300: '#94beff',
+          400: '#5c9bff',
+          500: '#2e75ff', 
+          600: '#0F52BA', // Main Brand Color
+          700: '#0a4299',
+          800: '#09387a',
+          900: '#0c3061',
+          950: '#081d3d',
         },
       },
       borderRadius: {
@@ -74,7 +88,7 @@ const config: Config = {
         "md": "0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1)",
         "lg": "0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1)",
         "xl": "0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1)",
-        "blue": "0 4px 14px 0 hsl(205 100% 50% / 0.25)",
+        "blue": "0 4px 14px 0 hsl(216 85% 39% / 0.25)",
       },
     },
   },

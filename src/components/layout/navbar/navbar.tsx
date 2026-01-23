@@ -85,7 +85,7 @@ const Navbar = () => {
             href="/coaching"
             className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
           >
-            Coachings
+            Explore
           </Link>
           {/* Dashboard link shown only when logged in */}
           {session && (

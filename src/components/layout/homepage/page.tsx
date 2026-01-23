@@ -1,539 +1,276 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Search, Users, Award, CheckCircle, Star, Play, BookOpen, Target, TrendingUp, Shield, Clock, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle, BookOpen, TrendingUp, Users, Clock, Shield, Star, Play, MapPin, ChevronRight, Quote } from 'lucide-react';
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-background overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-40 right-20 w-60 h-60 bg-primary/3 rounded-full blur-3xl animate-pulse delay-2000"></div>
-      </div>      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 py-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-        {/* Hero Background Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20"></div>
+    <div className="min-h-screen bg-white font-sans selection:bg-[#0F52BA]/20 selection:text-[#0F52BA]">
+      
+      {/* Hero Section with Pattern */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white">
+        {/* Subtle Dot Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
         
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full blur-xl animate-float-delay"></div>
-        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-green-400/15 to-blue-400/15 rounded-full blur-xl animate-float-slow"></div>
-        <div className="container mx-auto text-center relative z-10">
-          <div className="max-w-6xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center px-6 py-3 bg-primary/10 text-primary rounded-full text-sm font-medium mb-8 border border-primary/20 backdrop-blur-sm animate-fade-in">
-              <Star className="w-4 h-4 mr-2" />
-              India's Most Trusted Coaching Platform
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <div className="inline-flex items-center space-x-2 bg-[#0F52BA]/5 border border-[#0F52BA]/20 rounded-full px-4 py-1.5 mb-8 transition-transform hover:scale-105 cursor-default">
+              <span className="flex h-2 w-2 rounded-full bg-[#0F52BA] animate-pulse"></span>
+              <span className="text-sm font-semibold text-[#0F52BA] tracking-wide">#1 Trusted Coaching Platform in India</span>
             </div>
-            
-            {/* Main Title */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-tight animate-slide-up">
-              Find Your Perfect
-              <span className="block text-gradient bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                Coaching Match
+
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 mb-8 leading-[1.1]">
+              Find your perfect <br className="hidden md:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F52BA] to-[#2E6CD1]">
+                Coaching Institute
               </span>
             </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed animate-slide-up delay-300">
-              Compare 5000+ verified coaching institutes, book free demo classes, and get the best price for your education journey. Join 25,000+ students who found their success.
+
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Compare <strong>5,000+</strong> verified institutes, book free <span className="text-[#0F52BA] font-semibold under">demo classes</span>, 
+              and start your journey to success today.
             </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-slide-up delay-500">
-              <Button size="lg" className="px-10 py-6 text-lg premium-shadow hover:scale-105 transition-all duration-300 group" asChild>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button size="lg" className="h-14 px-8 rounded-full text-lg bg-[#0F52BA] text-white hover:bg-[#0A3d8F] shadow-lg shadow-[#0F52BA]/20 hover:shadow-[#0F52BA]/30 hover:-translate-y-0.5 transition-all duration-300" asChild>
                 <Link href="/coaching">
-                  <Search className="w-5 h-5 mr-2" />
-                  Explore Coaching Options
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  Find Coaching
                 </Link>
               </Button>
+              <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-lg border-2 border-gray-200 text-gray-700 hover:border-[#0F52BA] hover:bg-[#0F52BA] hover:text-white transition-all duration-300" asChild>
+                <Link href="/free-trial" className="flex items-center">
+                  <Play className="w-5 h-5 mr-2 fill-current" />
+                  Free Demo
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Stats - Dark Strip */}
+      <section className="bg-[#0F172A] border-t border-gray-800 text-white py-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/5"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center divide-x divide-white/10">
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">5k+</div>
+              <div className="text-sm md:text-base text-gray-400 font-medium uppercase tracking-wider">Top Institutes</div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">25k+</div>
+              <div className="text-sm md:text-base text-gray-400 font-medium uppercase tracking-wider">Active Students</div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">98%</div>
+              <div className="text-sm md:text-base text-gray-400 font-medium uppercase tracking-wider">Success Rate</div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">4.9</div>
+              <div className="text-sm md:text-base text-gray-400 font-medium uppercase tracking-wider">User Rating</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 tracking-tight">
+              Everything you need to excel.
+            </h2>
+            <p className="text-xl text-gray-600 leading-relaxed">
+              We've built the most comprehensive platform for students to find, compare, and connect with the best educators.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard 
+              icon={<CheckCircle className="w-6 h-6 text-[#0F52BA]" />}
+              color="bg-[#0F52BA]/5"
+              title="Verified Institutes"
+              desc="We physically verify every institute to ensure quality, safety, and faculty credentials."
+            />
+            <FeatureCard 
+              icon={<BookOpen className="w-6 h-6 text-[#0F52BA]" />}
+               color="bg-[#0F52BA]/5"
+              title="Expert Faculty"
+              desc="Detailed profiles of educators including their experience, qualifications, and teaching style."
+            />
+            <FeatureCard 
+              icon={<TrendingUp className="w-6 h-6 text-[#0F52BA]" />}
+               color="bg-[#0F52BA]/5"
+              title="Proven Results"
+              desc="Access authentic past year results and success stories verified by our team."
+            />
+            <FeatureCard 
+              icon={<Users className="w-6 h-6 text-[#0F52BA]" />}
+               color="bg-[#0F52BA]/5"
+              title="Student Community"
+              desc="Connect with alumni and current students to get real feedback and advice."
+            />
+            <FeatureCard 
+              icon={<Clock className="w-6 h-6 text-[#0F52BA]" />}
+               color="bg-[#0F52BA]/5"
+              title="Smart Comparison"
+              desc="Compare fees, batch timings, and distance side-by-side to make the right choice."
+            />
+            <FeatureCard 
+              icon={<Shield className="w-6 h-6 text-[#0F52BA]" />}
+               color="bg-[#0F52BA]/5"
+              title="Fee Protection"
+              desc="Your payment is safe with us. We ensure transparency in refund policies."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="flex flex-col md:flex-row items-center gap-16">
+            <div className="w-full md:w-1/2">
+               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 tracking-tight">
+                 Simple steps to your <br/> dream college.
+               </h2>
+               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                 We've simplified the complex process of finding coaching into three easy steps. No more confusion, just clear choices.
+               </p>
+               <div className="space-y-8">
+                 <StepRow num="01" title="Search & Filter" desc="Enter your exam (JEE, NEET, etc.) and location to see top-rated institutes near you." />
+                 <StepRow num="02" title="Compare & Shortlist" desc="View detailed fee structures, faculty profiles, and student reviews." />
+                 <StepRow num="03" title="Book Free Demo" desc="Attend a trial class to experience the teaching methodology before you pay." />
+               </div>
+            </div>
+            <div className="w-full md:w-1/2 relative">
+               <div className="absolute inset-0 bg-[#0F52BA]/10 rounded-2xl transform rotate-3"></div>
+               <div className="relative bg-white border border-gray-200 p-8 rounded-2xl shadow-xl">
+                 <h3 className="text-xl font-bold mb-6">Popular Exams</h3>
+                 <div className="space-y-4">
+                   {['JEE Advanced', 'NEET UG', 'UPSC CSE', 'CA Foundation', 'CAT', 'GATE'].map((item, i) => (
+                     <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-[#0F52BA]/5 transition-colors cursor-pointer group">
+                       <span className="font-medium text-gray-700 group-hover:text-[#0F52BA]">{item}</span>
+                       <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#0F52BA]" />
+                     </div>
+                   ))}
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0b1120] to-black text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+           <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Don't just take our word for it.</h2>
+            <p className="text-gray-400 text-lg">Join 25,000+ happy students who found their path.</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TestimonialCard 
+              quote="The comparison feature saved me so much time. I found a hidden gem of an institute near my house that I wouldn't have known about otherwise."
+              author="Arjun Sharma"
+              role="JEE Aspirant"
+              initials="AS"
+              color="bg-[#0F52BA]"
+            />
+            <TestimonialCard 
+              quote="I was confused between three big institutes. The free demo classes arranged by CoachingKart helped me decide which teaching style suited me better."
+              author="Priya Gupta"
+              role="NEET Student"
+              initials="PG"
+               color="bg-[#0F52BA]"
+            />
+            <TestimonialCard 
+              quote="The support team is amazing. They helped me negotiate the fees and provided a scholarship coupon. Highly recommended!"
+              author="Rahul Kumar"
+              role="CA Student"
+              initials="RK"
+               color="bg-[#0F52BA]"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Redesigned */}
+      <section className="py-24 px-4 bg-white">
+        <div className="container mx-auto max-w-5xl">
+          <div className="relative rounded-[3rem] overflow-hidden bg-gray-900 border border-gray-800 shadow-2xl group">
+            {/* Abstract Background */}
+            <div className="absolute inset-0">
+               <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-slate-900"></div>
+               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0F52BA]/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 opacity-70 group-hover:opacity-100 transition-opacity duration-700"></div>
+               <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#0F52BA]/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2 opacity-70 group-hover:opacity-100 transition-opacity duration-700"></div>
+            </div>
+            
+            <div className="relative z-10 px-6 py-20 md:py-24 text-center">
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight">
+                Start your preparation <br className="hidden md:block"/> with the best.
+              </h2>
               
-              <Button variant="outline" size="lg" className="px-10 py-6 text-lg hover:bg-primary/10 hover:text-primary hover:border-primary transition-all duration-300 group backdrop-blur-sm" asChild>
-                <Link href="/free-trial">
-                  <Play className="w-5 h-5 mr-2" />
-                  Book Free Demo
-                </Link>
-              </Button>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-slide-up delay-700">
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">5,000+</div>
-                <div className="text-sm text-muted-foreground">Verified Institutes</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">25,000+</div>
-                <div className="text-sm text-muted-foreground">Happy Students</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">98%</div>
-                <div className="text-sm text-muted-foreground">Success Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">24/7</div>
-                <div className="text-sm text-muted-foreground">Support</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-primary/30 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse"></div>
-          </div>
-        </div>
-      </section>      {/* Features Section with Modern Cards */}
-      <section className="py-32 px-4 relative bg-gradient-to-b from-white via-gray-50/50 to-slate-100/30">
-        {/* Modern Background Elements */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100/20 via-transparent to-purple-100/20"></div>
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
-        
-        {/* Geometric Shapes */}
-        <div className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-indigo-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-48 h-48 bg-gradient-to-br from-blue-100/40 to-cyan-100/40 rounded-full blur-2xl"></div>
-        
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:6rem_6rem] opacity-30 [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_110%)]"></div>        <div className="container mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm text-primary rounded-full text-sm font-medium mb-8 border border-primary/20 shadow-lg shadow-primary/10">
-              <Target className="w-4 h-4 mr-2" />
-              Why Choose CoachingKart
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Everything You Need for
-              <span className="block text-gradient bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                Academic Success
-              </span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              We provide comprehensive tools and resources to help you make informed decisions about your coaching education
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature Card 1 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 hover:border-primary/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-primary/10 hover:bg-white/90">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-primary/20">
-                  <CheckCircle className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Verified Institutes</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Every coaching institute is thoroughly verified for quality, credentials, faculty expertise, and student satisfaction rates.
-                </p>
-                <div className="flex items-center text-primary font-medium">
-                  <span>Learn more</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 2 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 hover:border-blue-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10 hover:bg-white/90">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-blue-500/20">
-                  <BookOpen className="w-8 h-8 text-blue-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Expert Faculty</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Learn from experienced educators with proven track records and specialized expertise in their respective fields.
-                </p>
-                <div className="flex items-center text-blue-500 font-medium">
-                  <span>Explore faculty</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 3 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 hover:border-green-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/10 hover:bg-white/90">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-green-500/20">
-                  <TrendingUp className="w-8 h-8 text-green-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Proven Results</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Track record of success with detailed analytics, performance insights, and transparent result reporting.
-                </p>
-                <div className="flex items-center text-green-500 font-medium">
-                  <span>View results</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 4 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 hover:border-purple-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10 hover:bg-white/90">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/20">
-                  <Users className="w-8 h-8 text-purple-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Community Support</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Join a thriving community of learners and get peer support throughout your educational journey.
-                </p>
-                <div className="flex items-center text-purple-500 font-medium">
-                  <span>Join community</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 5 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 hover:border-orange-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/10 hover:bg-white/90">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-amber-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500/20 to-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-orange-500/20">
-                  <Clock className="w-8 h-8 text-orange-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Flexible Schedules</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Choose from various batch timings and learning formats that perfectly fit your lifestyle and commitments.
-                </p>
-                <div className="flex items-center text-orange-500 font-medium">
-                  <span>View schedules</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 6 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 hover:border-red-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10 hover:bg-white/90">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-pink-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-500/20 to-red-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-red-500/20">
-                  <Shield className="w-8 h-8 text-red-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">24/7 Support</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Get help whenever you need it with our dedicated customer support team available round the clock.
-                </p>
-                <div className="flex items-center text-red-500 font-medium">
-                  <span>Get support</span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>      {/* How It Works - Interactive Timeline */}
-      <section className="py-32 px-4 bg-gradient-to-br from-primary/5 via-background to-blue-500/5 relative">
-        <div className="container mx-auto">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center px-6 py-3 bg-primary/10 text-primary rounded-full text-sm font-medium mb-8 border border-primary/20">
-              <MapPin className="w-4 h-4 mr-2" />
-              Your Learning Journey
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              How It Works
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Three simple steps to find and enroll in your ideal coaching program
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-12 relative">
-            {/* Connection Lines */}
-            <div className="hidden md:block absolute top-24 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-primary via-blue-500 to-primary"></div>
-            
-            {/* Step 1 */}
-            <div className="text-center group">
-              <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg shadow-primary/30 group-hover:scale-110 transition-all duration-300">
-                  1
-                </div>
-                <div className="absolute -top-2 -left-2 w-24 h-24 border-2 border-primary/20 rounded-full animate-pulse"></div>
-              </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Search & Compare</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Browse through our extensive database of verified coaching institutes. Use advanced filters to find institutes based on your location, budget, course requirements, and preferred teaching methodology.
+              <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+                 Get access to <span className="text-[#0F52BA] font-medium">exclusive scholarships and discounts</span> <br className="hidden md:block"/> when you book through CoachingKart.
               </p>
-              <div className="bg-card/50 backdrop-blur-sm p-4 rounded-xl border border-border/50">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Search className="w-4 h-4 mr-2 text-primary" />
-                  Advanced search filters available
-                </div>
+              
+              <div className="relative inline-block group/btn">
+                 <div className="absolute -inset-1 bg-gradient-to-r from-[#0F52BA] to-[#2E6CD1] rounded-full blur opacity-25 group-hover/btn:opacity-75 transition duration-500"></div>
+                 <Button size="lg" className="relative h-16 px-12 rounded-full text-xl bg-white text-gray-900 hover:bg-gray-50 hover:text-[#0F52BA] transition-all duration-300 font-bold border-0" asChild>
+                  <Link href="/coaching">
+                    Explore Institutes
+                  </Link>
+                </Button>
               </div>
-            </div>
-            
-            {/* Step 2 */}
-            <div className="text-center group">
-              <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-all duration-300">
-                  2
-                </div>
-                <div className="absolute -top-2 -left-2 w-24 h-24 border-2 border-blue-500/20 rounded-full animate-pulse delay-1000"></div>
-              </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Book Free Trial</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Schedule free demo classes with multiple institutes to experience their teaching methods firsthand. Interact with faculty, understand the curriculum, and assess the learning environment.
-              </p>
-              <div className="bg-card/50 backdrop-blur-sm p-4 rounded-xl border border-border/50">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Play className="w-4 h-4 mr-2 text-blue-500" />
-                  Free demo classes included
-                </div>
-              </div>
-            </div>
-            
-            {/* Step 3 */}
-            <div className="text-center group">
-              <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg shadow-green-500/30 group-hover:scale-110 transition-all duration-300">
-                  3
-                </div>
-                <div className="absolute -top-2 -left-2 w-24 h-24 border-2 border-green-500/20 rounded-full animate-pulse delay-2000"></div>
-              </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Enroll & Succeed</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Complete your enrollment with confidence and begin your journey towards academic excellence. Get ongoing support and track your progress throughout the course.
-              </p>
-              <div className="bg-card/50 backdrop-blur-sm p-4 rounded-xl border border-border/50">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Award className="w-4 h-4 mr-2 text-green-500" />
-                  Success tracking included
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="text-center mt-16">
-            <Button size="lg" className="px-8 py-4 text-lg" asChild>
-              <Link href="/coaching">
-                Start Your Journey Today
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>      {/* Student Success Stories - Interactive Testimonials */}
-      <section className="py-32 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center px-6 py-3 bg-primary/10 text-primary rounded-full text-sm font-medium mb-8 border border-primary/20">
-              <Users className="w-4 h-4 mr-2" />
-              Student Success Stories
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              What Our Students Say
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Real stories from students who found their perfect coaching match through our platform
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <div className="group relative bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-primary/10">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="flex mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <blockquote className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                  "CoachingKart helped me find the perfect JEE coaching institute. The trial classes were incredibly helpful in making my decision. I'm now confident in my choice!"
-                </blockquote>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-white font-semibold">AS</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">Arjun Sharma</div>
-                    <div className="text-sm text-muted-foreground">JEE Aspirant, AIR 235</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial 2 */}
-            <div className="group relative bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50 hover:border-blue-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="flex mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <blockquote className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                  "The platform made it so easy to compare different NEET coaching options. I found exactly what I was looking for and the support team was amazing throughout."
-                </blockquote>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-white font-semibold">PG</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">Priya Gupta</div>
-                    <div className="text-sm text-muted-foreground">NEET Student, Top 100</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial 3 */}
-            <div className="group relative bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50 hover:border-green-500/30 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/10">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10">
-                <div className="flex mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <blockquote className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                  "Excellent support throughout the process. The team helped me every step of the way to find the right coaching institute. Highly recommended!"
-                </blockquote>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-white font-semibold">RK</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">Rahul Kumar</div>
-                    <div className="text-sm text-muted-foreground">CA Foundation Student</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Stats */}
-          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="group">
-              <div className="text-4xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform">500+</div>
-              <div className="text-sm text-muted-foreground">Coaching Partners</div>
-            </div>
-            <div className="group">
-              <div className="text-4xl font-bold text-blue-500 mb-2 group-hover:scale-110 transition-transform">95%</div>
-              <div className="text-sm text-muted-foreground">Student Satisfaction</div>
-            </div>
-            <div className="group">
-              <div className="text-4xl font-bold text-green-500 mb-2 group-hover:scale-110 transition-transform">15K+</div>
-              <div className="text-sm text-muted-foreground">Success Stories</div>
-            </div>
-            <div className="group">
-              <div className="text-4xl font-bold text-purple-500 mb-2 group-hover:scale-110 transition-transform">24/7</div>
-              <div className="text-sm text-muted-foreground">Expert Support</div>
-            </div>
-          </div>
-        </div>
-      </section>      {/* Premium CTA Section */}
-      <section className="py-32 px-4 bg-gradient-to-br from-primary via-blue-600 to-purple-600 text-white relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
-        </div>
-        <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-20 w-40 h-40 bg-white/5 rounded-full blur-xl"></div>
-        
-        <div className="container mx-auto text-center relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Ready to Start Your
-              <span className="block">Learning Journey?</span>
-            </h2>
-            <p className="text-xl md:text-2xl mb-12 opacity-90 leading-relaxed">
-              Join thousands of students who have found their perfect coaching match. 
-              Start exploring today and take the first step towards academic excellence.
-            </p>
-            
-            {/* Feature Pills */}
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
-              <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-medium">
-                ✓ Free Demo Classes
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-medium">
-                ✓ Verified Institutes
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-medium">
-                ✓ Expert Support
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-medium">
-                ✓ Best Price Guarantee
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button variant="secondary" size="lg" className="px-10 py-6 text-lg bg-white text-primary hover:bg-white/90 hover:scale-105 transition-all duration-300" asChild>
-                <Link href="/coaching">
-                  Browse Coaching Options
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" className="px-10 py-6 text-lg bg-transparent border-white text-white hover:bg-white hover:text-primary transition-all duration-300" asChild>
-                <Link href="/free-trial">
-                  Book Free Trial
-                  <Play className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Trust Indicators & Partners */}
-      <section className="py-24 px-4 bg-card/30">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-              Trusted by Leading Coaching Institutes
-            </h3>
-            <p className="text-muted-foreground">
-              Partnering with India's top coaching centers to bring you the best education
-            </p>
-          </div>
-          
-          {/* Partner Logos */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center justify-items-center mb-16">
-            <div className="text-2xl md:text-3xl font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              ALLEN
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              FIITJEE
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              Aakash
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              Resonance
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              TIME
-            </div>
-          </div>
-
-          {/* Final Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
-              <div className="text-4xl font-bold text-primary mb-2">5000+</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Coaching Institutes</div>
-              <div className="text-sm text-muted-foreground">Verified and trusted nationwide</div>
-            </div>
-            <div className="bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
-              <div className="text-4xl font-bold text-blue-500 mb-2">25,000+</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Students Helped</div>
-              <div className="text-sm text-muted-foreground">Found their perfect coaching match</div>
-            </div>
-            <div className="bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
-              <div className="text-4xl font-bold text-green-500 mb-2">98%</div>
-              <div className="text-lg font-semibold text-foreground mb-2">Success Rate</div>
-              <div className="text-sm text-muted-foreground">Students satisfied with their choice</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 };
+
+// Subcomponents
+const FeatureCard = ({ icon, color, title, desc }: { icon: React.ReactNode, color: string, title: string, desc: string }) => (
+  <div className="bg-white p-8 rounded-2xl border border-gray-200 hover:border-[#0F52BA]/30 hover:shadow-xl hover:shadow-[#0F52BA]/5 transition-all duration-300 group">
+    <div className={`w-14 h-14 ${color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+      {icon}
+    </div>
+    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#0F52BA] transition-colors">{title}</h3>
+    <p className="text-gray-600 leading-relaxed">{desc}</p>
+  </div>
+);
+
+const StepRow = ({ num, title, desc }: { num: string, title: string, desc: string }) => (
+  <div className="flex gap-6">
+    <div className="flex-shrink-0 w-12 h-12 rounded-full border-2 border-[#0F52BA]/20 text-[#0F52BA] flex items-center justify-center font-bold text-lg bg-[#0F52BA]/5">
+      {num}
+    </div>
+    <div>
+      <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
+      <p className="text-gray-600 leading-relaxed">{desc}</p>
+    </div>
+  </div>
+);
+
+const TestimonialCard = ({ quote, author, role, initials, color }: { quote: string, author: string, role: string, initials: string, color: string }) => (
+  <div className="bg-gray-800 p-8 rounded-2xl border border-gray-700/50 hover:bg-gray-800/80 transition-colors">
+    <Quote className="w-8 h-8 text-gray-600 mb-6" />
+    <p className="text-lg text-gray-200 mb-8 leading-relaxed">"{quote}"</p>
+    <div className="flex items-center">
+      <div className={`w-12 h-12 ${color} rounded-full flex items-center justify-center mr-4 text-white font-bold text-sm shadow-lg`}>
+        {initials}
+      </div>
+      <div>
+        <div className="font-bold text-white">{author}</div>
+        <div className="text-sm text-gray-400">{role}</div>
+      </div>
+    </div>
+  </div>
+);
 
 export default HomePage;

@@ -157,7 +157,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
         <CardContent className="p-5">
           <div className="flex items-start gap-4">
             {/* Logo */}
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div className="w-16 h-16 bg-[#0F52BA] rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
               {mainProfile?.logo ? (
                 <img 
                   src={getOptimizedImageUrl(mainProfile.logo, 64, 64, 'auto')} 
@@ -174,7 +174,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-bold text-lg text-gray-900 truncate hover:text-blue-600 transition-colors">
+                  <h3 className="font-bold text-lg text-gray-900 truncate hover:text-[#0F52BA] transition-colors">
                     {coaching.organizationName}
                   </h3>
                   <p className="text-sm text-gray-600 font-medium">{mainProfile?.name || 'No profile name'}</p>
@@ -211,11 +211,11 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
   }
 
   return (
-    <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-100 rounded-2xl overflow-hidden group">
+    <Card className="bg-white hover:shadow-xl transition-all duration-300 border border-gray-100 rounded-2xl overflow-hidden group hover:-translate-y-1">
       <CardHeader className="pb-4 p-6">
         <div className="flex items-start gap-4">
           {/* Logo */}
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+          <div className="w-20 h-20 bg-[#0F52BA] rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
             {mainProfile?.logo ? (
               <img 
                 src={getOptimizedImageUrl(mainProfile.logo, 80, 80, 'auto')} 
@@ -232,7 +232,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
           <div className="flex-1">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-[#0F52BA] transition-colors">
                   {coaching.organizationName}
                 </h3>
                 <p className="text-gray-600 font-medium">{mainProfile?.name || 'No profile name'}</p>
@@ -323,7 +323,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
                 <span className="text-sm font-medium text-gray-700">Subjects: </span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {mainProfile.subjectsOffered.slice(0, 4).map((subject) => (
-                    <Badge key={subject} className="text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100">
+                    <Badge key={subject} className="text-xs bg-[#0F52BA]/10 text-[#0F52BA] border-[#0F52BA]/20 hover:bg-[#0F52BA]/20">
                       {subject}
                     </Badge>
                   ))}
@@ -341,7 +341,7 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
                 <span className="text-sm font-medium text-gray-700">Exams: </span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {mainProfile.examsOffered.slice(0, 3).map((exam) => (
-                    <Badge key={exam} variant="outline" className="text-xs border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                    <Badge key={exam} variant="outline" className="text-xs border-[#0F52BA]/30 text-[#0F52BA] hover:bg-[#0F52BA]/5">
                       {exam}
                     </Badge>
                   ))}
@@ -369,14 +369,14 @@ const PublicCoachingCard: React.FC<PublicCoachingCardProps> = ({
 
         {/* Actions */}
         <div className="flex gap-3 pt-2">
-          <Button variant="outline" size="sm" className="flex-1 border-gray-200 hover:border-blue-300 hover:bg-blue-50" asChild>
+          <Button variant="outline" size="sm" className="flex-1 border-gray-200 hover:border-[#0F52BA] hover:bg-[#0F52BA] hover:text-white transition-all" asChild>
             <Link href={`/coaching/${coaching.coachingId}`}>
               <Eye className="h-4 w-4 mr-2" />
               View Details
             </Link>
           </Button>
           {!session && (
-            <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700" asChild>
+            <Button size="sm" className="flex-1 bg-[#0F52BA] hover:bg-[#0A3d8F]" asChild>
               <Link href="/login">
                 <Lock className="h-4 w-4 mr-2" />
                 Login to Contact

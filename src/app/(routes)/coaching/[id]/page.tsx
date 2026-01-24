@@ -4,13 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PageLoader } from '@/components/ui/loader';
 import { 
   MapPin, Phone, Mail, Globe, Calendar, Users, BookOpen, Award, 
-  Clock, Star, CheckCircle, Building2, Wifi, Monitor, Edit, ArrowLeft,
-  Image as ImageIcon, User
+  Clock, Star, CheckCircle, Building2, Edit, ArrowLeft,
+  Image as ImageIcon, User, ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -46,7 +44,8 @@ interface CoachingData {
     verificationStatus: 'Pending' | 'Verified' | 'Rejected';
     subjectsOffered: string[];
     examsOffered: string[];
-    facilities: string[];    courses: Array<{
+    facilities: string[];
+    courses: Array<{
       id: string;
       courseName: string;
       courseAmount: number;
@@ -59,11 +58,20 @@ interface CoachingData {
       profileImage?: string;
       bio?: string;
       specialization?: string[];
-      email?: string;
-      phone?: string;
     }>;
   }>;
 }
+
+// Section Component for consistent styling
+const Section = ({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) => (
+  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+      <Icon className="w-5 h-5 text-[#0F52BA]" />
+      <h3 className="font-semibold text-gray-900">{title}</h3>
+    </div>
+    <div className="p-4">{children}</div>
+  </div>
+);
 
 const CoachingDetailPage = () => {
   const params = useParams();
@@ -76,24 +84,17 @@ const CoachingDetailPage = () => {
   const coachingId = params?.id as string;
 
   useEffect(() => {
-    if (coachingId) {
-      fetchCoachingDetails();
-    }
+    if (coachingId) fetchCoachingDetails();
   }, [coachingId]);
 
   const fetchCoachingDetails = async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/coaching/${coachingId}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch coaching details');
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch');
       const data = await response.json();
       setCoaching(data);
     } catch (error) {
-      console.error('Error fetching coaching details:', error);
       setError('Failed to load coaching details');
       toast.error('Failed to load coaching details');
     } finally {
@@ -101,452 +102,352 @@ const CoachingDetailPage = () => {
     }
   };
 
+  // Skeleton Loading
   if (loading) {
-    return <PageLoader text="Loading coaching details..." />;
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="animate-pulse">
+              <div className="h-6 w-16 bg-gray-200 rounded mb-4"></div>
+              <div className="flex gap-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-xl"></div>
+                <div className="flex-1">
+                  <div className="h-7 w-2/3 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 w-1/3 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-4 space-y-4">
+          {[1,2,3].map(i => (
+            <div key={i} className="bg-white rounded-xl p-4 animate-pulse">
+              <div className="h-5 w-32 bg-gray-200 rounded mb-3"></div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error || !coaching) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Coaching Not Found</h2>
-            <p className="text-muted-foreground mb-4">
-              The coaching details you're looking for could not be found.
-            </p>
-            <Button onClick={() => router.back()}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Go Back
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl p-6 text-center max-w-sm w-full">
+          <h2 className="text-lg font-semibold mb-2">Coaching Not Found</h2>
+          <p className="text-gray-500 mb-4 text-sm">The coaching you're looking for doesn't exist.</p>
+          <Button onClick={() => router.back()} size="sm">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Go Back
+          </Button>
+        </div>
       </div>
     );
   }
-  const isOwner = session?.user?.id && coaching && session.user.id === coaching.ownerUserId;
 
-  // Get the main profile data
-  const mainProfile = coaching?.profiles?.[0];
+  const isOwner = session?.user?.id && session.user.id === coaching.ownerUserId;
+  const mainProfile = coaching.profiles?.[0];
+  const minPrice = mainProfile?.courses?.length 
+    ? Math.min(...mainProfile.courses.map(c => c.courseAmount)) 
+    : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8">
-      <div className="container max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <Button variant="ghost" className="mb-4" onClick={() => router.back()}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-              <h1 className="text-3xl font-bold text-foreground mb-2">{coaching.organizationName}</h1>
-              {mainProfile?.tagline && <p className="text-muted-foreground">{mainProfile.tagline}</p>}
-              <div className="flex items-center gap-2 mt-2">
-                <Badge variant={coaching.approved ? "default" : "secondary"}>
-                  {coaching.approved ? "Approved" : "Pending Approval"}
-                </Badge>
-                {mainProfile && (
-                  <Badge variant="outline">
-                    {mainProfile.city}, {mainProfile.state}
-                  </Badge>
-                )}              </div>
+    <div className="min-h-screen bg-gray-50 pb-24 lg:pb-8">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-16 z-30">
+        <div className="container mx-auto px-4 py-4">
+          {/* Back Button */}
+          <button 
+            onClick={() => router.back()} 
+            className="inline-flex items-center text-sm font-medium text-[#0F52BA] bg-[#0F52BA]/10 hover:bg-[#0F52BA]/20 px-3 py-1.5 rounded-full mb-3 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
+          </button>
+          
+          {/* Institute Info */}
+          <div className="flex gap-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-[#0F52BA] rounded-xl flex items-center justify-center flex-shrink-0">
+              {mainProfile?.logo ? (
+                <img src={mainProfile.logo} alt="" className="w-full h-full object-cover rounded-xl" />
+              ) : (
+                <Building2 className="w-8 h-8 text-white" />
+              )}
             </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              {/* If not logged in, show Login to Apply */}
-              {!session?.user && (
-                <Button asChild className="bg-blue-600 hover:bg-blue-700">
-                  <Link href="/login">
-                    <User className="h-4 w-4 mr-2" />
-                    Login to Apply
-                  </Link>
-                </Button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
+                {coaching.organizationName}
+              </h1>
+              {mainProfile?.tagline && (
+                <p className="text-sm text-gray-600 line-clamp-1 mt-0.5">{mainProfile.tagline}</p>
               )}
-              
-              {/* If logged in as user (student), show contact and demo buttons */}
-              {session?.user && !isOwner && (
-                <>
-                  <Button asChild variant="outline">
-                    <Link href={`tel:${mainProfile?.contactNumber}`}>
-                      <Phone className="h-4 w-4 mr-2" />
-                      Contact Now
-                    </Link>
-                  </Button>
-                  <Button asChild className="bg-green-600 hover:bg-green-700">
-                    <Link href={`/demo-booking/${coaching.coachingId}`}>
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Book a Demo
-                    </Link>
-                  </Button>
-                </>
-              )}
-              
-              {/* If owner, show Edit Details */}
-              {isOwner && (
-                <Button asChild>
-                  <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Details
-                  </Link>
-                </Button>
-              )}
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="flex items-center text-sm text-gray-500">
+                  <MapPin className="w-3.5 h-3.5 mr-1" />
+                  {mainProfile?.city}, {mainProfile?.state}
+                </span>
+                {mainProfile?.verificationStatus === 'Verified' && (
+                  <Badge className="bg-green-100 text-green-700 text-xs">
+                    <Award className="w-3 h-3 mr-1" /> Verified
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Info */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Overview */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-blue-600" />
-                  Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {mainProfile?.description && (
-                  <p className="text-gray-700 leading-relaxed">{mainProfile.description}</p>                )}
-              
-                
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {mainProfile?.establishedYear && (
-                    <div className="text-center p-3 bg-blue-50 rounded-lg">
-                      <Calendar className="h-6 w-6 text-blue-600 mx-auto mb-1" />
-                      <p className="text-sm font-medium">Established</p>
-                      <p className="text-lg font-bold text-blue-600">{mainProfile.establishedYear}</p>
-                    </div>
-                  )}
-                  <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <BookOpen className="h-6 w-6 text-green-600 mx-auto mb-1" />
-                    <p className="text-sm font-medium">Subjects</p>
-                    <p className="text-lg font-bold text-green-600">
-                      {mainProfile?.subjectsOffered?.length || 0}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <Award className="h-6 w-6 text-purple-600 mx-auto mb-1" />
-                    <p className="text-sm font-medium">Exams</p>
-                    <p className="text-lg font-bold text-purple-600">
-                      {mainProfile?.examsOffered?.length || 0}
-                    </p>
-                  </div>
-                </div>              </CardContent>
-            </Card>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-4 space-y-4">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-3 gap-3">
+          {mainProfile?.establishedYear && (
+            <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
+              <Calendar className="w-5 h-5 text-[#0F52BA] mx-auto mb-1" />
+              <p className="text-lg font-bold text-gray-900">{mainProfile.establishedYear}</p>
+              <p className="text-xs text-gray-500">Established</p>
+            </div>
+          )}
+          <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
+            <BookOpen className="w-5 h-5 text-[#0F52BA] mx-auto mb-1" />
+            <p className="text-lg font-bold text-gray-900">{mainProfile?.courses?.length || 0}</p>
+            <p className="text-xs text-gray-500">Courses</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
+            <Users className="w-5 h-5 text-[#0F52BA] mx-auto mb-1" />
+            <p className="text-lg font-bold text-gray-900">{mainProfile?.teachers?.length || 0}</p>
+            <p className="text-xs text-gray-500">Teachers</p>
+          </div>
+        </div>
 
-            {/* Coaching Images Gallery */}
-            {mainProfile?.images && mainProfile.images.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5 text-blue-600" />
-                    Coaching Gallery
-                  </CardTitle>
-                  <CardDescription>Take a virtual tour of our coaching facilities</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {mainProfile.images.map((image, index) => (
-                      <div 
-                        key={index} 
-                        className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                        onClick={() => window.open(image, '_blank')}
-                      >
-                        <img 
-                          src={image} 
-                          alt={`Coaching facility ${index + 1}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+        {/* About */}
+        {mainProfile?.description && (
+          <Section title="About" icon={Building2}>
+            <p className="text-gray-600 text-sm leading-relaxed">{mainProfile.description}</p>
+          </Section>
+        )}
+
+        {/* Exams & Subjects */}
+        {(mainProfile?.examsOffered?.length > 0 || mainProfile?.subjectsOffered?.length > 0) && (
+          <Section title="Exams & Subjects" icon={Award}>
+            {mainProfile?.examsOffered?.length > 0 && (
+              <div className="mb-3">
+                <p className="text-xs font-medium text-gray-500 mb-2">EXAM PREPARATION</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {mainProfile.examsOffered.map((exam, i) => (
+                    <Badge key={i} className="bg-[#0F52BA]/10 text-[#0F52BA] border-0 text-xs">{exam}</Badge>
+                  ))}
+                </div>
+              </div>
             )}
-
-            {/* Subjects & Exams */}
-            {mainProfile && (mainProfile.subjectsOffered?.length > 0 || mainProfile.examsOffered?.length > 0) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-blue-600" />
-                    Subjects & Exams
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {mainProfile.subjectsOffered?.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold mb-2">Subjects Offered</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {mainProfile.subjectsOffered.map((subject, index) => (
-                          <Badge key={index} variant="secondary">{subject}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {mainProfile.examsOffered?.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold mb-2">Exam Preparation</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {mainProfile.examsOffered.map((exam, index) => (
-                          <Badge key={index} variant="outline">{exam}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}            {/* Courses */}
-            {mainProfile?.courses && mainProfile.courses.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-blue-600" />
-                    Courses Offered
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {mainProfile.courses.map((course, index) => (
-                      <div key={course.id} className="p-4 border rounded-lg">
-                        <h5 className="font-semibold">{course.courseName}</h5>
-                        <p className="text-lg font-bold text-green-600">₹{course.courseAmount.toLocaleString()}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>            )}
-
-            {/* Teachers */}
-            {mainProfile?.teachers && mainProfile.teachers.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-blue-600" />
-                    Our Teachers
-                  </CardTitle>
-                  <CardDescription>Meet our experienced faculty members</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {mainProfile.teachers.map((teacher, index) => (
-                      <div key={teacher.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                        <div className="flex items-start gap-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                            {teacher.profileImage ? (
-                              <img 
-                                src={teacher.profileImage} 
-                                alt={teacher.name}
-                                className="w-full h-full object-cover rounded-full"
-                              />
-                            ) : (
-                              <span className="text-white font-semibold text-lg">
-                                {teacher.name.charAt(0).toUpperCase()}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <h5 className="font-semibold text-lg">{teacher.name}</h5>
-                            <p className="text-sm text-gray-600 mb-1">{teacher.qualification}</p>
-                            <p className="text-sm text-blue-600 font-medium">{teacher.experience} years experience</p>
-                            {teacher.specialization && teacher.specialization.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {teacher.specialization.map((spec, specIndex) => (
-                                  <Badge key={specIndex} variant="secondary" className="text-xs">
-                                    {spec}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        {teacher.bio && (
-                          <p className="text-sm text-gray-600 mt-3 leading-relaxed">{teacher.bio}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>            )}
-          </div>          {/* Right Column - Actions & Contact */}
-          <div className="space-y-6">
-            {/* Action Buttons */}
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-              <CardHeader>
-                <CardTitle className="text-center text-blue-700">
-                  {!session?.user && "Join Us Today"}
-                  {session?.user && !isOwner && "Take Action"}
-                  {isOwner && "Manage Your Coaching"}
-                </CardTitle>
-                <CardDescription className="text-center">
-                  {!session?.user && "Login to apply and connect with us"}
-                  {session?.user && !isOwner && "Get in touch or book a demo session"}
-                  {isOwner && "Edit your coaching details"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {/* If not logged in, show Login to Apply */}
-                {!session?.user && (
-                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
-                    <Link href="/login">
-                      <User className="h-5 w-5 mr-2" />
-                      Login to Apply
-                    </Link>
-                  </Button>
-                )}
-                
-                {/* If logged in as user (student), show contact and demo buttons */}
-                {session?.user && !isOwner && (
-                  <>
-                    <Button asChild className="w-full bg-green-600 hover:bg-green-700" size="lg">
-                      <Link href={`/demo-booking/${coaching.coachingId}`}>
-                        <Calendar className="h-5 w-5 mr-2" />
-                        Book a Demo Now
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" className="w-full" size="lg">
-                      <Link href={`tel:${mainProfile?.contactNumber}`}>
-                        <Phone className="h-5 w-5 mr-2" />
-                        Contact Now
-                      </Link>
-                    </Button>
-                  </>
-                )}
-                  {/* If owner, show Edit Details */}
-                {isOwner && (
-                  <div className="space-y-3">
-                    <Button asChild className="w-full" size="lg">
-                      <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
-                        <Edit className="h-5 w-5 mr-2" />
-                        Edit Details
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" className="w-full" size="lg">
-                      <Link href={`/coaching-dashboard/demo-slots/${coaching.coachingId}`}>
-                        <Calendar className="h-5 w-5 mr-2" />
-                        Manage Demo Booking
-                      </Link>
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>            {/* Contact Information - Only show if logged in */}
-            {session?.user && mainProfile && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-blue-600" />
-                    Contact Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <span>{mainProfile.contactNumber}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span>{mainProfile.email}</span>
-                  </div>
-                  {mainProfile.website && (
-                    <div className="flex items-center gap-3">
-                      <Globe className="h-4 w-4 text-gray-400" />
-                      <a 
-                        href={mainProfile.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Visit Website
-                      </a>
-                    </div>
-                  )}                </CardContent>
-              </Card>
+            {mainProfile?.subjectsOffered?.length > 0 && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-2">SUBJECTS</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {mainProfile.subjectsOffered.map((subject, i) => (
+                    <Badge key={i} variant="outline" className="text-xs border-gray-200">{subject}</Badge>
+                  ))}
+                </div>
+              </div>
             )}
+          </Section>
+        )}
 
-            {/* Contact Information prompt for non-logged in users */}
+        {/* Courses */}
+        {mainProfile?.courses?.length > 0 && (
+          <Section title="Courses" icon={BookOpen}>
+            <div className="space-y-2">
+              {mainProfile.courses.map((course) => (
+                <div key={course.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium text-gray-900 text-sm">{course.courseName}</span>
+                  <span className="font-bold text-[#0F52BA]">₹{course.courseAmount.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Gallery - Horizontal Slider */}
+        {mainProfile?.images?.length > 0 && (
+          <Section title="Gallery" icon={ImageIcon}>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+              {mainProfile.images.map((img, i) => (
+                <div 
+                  key={i} 
+                  className="flex-shrink-0 w-64 h-44 rounded-xl overflow-hidden bg-gray-100 snap-start cursor-pointer"
+                  onClick={() => window.open(img, '_blank')}
+                >
+                  <img src={img} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                </div>
+              ))}
+            </div>
+            {mainProfile.images.length > 3 && (
+              <p className="text-xs text-gray-400 text-center mt-2">Swipe to see more →</p>
+            )}
+          </Section>
+        )}
+
+        {/* Teachers */}
+        {mainProfile?.teachers?.length > 0 && (
+          <Section title="Faculty" icon={Users}>
+            <div className="space-y-3">
+              {mainProfile.teachers.map((teacher) => (
+                <div key={teacher.id} className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-[#0F52BA] rounded-full flex items-center justify-center flex-shrink-0">
+                    {teacher.profileImage ? (
+                      <img src={teacher.profileImage} alt="" className="w-full h-full object-cover rounded-full" />
+                    ) : (
+                      <span className="text-white font-semibold">{teacher.name.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm">{teacher.name}</p>
+                    <p className="text-xs text-gray-500">{teacher.qualification} • {teacher.experience} yrs exp</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Contact & Location */}
+        <Section title="Contact & Location" icon={MapPin}>
+          <div className="space-y-3 text-sm">
+            {mainProfile?.address && (
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-gray-600">{mainProfile.address}</p>
+                  <p className="text-gray-500">{mainProfile.city}, {mainProfile.state} - {mainProfile.pincode}</p>
+                </div>
+              </div>
+            )}
+            {session?.user && mainProfile?.contactNumber && (
+              <div className="flex items-center gap-3">
+                <Phone className="w-4 h-4 text-gray-400" />
+                <a href={`tel:${mainProfile.contactNumber}`} className="text-[#0F52BA]">{mainProfile.contactNumber}</a>
+              </div>
+            )}
+            {session?.user && mainProfile?.email && (
+              <div className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-gray-400" />
+                <a href={`mailto:${mainProfile.email}`} className="text-[#0F52BA]">{mainProfile.email}</a>
+              </div>
+            )}
+            {mainProfile?.website && (
+              <div className="flex items-center gap-3">
+                <Globe className="w-4 h-4 text-gray-400" />
+                <a href={mainProfile.website} target="_blank" rel="noopener noreferrer" className="text-[#0F52BA]">Visit Website</a>
+              </div>
+            )}
             {!session?.user && (
-              <Card className="border-blue-200 bg-blue-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-blue-600" />
-                    Contact Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-3">
-                    Login to view contact details and connect with the coaching center directly.
-                  </p>
-                  <Button asChild className="w-full">
-                    <Link href="/login">
-                      <User className="h-4 w-4 mr-2" />
-                      Login to View Contact Details
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+                <Link href="/login" className="text-[#0F52BA] font-medium">Login</Link> to view contact details
+              </p>
             )}
+          </div>
+        </Section>
 
-            {/* Location */}
-            {mainProfile && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-blue-600" />
-                    Location
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700">{mainProfile.address}</p>
-                  <p className="text-gray-600">{mainProfile.city}, {mainProfile.state} - {mainProfile.pincode}</p>
-                </CardContent>
-              </Card>
+        {/* Facilities */}
+        {mainProfile?.facilities?.length > 0 && (
+          <Section title="Facilities" icon={CheckCircle}>
+            <div className="grid grid-cols-2 gap-2">
+              {mainProfile.facilities.map((facility, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  <span className="text-gray-700">{facility}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Operating Hours */}
+        {mainProfile?.operatingHours && (
+          <Section title="Timings" icon={Clock}>
+            <p className="text-sm text-gray-600">{mainProfile.operatingHours}</p>
+            {mainProfile.operatingDays?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {mainProfile.operatingDays.map((day, i) => (
+                  <Badge key={i} variant="outline" className="text-xs">{day}</Badge>
+                ))}
+              </div>
             )}
+          </Section>
+        )}
+      </div>
 
-            {/* Operating Hours */}
-            {mainProfile && (mainProfile.operatingDays?.length > 0 || mainProfile.operatingHours) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-blue-600" />
-                    Operating Hours
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {mainProfile.operatingDays?.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {mainProfile.operatingDays.map((day) => (
-                        <Badge key={day} variant="outline" className="text-xs">{day}</Badge>
-                      ))}
-                    </div>
-                  )}
-                  {mainProfile.operatingHours && (
-                    <p className="text-gray-600">{mainProfile.operatingHours}</p>
-                  )}
-                </CardContent>
-              </Card>
-            )}            {/* Facilities */}
-            {mainProfile?.facilities && mainProfile.facilities.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-blue-600" />
-                    Facilities
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {mainProfile.facilities.map((facility, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">{facility}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}          
+      {/* Sticky Bottom CTA - Mobile Only */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden z-40">
+        <div className="flex gap-3">
+          {!session?.user && (
+            <Button asChild className="flex-1 bg-[#0F52BA] hover:bg-[#0A3D8F]">
+              <Link href="/login">
+                <User className="w-4 h-4 mr-2" /> Login to Apply
+              </Link>
+            </Button>
+          )}
+          {session?.user && !isOwner && (
+            <>
+              <Button asChild variant="outline" className="flex-1">
+                <Link href={`tel:${mainProfile?.contactNumber}`}>
+                  <Phone className="w-4 h-4 mr-2" /> Call
+                </Link>
+              </Button>
+              <Button asChild className="flex-1 bg-[#0F52BA] hover:bg-[#0A3D8F]">
+                <Link href={`/demo-booking/${coaching.coachingId}`}>
+                  <Calendar className="w-4 h-4 mr-2" /> Book Demo
+                </Link>
+              </Button>
+            </>
+          )}
+          {isOwner && (
+            <Button asChild className="flex-1 bg-[#0F52BA] hover:bg-[#0A3D8F]">
+              <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}>
+                <Edit className="w-4 h-4 mr-2" /> Edit Details
+              </Link>
+            </Button>
+          )}
+        </div>
+        {minPrice && (
+          <p className="text-center text-xs text-gray-500 mt-2">
+            Courses starting from <span className="font-bold text-[#0F52BA]">₹{minPrice.toLocaleString()}</span>
+          </p>
+        )}
+      </div>
+
+      {/* Desktop CTA - Hidden on mobile */}
+      <div className="hidden lg:block fixed bottom-8 right-8 z-40">
+        <div className="bg-white rounded-xl shadow-xl border border-gray-200 p-4 w-72">
+          <div className="text-center mb-3">
+            {minPrice && (
+              <p className="text-sm text-gray-500">Starting from <span className="text-xl font-bold text-[#0F52BA]">₹{minPrice.toLocaleString()}</span></p>
+            )}
+          </div>
+          <div className="space-y-2">
+            {!session?.user && (
+              <Button asChild className="w-full bg-[#0F52BA] hover:bg-[#0A3D8F]">
+                <Link href="/login"><User className="w-4 h-4 mr-2" /> Login to Apply</Link>
+              </Button>
+            )}
+            {session?.user && !isOwner && (
+              <>
+                <Button asChild className="w-full bg-[#0F52BA] hover:bg-[#0A3D8F]">
+                  <Link href={`/demo-booking/${coaching.coachingId}`}><Calendar className="w-4 h-4 mr-2" /> Book Demo</Link>
+                </Button>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={`tel:${mainProfile?.contactNumber}`}><Phone className="w-4 h-4 mr-2" /> Contact Now</Link>
+                </Button>
+              </>
+            )}
+            {isOwner && (
+              <Button asChild className="w-full bg-[#0F52BA] hover:bg-[#0A3D8F]">
+                <Link href={`/coaching-dashboard/manage/${coaching.coachingId}`}><Edit className="w-4 h-4 mr-2" /> Edit Details</Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>

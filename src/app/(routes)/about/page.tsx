@@ -1,235 +1,203 @@
 import React from 'react';
-import { FaGraduationCap, FaUserTie, FaChartLine, FaHandshake } from 'react-icons/fa';
+import Link from 'next/link';
+import { 
+  Target, 
+  Eye, 
+  Users, 
+  Award, 
+  TrendingUp, 
+  Search, 
+  Shield, 
+  Zap,
+  MapPin,
+  Calendar,
+  Star,
+  ChevronRight
+} from 'lucide-react';
 
-// Import common reusable components
-import PageHeader from '@/components/common/PageHeader';
-import ValueCard from '@/components/common/ValueCard';
-import TeamMember from '@/components/common/TeamMember';
-import Quote from '@/components/common/Quote';
-import MetricCard from '@/components/common/MetricCard';
+// Stats data
+const stats = [
+  { value: '5,000+', label: 'Coaching Institutes' },
+  { value: '100+', label: 'Cities Covered' },
+  { value: '₹15Cr+', label: 'Student Savings' },
+  { value: '100K+', label: 'Students Helped' },
+];
 
-// Import page-specific components
-import StoryThread from './StoryThread';
-import StoryNode from './StoryNode';
+// Values data
+const values = [
+  { icon: Star, title: 'Student First', desc: 'Every decision prioritizes student needs and educational outcomes.' },
+  { icon: Search, title: 'Transparency', desc: 'Complete honesty about coaching quality, pricing, and experiences.' },
+  { icon: Shield, title: 'Accessibility', desc: 'Quality education accessible to all regardless of location.' },
+  { icon: Zap, title: 'Innovation', desc: 'Constantly improving ways to discover educational opportunities.' },
+];
 
-// Main About Us Component
+// Team data
+const team = [
+  { name: 'Priya Sharma', role: 'Founder & CEO', initial: 'P' },
+  { name: 'Rahul Verma', role: 'CTO', initial: 'R' },
+  { name: 'Neha Patel', role: 'Head of Partnerships', initial: 'N' },
+  { name: 'Arjun Mehta', role: 'Student Success Lead', initial: 'A' },
+];
+
+// Journey data
+const journey = [
+  { year: '2020', title: 'The Beginning', desc: 'CoachingKart was born to help students find reliable coaching information.' },
+  { year: '2021', title: 'Building Partnerships', desc: 'Started with 50 partner institutes, building trust across India.' },
+  { year: '2022', title: 'Launching Services', desc: 'Introduced free demos, price matching, and verified reviews.' },
+  { year: '2023', title: 'Nationwide Expansion', desc: 'Expanded to 100+ cities with 5,000+ coaching institutes.' },
+];
+
 const AboutUs = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader
-        title="Our Journey to Transform Education"
-        subtitle="We're on a mission to make quality coaching accessible, affordable, and transparent for every student in India"
-      />
-
-      <div className="container mx-auto px-4 pb-24">
-        {/* Vision and Mission */}
-        <div className="grid md:grid-cols-2 gap-12 mb-24">
-          <div className="bg-gradient-to-br from-coaching-primary/10 to-coaching-accent/10 p-8 rounded-2xl">
-            <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-              <span className="text-coaching-primary text-3xl">🔭</span> Our
-              Vision
-            </h2>
-            <p className="text-lg leading-relaxed text-foreground/90">
-              To create a world where every student has equal access to
-              high-quality education, regardless of their location or economic
-              background. We envision a future where finding the right coaching
-              is easy, transparent, and affordable for all.
-            </p>
-          </div>
-          <div className="bg-gradient-to-br from-coaching-accent/10 to-coaching-primary/10 p-8 rounded-2xl">
-            <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-              <span className="text-coaching-accent text-3xl">🎯</span> Our
-              Mission
-            </h2>
-            <p className="text-lg leading-relaxed text-foreground/90">
-              To bridge the gap between students and coaching institutes by
-              building a platform that offers unbiased information, verified
-              reviews, and exclusive discounts. We&apos;re committed to
-              transforming how students discover, compare, and access
-              educational resources.
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-12 md:py-20">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Transforming How Students{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F52BA] to-[#2E6CD1]">
+                Find Education
+              </span>
+            </h1>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              We're on a mission to make quality coaching accessible, affordable, and transparent for every student in India.
             </p>
           </div>
         </div>
+      </section>
 
-        {/* Our Story Thread */}
-        <div className="mb-24">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            Our Journey
-          </h2>
-
-          <StoryThread>
-            <StoryNode
-              year="2020"
-              title="The Beginning"
-              description="CoachingKart was born from a simple observation: students were struggling to find reliable information about coaching institutes. Our founders, former students themselves, experienced the frustration of making uninformed decisions about their education. They envisioned a platform where students could access transparent, verified information about educational options."
-              image="/images/about/beginning.jpg"
-              icon={<FaGraduationCap />}
-              isLeft={true}
-            />
-
-            <StoryNode
-              year="2021"
-              title="Building Partnerships"
-              description="We began building relationships with coaching institutes across India, starting with just 50 partners. Our team traveled to different cities, meeting institute owners and understanding their challenges. We created win-win partnerships that helped institutes reach more students while giving students more options."
-              image="/images/about/partnerships.jpg"
-              icon={<FaHandshake />}
-              isLeft={false}
-            />
-
-            <StoryNode
-              year="2022"
-              title="Launching Student Services"
-              description="We introduced our core student services: free demo classes, price matching, and verified reviews. The response was overwhelming. Students could now try before they committed, get the best prices, and learn from others experiences. Our platform began growing rapidly through word-of-mouth."
-              image="/images/about/services.jpg"
-              icon={<FaUserTie />}
-              isLeft={true}
-            />
-
-            <StoryNode
-              year="2023"
-              title="Nationwide Expansion"
-              description="CoachingKart expanded to over 100 cities across India. We reached a milestone of 5,000+ coaching institutes on our platform, covering everything from JEE/NEET preparation to language courses and professional certifications. Our community grew to over 100,000 students who found their perfect educational match."
-              image="/images/about/growth.jpg"
-              icon={<FaChartLine />}
-              isLeft={false}
-            />
-          </StoryThread>
-        </div>
-
-        {/* Our Values */}
-        <div className="mb-24">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Values</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              These core principles guide every decision we make and every
-              feature we develop
+      {/* Vision & Mission */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-[#0F52BA]/10 rounded-xl flex items-center justify-center">
+                <Eye className="w-5 h-5 text-[#0F52BA]" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Our Vision</h2>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              A world where every student has equal access to high-quality education, regardless of location or economic background. Finding the right coaching should be easy, transparent, and affordable.
             </p>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <ValueCard
-              icon={<span className="text-2xl">⭐</span>}
-              title="Student First"
-              description="Every decision we make prioritizes student needs and educational outcomes. We're committed to being an advocate for students."
-            />
-
-            <ValueCard
-              icon={<span className="text-2xl">🔍</span>}
-              title="Transparency"
-              description="We believe in complete honesty about coaching quality, pricing, and student experiences. No hidden fees or misleading claims."
-            />
-
-            <ValueCard
-              icon={<span className="text-2xl">🤝</span>}
-              title="Accessibility"
-              description="Quality education should be accessible to all students regardless of location or economic background."
-            />
-
-            <ValueCard
-              icon={<span className="text-2xl">🚀</span>}
-              title="Innovation"
-              description="We constantly improve our platform to create better ways for students to discover and access educational opportunities."
-            />
-          </div>
-        </div>
-
-        {/* Impact Metrics */}
-        <div className="mb-24 bg-gradient-to-r from-coaching-primary/5 to-coaching-accent/5 rounded-3xl p-8 md:p-12">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Impact</h2>
-            <p className="text-lg text-muted-foreground">
-              The difference we&apos;re making in education
+          <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-[#0F52BA]/10 rounded-xl flex items-center justify-center">
+                <Target className="w-5 h-5 text-[#0F52BA]" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Our Mission</h2>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              Bridge the gap between students and coaching institutes with unbiased information, verified reviews, and exclusive discounts. Transform how students discover and access educational resources.
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            <MetricCard value="5,000+" label="Coaching Institutes" />
-            <MetricCard value="100+" label="Cities Covered" />
-            <MetricCard value="₹15Cr+" label="Student Savings" />
-            <MetricCard value="100K+" label="Students Helped" />
+      {/* Stats */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="bg-[#0F52BA] rounded-2xl p-6 md:p-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {stats.map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-white">{stat.value}</p>
+                <p className="text-sm text-white/70">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Quote */}
-        <div className="mb-24">
-          <Quote
-            text="Education is the most powerful weapon which you can use to change the world. At CoachingKart, we're making sure every student has access to the best educational resources to change their world."
-            author="Priya Sharma"
-            role="Founder & CEO, CoachingKart"
-          />
-        </div>
-
-        {/* Meet the Team */}
-        <div className="mb-24">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Meet Our Team
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Passionate educators, technologists, and changemakers committed to
-              transforming education access
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            <TeamMember
-              name="Priya Sharma"
-              role="Founder & CEO"
-              image="/images/team/founder.jpg"
-              bio="Former IIT student who experienced firsthand the challenges of finding the right coaching. Committed to making education accessible for all."
-            />
-
-            <TeamMember
-              name="Rahul Verma"
-              role="Chief Technology Officer"
-              image="/images/team/cto.jpg"
-              bio="Tech innovator with expertise in educational platforms. Passionate about using technology to solve real educational problems."
-            />
-
-            <TeamMember
-              name="Neha Patel"
-              role="Head of Partnerships"
-              image="/images/team/partnerships.jpg"
-              bio="10+ years in education sector, building relationships between students and quality educational providers."
-            />
-
-            <TeamMember
-              name="Arjun Mehta"
-              role="Student Success Lead"
-              image="/images/team/success.jpg"
-              bio="Former career counselor who ensures our platform truly meets student needs and delivers meaningful outcomes."
-            />
+      {/* Journey */}
+      <section className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-10">Our Journey</h2>
+        <div className="relative">
+          {/* Timeline line - hidden on mobile */}
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 -translate-x-1/2"></div>
+          
+          <div className="space-y-6 md:space-y-0">
+            {journey.map((item, i) => (
+              <div key={i} className={`md:flex md:items-center ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                <div className={`flex-1 ${i % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
+                  <div className="bg-white rounded-xl p-5 border border-gray-200">
+                    <span className="inline-block bg-[#0F52BA]/10 text-[#0F52BA] text-sm font-bold px-3 py-1 rounded-full mb-2">
+                      {item.year}
+                    </span>
+                    <h3 className="font-bold text-gray-900 mb-1">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.desc}</p>
+                  </div>
+                </div>
+                {/* Center dot - hidden on mobile */}
+                <div className="hidden md:flex w-4 h-4 bg-[#0F52BA] rounded-full border-4 border-white shadow-md flex-shrink-0 relative z-10"></div>
+                <div className="flex-1 hidden md:block"></div>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Join Our Mission */}
-        <div className="text-center bg-gradient-to-br from-coaching-primary/10 via-transparent to-coaching-accent/10 rounded-3xl p-8 md:p-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Join Our Mission
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-            Whether you&apos;re a student seeking the best education, a coaching
-            institute looking to reach more students, or a passionate individual
-            wanting to join our team — we&apos;d love to connect with you.
+      {/* Values */}
+      <section className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-4">Our Values</h2>
+        <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+          Core principles that guide every decision we make
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {values.map((value, i) => (
+            <div key={i} className="bg-white rounded-xl p-5 border border-gray-200 text-center">
+              <div className="w-12 h-12 bg-[#0F52BA]/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <value.icon className="w-6 h-6 text-[#0F52BA]" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-1 text-sm">{value.title}</h3>
+              <p className="text-xs text-gray-500">{value.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-4">Our Team</h2>
+        <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+          Passionate educators and technologists transforming education access
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {team.map((member, i) => (
+            <div key={i} className="bg-white rounded-xl p-5 border border-gray-200 text-center">
+              <div className="w-16 h-16 bg-[#0F52BA] rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-xl font-bold text-white">{member.initial}</span>
+              </div>
+              <h3 className="font-bold text-gray-900 text-sm">{member.name}</h3>
+              <p className="text-xs text-gray-500">{member.role}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="container mx-auto px-4 py-12 pb-20">
+        <div className="bg-gradient-to-r from-[#0F52BA] to-[#2E6CD1] rounded-2xl p-8 md:p-12 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Join Our Mission</h2>
+          <p className="text-white/80 mb-6 max-w-2xl mx-auto">
+            Whether you're a student, coaching institute, or passionate individual — we'd love to connect.
           </p>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="/contact"
-              className="px-8 py-3 bg-coaching-primary text-white font-medium rounded-full hover:bg-coaching-primary/90 transition-colors duration-300 shadow-lg shadow-coaching-primary/20 hover:shadow-coaching-primary/40"
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link 
+              href="/contact-us" 
+              className="inline-flex items-center justify-center px-6 py-3 bg-white text-[#0F52BA] font-medium rounded-full hover:bg-gray-100 transition-colors"
             >
-              Contact Us
-            </a>
-
-            <a
-              href="/careers"
-              className="px-8 py-3 bg-gradient-to-r from-coaching-secondary to-coaching-accent text-white font-medium rounded-full hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-coaching-accent/20 hover:shadow-coaching-accent/40"
+              Contact Us <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
+            <Link 
+              href="/coaching" 
+              className="inline-flex items-center justify-center px-6 py-3 bg-white/10 text-white font-medium rounded-full hover:bg-white/20 transition-colors border border-white/30"
             >
-              Join Our Team
-            </a>
+              Explore Coaching
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

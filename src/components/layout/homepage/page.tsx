@@ -31,16 +31,10 @@ const HomePage = () => {
               and start your journey to success today.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex items-center justify-center">
               <Button size="lg" className="h-14 px-8 rounded-full text-lg bg-[#0F52BA] text-white hover:bg-[#0A3d8F] shadow-lg shadow-[#0F52BA]/20 hover:shadow-[#0F52BA]/30 hover:-translate-y-0.5 transition-all duration-300" asChild>
                 <Link href="/coaching">
-                  Find Coaching
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-lg border-2 border-gray-200 text-gray-700 hover:border-[#0F52BA] hover:bg-[#0F52BA] hover:text-white transition-all duration-300" asChild>
-                <Link href="/free-trial" className="flex items-center">
-                  <Play className="w-5 h-5 mr-2 fill-current" />
-                  Free Demo
+                  Find Coaching <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
             </div>

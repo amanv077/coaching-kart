@@ -4,9 +4,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ButtonLoader } from '@/components/ui/loader';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageCircle, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -19,319 +18,228 @@ const ContactUs = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // TODO: Implement form submission logic
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Thank you for your message! We\'ll get back to you soon.');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
+      toast.success('Message sent! We\'ll get back to you soon.');
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (error) {
-      alert('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const contactInfo = [
+    { icon: MapPin, label: 'Address', value: '123 Education Hub, Knowledge District, New Delhi - 110001' },
+    { icon: Phone, label: 'Phone', value: '+91 98765 43210' },
+    { icon: Mail, label: 'Email', value: 'info@coachingkart.com' },
+    { icon: Clock, label: 'Hours', value: 'Mon-Fri: 9AM-7PM, Sat: 10AM-5PM' },
+  ];
+
+  const faqs = [
+    { q: 'How quickly do you respond?', a: 'We respond within 24 hours on business days.' },
+    { q: 'Do you offer free consultations?', a: 'Yes! Initial consultations are completely free.' },
+    { q: 'Can I visit without appointment?', a: 'Walk-ins welcome, but appointments are preferred.' },
+    { q: 'Weekend support available?', a: 'Limited support on Saturdays via WhatsApp/email.' },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header Section */}
-      <div className="bg-gradient-to-r from-coaching-primary/10 to-coaching-accent/10 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-coaching-gradient bg-clip-text  ">
-            Get in Touch
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions about our coaching services? We&apos;re here to help you find the perfect educational match.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-12 md:py-16">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Get in <span className="text-[#0F52BA]">Touch</span>
+            </h1>
+            <p className="text-gray-600">
+              Have questions about coaching services? We're here to help you find the perfect match.
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Form - Left Side (2/3 width) */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Contact Form */}
           <div className="lg:col-span-2">
-            <Card className="shadow-lg border-coaching-primary/10">
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <MessageCircle className="text-coaching-primary" />
-                  Send us a Message
-                </CardTitle>
-                <p className="text-muted-foreground">
-                  Fill out the form below and we&apos;ll get back to you within 24 hours.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Full Name *
-                      </label>
-                      <Input
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        placeholder="Your full name"
-                        required
-                        className="focus:ring-coaching-primary focus:border-coaching-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Email Address *
-                      </label>
-                      <Input
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="your.email@example.com"
-                        required
-                        className="focus:ring-coaching-primary focus:border-coaching-primary"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Phone Number
-                      </label>
-                      <Input
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="+91 98765 43210"
-                        className="focus:ring-coaching-primary focus:border-coaching-primary"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Subject *
-                      </label>
-                      <Input
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleInputChange}
-                        placeholder="What can we help you with?"
-                        required
-                        className="focus:ring-coaching-primary focus:border-coaching-primary"
-                      />
-                    </div>
-                  </div>
-
+            <div className="bg-white rounded-xl border border-gray-200 p-5 md:p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <MessageCircle className="w-5 h-5 text-[#0F52BA]" />
+                <h2 className="text-lg font-bold text-gray-900">Send a Message</h2>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Message *
-                    </label>
-                    <Textarea
-                      name="message"
-                      value={formData.message}
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Name *</label>
+                    <Input
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Tell us more about your query..."
-                      rows={6}
+                      placeholder="Your name"
                       required
-                      className="focus:ring-coaching-primary focus:border-coaching-primary resize-none"
+                      className="h-11 focus:border-[#0F52BA] focus:ring-[#0F52BA]/20"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Email *</label>
+                    <Input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="you@example.com"
+                      required
+                      className="h-11 focus:border-[#0F52BA] focus:ring-[#0F52BA]/20"
+                    />
+                  </div>
+                </div>
 
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting}
-                    className="w-full bg-coaching-primary hover:bg-coaching-primary/90 text-white font-medium py-3"
-                  >                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <ButtonLoader size="sm" />
-                        Sending Message...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Send size={16} />
-                        Send Message
-                      </div>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
+                    <Input
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="+91 98765 43210"
+                      className="h-11 focus:border-[#0F52BA] focus:ring-[#0F52BA]/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Subject *</label>
+                    <Input
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      placeholder="How can we help?"
+                      required
+                      className="h-11 focus:border-[#0F52BA] focus:ring-[#0F52BA]/20"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Message *</label>
+                  <Textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Tell us more..."
+                    rows={5}
+                    required
+                    className="focus:border-[#0F52BA] focus:ring-[#0F52BA]/20 resize-none"
+                  />
+                </div>
+
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full h-11 bg-[#0F52BA] hover:bg-[#0A3D8F] text-white font-medium"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Sending...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Send className="w-4 h-4" /> Send Message
+                    </span>
+                  )}
+                </Button>
+              </form>
+            </div>
           </div>
 
-          {/* Contact Information - Right Side (1/3 width) */}
-          <div className="space-y-6">
+          {/* Contact Info Sidebar */}
+          <div className="space-y-4">
             {/* Contact Details */}
-            <Card className="shadow-lg border-coaching-secondary/10">
-              <CardHeader>
-                <CardTitle className="text-xl">Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <MapPin className="text-coaching-primary mt-1 flex-shrink-0" size={20} />
-                  <div>
-                    <h4 className="font-medium">Address</h4>
-                    <p className="text-sm text-muted-foreground">
-                      123 Education Hub, <br />
-                      Knowledge District, <br />
-                      New Delhi, India - 110001
-                    </p>
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-900 mb-4">Contact Info</h3>
+              <div className="space-y-4">
+                {contactInfo.map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-9 h-9 bg-[#0F52BA]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-4 h-4 text-[#0F52BA]" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">{item.label}</p>
+                      <p className="text-sm text-gray-900">{item.value}</p>
+                    </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
 
-                <div className="flex items-start gap-3">
-                  <Phone className="text-coaching-primary mt-1 flex-shrink-0" size={20} />
-                  <div>
-                    <h4 className="font-medium">Phone</h4>
-                    <p className="text-sm text-muted-foreground">
-                      +91 98765 43210 <br />
-                      +91 87654 32109
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Mail className="text-coaching-primary mt-1 flex-shrink-0" size={20} />
-                  <div>
-                    <h4 className="font-medium">Email</h4>
-                    <p className="text-sm text-muted-foreground">
-                      info@coachingkart.com <br />
-                      support@coachingkart.com
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Clock className="text-coaching-primary mt-1 flex-shrink-0" size={20} />
-                  <div>
-                    <h4 className="font-medium">Business Hours</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Monday - Friday: 9:00 AM - 7:00 PM <br />
-                      Saturday: 10:00 AM - 5:00 PM <br />
-                      Sunday: Closed
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Contact Options */}
-            <Card className="shadow-lg border-coaching-accent/10">
-              <CardHeader>
-                <CardTitle className="text-xl">Quick Contact</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
+            {/* Quick Actions */}
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h3 className="font-bold text-gray-900 mb-3">Quick Contact</h3>
+              <div className="space-y-2">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-coaching-primary text-coaching-primary hover:bg-coaching-primary hover:text-white"
+                  className="w-full justify-start border-[#0F52BA]/30 text-[#0F52BA] hover:bg-[#0F52BA] hover:text-white"
                   onClick={() => window.open('tel:+919876543210')}
                 >
-                  <Phone size={16} className="mr-2" />
-                  Call Now
+                  <Phone className="w-4 h-4 mr-2" /> Call Now
                 </Button>
-                
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-coaching-secondary text-coaching-secondary hover:bg-coaching-secondary hover:text-white"
+                  className="w-full justify-start border-[#0F52BA]/30 text-[#0F52BA] hover:bg-[#0F52BA] hover:text-white"
                   onClick={() => window.open('mailto:info@coachingkart.com')}
                 >
-                  <Mail size={16} className="mr-2" />
-                  Send Email
+                  <Mail className="w-4 h-4 mr-2" /> Send Email
                 </Button>
-                
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-coaching-accent text-coaching-accent hover:bg-coaching-accent hover:text-white"
+                  className="w-full justify-start border-green-500/30 text-green-600 hover:bg-green-500 hover:text-white"
                   onClick={() => window.open('https://wa.me/919876543210', '_blank')}
                 >
-                  <MessageCircle size={16} className="mr-2" />
-                  WhatsApp
+                  <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Map Section */}
-        <div className="mt-16">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Find Us Here</CardTitle>
-              <p className="text-center text-muted-foreground">
-                Visit our office for in-person consultations and support
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video w-full rounded-lg overflow-hidden border">
-                {/* Google Maps Embed */}
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.9462889635384!2d77.2273!3d28.6129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce2daa9eb4d0b%3A0x717971125923e5d!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1635787234567!5m2!1sen!2sin"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="CoachingKart Office Location"
-                />
-              </div>
-            </CardContent>
-          </Card>
+        {/* Map */}
+        <div className="mt-8 bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="p-4 border-b border-gray-100">
+            <h3 className="font-bold text-gray-900">Find Us</h3>
+          </div>
+          <div className="aspect-[21/9] w-full">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.9462889635384!2d77.2273!3d28.6129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce2daa9eb4d0b%3A0x717971125923e5d!2sNew%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1635787234567!5m2!1sen!2sin"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Office Location"
+            />
+          </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold mb-2">How quickly do you respond to inquiries?</h3>
-                <p className="text-sm text-muted-foreground">
-                  We typically respond to all inquiries within 24 hours during business days. Urgent queries are handled within 2-4 hours.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold mb-2">Do you provide free consultations?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Yes! We offer free initial consultations to help you understand our services and find the right coaching match.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold mb-2">Can I visit your office without an appointment?</h3>
-                <p className="text-sm text-muted-foreground">
-                  While walk-ins are welcome, we recommend scheduling an appointment to ensure our team can give you dedicated attention.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold mb-2">Do you have weekend support?</h3>
-                <p className="text-sm text-muted-foreground">
-                  We offer limited weekend support on Saturdays. For urgent matters, you can reach us via WhatsApp or email.
-                </p>
-              </CardContent>
-            </Card>
+        {/* FAQ */}
+        <div className="mt-8 mb-12">
+          <h2 className="text-xl font-bold text-gray-900 text-center mb-6">Frequently Asked Questions</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-4">
+                <h3 className="font-semibold text-gray-900 text-sm mb-1">{faq.q}</h3>
+                <p className="text-sm text-gray-600">{faq.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

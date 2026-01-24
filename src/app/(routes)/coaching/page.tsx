@@ -5,25 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { CardLoader } from '@/components/ui/loader';
-import PublicCoachingCard from '@/components/common/PublicCoachingCard';
+import Link from 'next/link';
 import { 
   Search, 
   MapPin, 
-  Filter, 
   X, 
-  Grid, 
-  List, 
   SlidersHorizontal,
   Star,
-  TrendingUp,
-  Clock,
-  DollarSign,
-  Users,
+  Building2,
   BookOpen,
   Award,
-  ChevronDown,
-  ChevronUp,
-  Sliders
+  ChevronRight,
+  Users
 } from 'lucide-react';
 
 interface CoachingProfile {
@@ -74,14 +67,115 @@ interface ApiResponse {
   };
 }
 
+// Enhanced Coaching Card Component
+const CoachingCard = ({ coaching }: { coaching: Coaching }) => {
+  const mainProfile = coaching.profiles?.[0];
+  const totalCourses = coaching.profiles?.reduce((acc, p) => acc + (p.courses?.length || 0), 0) || 0;
+  
+  const getAvgRating = () => {
+    let total = 0, count = 0;
+    coaching.profiles?.forEach(p => {
+      p.courses?.forEach(c => {
+        if (c.rating) { total += c.rating; count++; }
+      });
+    });
+    return count > 0 ? (total / count).toFixed(1) : null;
+  };
+  
+  const rating = getAvgRating();
+  const minPrice = mainProfile?.courses?.length 
+    ? Math.min(...mainProfile.courses.map(c => c.courseAmount)) 
+    : null;
+  const exams = mainProfile?.examsOffered?.slice(0, 3) || [];
+
+  return (
+    <Link href={`/coaching/${coaching.coachingId}`}>
+      <div className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-xl hover:border-[#0F52BA]/40 transition-all duration-300 cursor-pointer group h-full">
+        {/* Header */}
+        <div className="flex gap-4 mb-4">
+          {/* Logo */}
+          <div className="w-16 h-16 bg-[#0F52BA] rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+            {mainProfile?.logo ? (
+              <img src={mainProfile.logo} alt="" className="w-full h-full object-cover rounded-xl" />
+            ) : (
+              <Building2 className="w-8 h-8 text-white" />
+            )}
+          </div>
+          
+          {/* Title & Location */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-[#0F52BA] transition-colors line-clamp-1">
+              {coaching.organizationName}
+            </h3>
+            {mainProfile?.name && mainProfile.name !== coaching.organizationName && (
+              <p className="text-sm text-gray-600 line-clamp-1">{mainProfile.name}</p>
+            )}
+            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="truncate">{mainProfile?.city}, {mainProfile?.state}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        {mainProfile?.tagline && (
+          <p className="text-sm text-gray-600 line-clamp-2 mb-3">{mainProfile.tagline}</p>
+        )}
+
+        {/* Exams */}
+        {exams.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {exams.map(exam => (
+              <Badge key={exam} variant="outline" className="text-xs border-[#0F52BA]/30 text-[#0F52BA] bg-[#0F52BA]/5">
+                {exam}
+              </Badge>
+            ))}
+            {(mainProfile?.examsOffered?.length || 0) > 3 && (
+              <Badge variant="outline" className="text-xs border-gray-200 text-gray-500">
+                +{(mainProfile?.examsOffered?.length || 0) - 3}
+              </Badge>
+            )}
+          </div>
+        )}
+
+        {/* Stats Row */}
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-4 text-sm text-gray-600">
+            {rating && (
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                <span className="font-semibold text-gray-900">{rating}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1">
+              <BookOpen className="w-4 h-4 text-gray-400" />
+              <span>{totalCourses} Courses</span>
+            </div>
+            {mainProfile?.verificationStatus === 'Verified' && (
+              <div className="flex items-center gap-1 text-green-600">
+                <Award className="w-4 h-4" />
+                <span className="text-xs font-medium">Verified</span>
+              </div>
+            )}
+          </div>
+          
+          {minPrice && (
+            <div className="text-right">
+              <p className="text-xs text-gray-500">From</p>
+              <p className="font-bold text-[#0F52BA]">₹{minPrice.toLocaleString()}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+};
+
 const CoachingsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [selectedExams, setSelectedExams] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [sortBy, setSortBy] = useState('relevance');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [coachings, setCoachings] = useState<Coaching[]>([]);
@@ -92,19 +186,9 @@ const CoachingsPage = () => {
     totalPages: 0,
   });
   const [error, setError] = useState<string | null>(null);
-  const [quickFilter, setQuickFilter] = useState<string>('');
 
-  // Popular subjects and exams
-  const popularSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Computer Science', 'Economics'];
-  const popularExams = ['JEE Main', 'JEE Advanced', 'NEET', 'GATE', 'CAT', 'UPSC', 'SSC', 'Bank PO'];
-  const quickFilters = [
-    { label: 'Top Rated', value: 'top-rated', icon: Star },
-    { label: 'Most Popular', value: 'popular', icon: TrendingUp },
-    { label: 'Recently Added', value: 'recent', icon: Clock },
-    { label: 'Budget Friendly', value: 'budget', icon: DollarSign }
-  ];
+  const popularExams = ['JEE Main', 'JEE Advanced', 'NEET', 'GATE', 'CAT', 'UPSC', 'SSC'];
 
-  // Fetch coachings from API
   const fetchCoachings = useCallback(async () => {
     try {
       setLoading(true);
@@ -116,490 +200,212 @@ const CoachingsPage = () => {
         sortBy,
       });
 
-      if (searchQuery.trim()) {
-        params.append('search', searchQuery.trim());
-      }
-      if (location.trim()) {
-        params.append('location', location.trim());
-      }
-      if (selectedSubjects.length > 0) {
-        params.append('subjects', selectedSubjects.join(','));
-      }
-      if (selectedExams.length > 0) {
-        params.append('exams', selectedExams.join(','));
-      }
-      if (priceRange[0] > 0 || priceRange[1] < 100000) {
-        params.append('minPrice', priceRange[0].toString());
-        params.append('maxPrice', priceRange[1].toString());
-      }
-      if (quickFilter) {
-        params.append('quickFilter', quickFilter);
-      }
+      if (searchQuery.trim()) params.append('search', searchQuery.trim());
+      if (location.trim()) params.append('location', location.trim());
+      if (selectedExams.length > 0) params.append('exams', selectedExams.join(','));
 
       const response = await fetch(`/api/coaching/public?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch coachings: ${response.statusText}`);
-      }
+      if (!response.ok) throw new Error('Failed to fetch');
 
       const data: ApiResponse = await response.json();
       setCoachings(data.coachings);
       setPagination(data.pagination);
     } catch (err) {
-      console.error('Error fetching coachings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch coachings');
+      setError(err instanceof Error ? err.message : 'Failed to fetch');
     } finally {
       setLoading(false);
     }
-  }, [
-    pagination.page,
-    pagination.limit,
-    searchQuery,
-    location,
-    selectedSubjects,
-    selectedExams,
-    priceRange,
-    sortBy,
-    quickFilter,
-  ]);
+  }, [pagination.page, pagination.limit, searchQuery, location, selectedExams, sortBy]);
 
-  // Fetch coachings on component mount and when filters change
-  useEffect(() => {
-    fetchCoachings();
-  }, [fetchCoachings]);
+  useEffect(() => { fetchCoachings(); }, [fetchCoachings]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
-    if (pagination.page !== 1) {
-      setPagination(prev => ({ ...prev, page: 1 }));
-    }
-  }, [searchQuery, location, selectedSubjects, selectedExams, priceRange, sortBy, quickFilter]);
+    if (pagination.page !== 1) setPagination(prev => ({ ...prev, page: 1 }));
+  }, [searchQuery, location, selectedExams, sortBy]);
 
   const clearFilters = () => {
     setSearchQuery('');
     setLocation('');
-    setSelectedSubjects([]);
     setSelectedExams([]);
-    setPriceRange([0, 100000]);
-    setQuickFilter('');
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const addFilter = (value: string, type: 'subject' | 'exam') => {
-    if (type === 'subject' && !selectedSubjects.includes(value)) {
-      setSelectedSubjects([...selectedSubjects, value]);
-    } else if (type === 'exam' && !selectedExams.includes(value)) {
-      setSelectedExams([...selectedExams, value]);
-    }
-  };
-
-  const removeFilter = (value: string, type: 'subject' | 'exam') => {
-    if (type === 'subject') {
-      setSelectedSubjects(selectedSubjects.filter(s => s !== value));
-    } else if (type === 'exam') {
-      setSelectedExams(selectedExams.filter(e => e !== value));
-    }
-  };
-
-  const getActiveFiltersCount = () => {
-    return selectedSubjects.length + selectedExams.length + 
-      (location ? 1 : 0) + 
-      (priceRange[0] > 0 || priceRange[1] < 100000 ? 1 : 0) +
-      (quickFilter ? 1 : 0);
+  const toggleExam = (exam: string) => {
+    setSelectedExams(prev => 
+      prev.includes(exam) ? prev.filter(e => e !== exam) : [...prev, exam]
+    );
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative bg-white overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full -translate-x-32 -translate-y-32 opacity-60"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-100 rounded-full translate-x-32 translate-y-32 opacity-60"></div>
-        </div>
-        
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">
-              Find Your Perfect
-              <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Coaching Institute
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Discover top-rated coaching institutes, compare options, and make the right choice for your academic journey
-            </p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="max-w-5xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
-                  <Input
-                    placeholder="Search coaching institutes, subjects, or exams..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 h-14 text-lg border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl"
-                  />
-                </div>
-                <div className="relative group">
-                  <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
-                  <Input
-                    placeholder="Enter your city or area"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="pl-12 h-14 text-lg border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              {/* Quick Filters */}
-              <div className="flex flex-wrap gap-3">
-                {quickFilters.map((filter) => {
-                  const Icon = filter.icon;
-                  return (
-                    <Button
-                      key={filter.value}
-                      variant={quickFilter === filter.value ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setQuickFilter(quickFilter === filter.value ? '' : filter.value)}
-                      className="h-11 px-5 rounded-xl transition-all duration-200 hover:scale-105 border-gray-200"
-                    >
-                      <Icon className="w-4 h-4 mr-2" />
-                      {filter.label}
-                    </Button>
-                  );
-                })}
-              </div>
+      {/* Search Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-16 z-40">
+        <div className="container mx-auto px-4 py-4">
+          {/* Search Row */}
+          <div className="flex gap-3 mb-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Input
+                placeholder="Search coaching institutes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-11 text-base border-gray-200 focus:border-[#0F52BA] rounded-xl"
+              />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className={`lg:w-80 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="sticky top-8">
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                    <Sliders className="w-5 h-5 mr-2" />
-                    Filters
-                  </h3>
-                  {getActiveFiltersCount() > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearFilters}
-                      className="text-blue-600 hover:text-blue-700"
-                    >
-                      Clear All
-                    </Button>
-                  )}
-                </div>
-
-                {/* Active Filters */}
-                {getActiveFiltersCount() > 0 && (
-                  <div className="mb-6">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Active Filters</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedSubjects.map((subject) => (
-                        <Badge
-                          key={subject}
-                          variant="secondary"
-                          className="bg-blue-100 text-blue-800 hover:bg-blue-200"
-                        >
-                          {subject}
-                          <X
-                            className="w-3 h-3 ml-1 cursor-pointer"
-                            onClick={() => removeFilter(subject, 'subject')}
-                          />
-                        </Badge>
-                      ))}
-                      {selectedExams.map((exam) => (
-                        <Badge
-                          key={exam}
-                          variant="secondary"
-                          className="bg-green-100 text-green-800 hover:bg-green-200"
-                        >
-                          {exam}
-                          <X
-                            className="w-3 h-3 ml-1 cursor-pointer"
-                            onClick={() => removeFilter(exam, 'exam')}
-                          />
-                        </Badge>
-                      ))}
-                      {location && (
-                        <Badge variant="secondary" className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                          {location}
-                          <X
-                            className="w-3 h-3 ml-1 cursor-pointer"
-                            onClick={() => setLocation('')}
-                          />
-                        </Badge>
-                      )}
-                      {quickFilter && (
-                        <Badge variant="secondary" className="bg-orange-100 text-orange-800 hover:bg-orange-200">
-                          {quickFilters.find(f => f.value === quickFilter)?.label}
-                          <X
-                            className="w-3 h-3 ml-1 cursor-pointer"
-                            onClick={() => setQuickFilter('')}
-                          />
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Subjects Filter */}
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Subjects</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {popularSubjects.map((subject) => (
-                      <Button
-                        key={subject}
-                        variant={selectedSubjects.includes(subject) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() =>
-                          selectedSubjects.includes(subject)
-                            ? removeFilter(subject, 'subject')
-                            : addFilter(subject, 'subject')
-                        }
-                        className="h-9 text-xs justify-start px-3 rounded-lg"
-                      >
-                        {subject}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Exams Filter */}
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Exams</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {popularExams.map((exam) => (
-                      <Button
-                        key={exam}
-                        variant={selectedExams.includes(exam) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() =>
-                          selectedExams.includes(exam)
-                            ? removeFilter(exam, 'exam')
-                            : addFilter(exam, 'exam')
-                        }
-                        className="h-9 text-xs justify-start px-3 rounded-lg"
-                      >
-                        {exam}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price Range */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Price Range</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span>₹{priceRange[0].toLocaleString()}</span>
-                      <span>₹{priceRange[1].toLocaleString()}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100000"
-                      step="1000"
-                      value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </div>
+            <div className="relative w-44 hidden md:block">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Input
+                placeholder="City"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="pl-10 h-11 text-base border-gray-200 focus:border-[#0F52BA] rounded-xl"
+              />
             </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`h-11 px-4 border-gray-200 ${showFilters ? 'bg-[#0F52BA]/5 border-[#0F52BA] text-[#0F52BA]' : ''}`}
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+              <span className="ml-2 hidden sm:inline">Filters</span>
+              {selectedExams.length > 0 && (
+                <Badge className="ml-2 bg-[#0F52BA] text-white text-xs px-1.5">{selectedExams.length}</Badge>
+              )}
+            </Button>
           </div>
-
-          {/* Results Section */}
-          <div className="flex-1">
-            {/* Results Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-              <div>
-                {!loading && (
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {`${pagination.total} Coaching${pagination.total !== 1 ? 's' : ''} Found`}
-                  </h2>
-                )}
-                <p className="text-gray-600 mt-1">
-                  {location &&
-                    `in ${location}${selectedSubjects.length > 0 
-                      ? ` for ${selectedSubjects.join(', ')}` 
-                      : ''}`}
-                </p>
-                {error && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {error}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex items-center gap-4">
-                {/* Mobile Filter Toggle */}
+          
+          {/* Filter Chips */}
+          {showFilters && (
+            <div className="flex flex-wrap gap-2 py-2">
+              {popularExams.map(exam => (
                 <Button
-                  variant="outline"
+                  key={exam}
+                  variant={selectedExams.includes(exam) ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="lg:hidden border-gray-200"
+                  onClick={() => toggleExam(exam)}
+                  className={`h-9 px-4 rounded-full text-sm ${
+                    selectedExams.includes(exam) 
+                      ? 'bg-[#0F52BA] hover:bg-[#0A3d8F]' 
+                      : 'border-gray-200 hover:border-[#0F52BA] hover:text-[#0F52BA]'
+                  }`}
                 >
-                  <SlidersHorizontal size={16} className="mr-2" />
-                  Filters
-                  {getActiveFiltersCount() > 0 && (
-                    <Badge className="ml-2 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full">
-                      {getActiveFiltersCount()}
-                    </Badge>
-                  )}
+                  {exam}
                 </Button>
-
-                {/* Sort Dropdown */}
-                <select
-                  value={sortBy}
-                  onChange={e => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="relevance">Most Relevant</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="newest">Newest First</option>
-                </select>
-
-                {/* View Toggle */}
-                <div className="flex border border-gray-200 rounded-xl overflow-hidden">
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                    className="rounded-none border-0"
-                  >
-                    <Grid size={16} />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                    className="rounded-none border-0"
-                  >
-                    <List size={16} />
-                  </Button>
-                </div>
-              </div>
+              ))}
+              {selectedExams.length > 0 && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 text-sm text-gray-500 hover:text-red-500">
+                  <X className="w-4 h-4 mr-1" /> Clear
+                </Button>
+              )}
             </div>
+          )}
+        </div>
+      </div>
 
-            {/* Loading State */}
-            {loading && (
-              <div className="text-center py-20">
-                <CardLoader text="Loading coaching institutes..." />
-              </div>
-            )}
-
-            {/* Results Grid */}
-            {!loading && !error && coachings.length > 0 && (
-              <div
-                className={
-                  viewMode === 'grid'
-                    ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8'
-                    : 'space-y-6'
-                }
-              >
-                {coachings.map((coaching: Coaching) => (
-                  <PublicCoachingCard 
-                    key={coaching.id} 
-                    coaching={coaching}
-                    variant={viewMode === 'list' ? 'compact' : 'default'}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Pagination */}
-            {!loading && !error && pagination.totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-12">
-                <Button
-                  variant="outline"
-                  disabled={pagination.page === 1}
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  className="border-gray-200"
-                >
-                  Previous
-                </Button>
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={pagination.page === page ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePageChange(page)}
-                        className="w-10 h-10 p-0 border-gray-200"
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                </div>
-                <Button
-                  variant="outline"
-                  disabled={pagination.page === pagination.totalPages}
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  className="border-gray-200"
-                >
-                  Next
-                </Button>
-              </div>
-            )}
-
-            {/* No Results */}
-            {!loading && !error && coachings.length === 0 && (
-              <div className="text-center py-20">
-                <div className="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Search className="w-12 h-12 text-gray-400" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-4 text-gray-900">
-                  No coaching institutes found
-                </h3>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  Try adjusting your filters or search criteria to find more results
-                </p>
-                <Button onClick={clearFilters} className="bg-blue-600 hover:bg-blue-700">
-                  Clear All Filters
-                </Button>
-              </div>
-            )}
-
-            {/* Error State */}
-            {!loading && error && (
-              <div className="text-center py-20">
-                <div className="w-32 h-32 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                  <X className="w-12 h-12 text-red-500" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-4 text-gray-900">
-                  Something went wrong
-                </h3>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  {error}
-                </p>
-                <Button onClick={fetchCoachings} className="bg-blue-600 hover:bg-blue-700">
-                  Try Again
-                </Button>
-              </div>
+      {/* Results */}
+      <div className="container mx-auto px-4 py-6">
+        {/* Results Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              {loading ? 'Finding institutes...' : `${pagination.total} Coaching Institutes`}
+            </h2>
+            {(location || selectedExams.length > 0) && (
+              <p className="text-sm text-gray-500 mt-0.5">
+                {location && `in ${location}`}
+                {selectedExams.length > 0 && ` for ${selectedExams.join(', ')}`}
+              </p>
             )}
           </div>
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:border-[#0F52BA] outline-none bg-white"
+          >
+            <option value="relevance">Most Relevant</option>
+            <option value="rating">Top Rated</option>
+            <option value="price-low">Lowest Price</option>
+            <option value="newest">Newest</option>
+          </select>
         </div>
+
+        {/* Loading */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 animate-pulse">
+                <div className="flex gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gray-200 rounded-xl"></div>
+                  <div className="flex-1">
+                    <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
+                <div className="flex gap-2 mb-3">
+                  <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                  <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                </div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Grid */}
+        {!loading && !error && coachings.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {coachings.map(coaching => (
+              <CoachingCard key={coaching.id} coaching={coaching} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center gap-3 mt-10">
+            <Button
+              variant="outline"
+              disabled={pagination.page === 1}
+              onClick={() => setPagination(p => ({ ...p, page: p.page - 1 }))}
+              className="h-10 px-5"
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600 px-4">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              disabled={pagination.page === pagination.totalPages}
+              onClick={() => setPagination(p => ({ ...p, page: p.page + 1 }))}
+              className="h-10 px-5"
+            >
+              Next
+            </Button>
+          </div>
+        )}
+
+        {/* No Results */}
+        {!loading && !error && coachings.length === 0 && (
+          <div className="text-center py-20">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No institutes found</h3>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              Try adjusting your search or filters to find coaching institutes
+            </p>
+            <Button onClick={clearFilters} className="bg-[#0F52BA]">Clear Filters</Button>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="text-center py-20">
+            <p className="text-red-500 mb-4">{error}</p>
+            <Button onClick={fetchCoachings} className="bg-[#0F52BA]">Try Again</Button>
+          </div>
+        )}
       </div>
     </div>
   );

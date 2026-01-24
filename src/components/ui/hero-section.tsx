@@ -51,7 +51,7 @@ const HeroSection = ({
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
-            <Button variant="gradient" size="lg" className="shadow-coaching-button hover:shadow-coaching-hover transition-all duration-300" asChild>
+            <Button variant="default" size="lg" className="shadow-coaching-button hover:shadow-coaching-hover transition-all duration-300" asChild>
               <Link href={primaryButtonHref} className="group">
                 {primaryButtonText}
                 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>

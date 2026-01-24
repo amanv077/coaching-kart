@@ -1,18 +1,16 @@
 "use client";
 
-import CoachingCard from '@/components/common/coaching-card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { CardLoader, PageLoader } from '@/components/ui/loader';
 import {
   Award,
   BookOpen,
   Building2,
-  DollarSign,
-  FileText,
+  Calendar,
+  Edit,
+  ExternalLink,
+  MapPin,
   Plus,
   Settings,
-  TrendingUp,
   Users
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -38,292 +36,279 @@ interface CoachingData {
     id: string;
     profileId: string;
     name: string;
-    branchName?: string;
     city: string;
     state: string;
-    logo?: string;
-    images: string[];
     tagline?: string;
-    description: string;
-    establishedYear: number;
-    contactNumber: string;
-    email: string;
-    rating?: number;
-    totalRatings?: number;
-    approved: boolean;
-    isActive: boolean;
     verificationStatus: 'Pending' | 'Verified' | 'Rejected';
-    courses: Array<{
-      id: string;
-      courseName: string;
-      courseAmount: number;
-    }>;
-    subjectsOffered: string[];
+    courses: Array<{ id: string; courseName: string; courseAmount: number }>;
     examsOffered: string[];
-    facilities: string[];
   }>;
 }
+
+// Skeleton Components
+const SkeletonStatCard = () => (
+  <div className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+    <div className="w-9 h-9 bg-gray-200 rounded-lg mb-2"></div>
+    <div className="h-7 w-12 bg-gray-200 rounded mb-1"></div>
+    <div className="h-3 w-16 bg-gray-100 rounded"></div>
+  </div>
+);
+
+const SkeletonQuickActions = () => (
+  <div className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+    <div className="h-4 w-24 bg-gray-200 rounded mb-3"></div>
+    <div className="flex gap-2">
+      <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+      <div className="h-10 w-28 bg-gray-100 rounded-lg"></div>
+      <div className="h-10 w-24 bg-gray-100 rounded-lg"></div>
+    </div>
+  </div>
+);
+
+const SkeletonCoachingCard = () => (
+  <div className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+    <div className="flex items-start gap-3 mb-3">
+      <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+      <div className="flex-1">
+        <div className="h-5 w-40 bg-gray-200 rounded mb-2"></div>
+        <div className="h-3 w-32 bg-gray-100 rounded"></div>
+      </div>
+      <div className="h-6 w-16 bg-gray-100 rounded-full"></div>
+    </div>
+    <div className="flex gap-1.5 mb-3">
+      <div className="h-5 w-12 bg-gray-100 rounded"></div>
+      <div className="h-5 w-14 bg-gray-100 rounded"></div>
+      <div className="h-5 w-10 bg-gray-100 rounded"></div>
+    </div>
+    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+      <div className="h-4 w-20 bg-gray-100 rounded"></div>
+      <div className="flex gap-2">
+        <div className="h-8 w-8 bg-gray-100 rounded-lg"></div>
+        <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+      </div>
+    </div>
+  </div>
+);
+
+const DashboardSkeleton = () => (
+  <div className="min-h-screen bg-gray-50">
+    <div className="container mx-auto px-4 py-6">
+      {/* Header Skeleton */}
+      <div className="mb-6 animate-pulse">
+        <div className="h-8 w-48 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 w-64 bg-gray-100 rounded"></div>
+      </div>
+
+      {/* Stats Grid Skeleton */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+      </div>
+
+      {/* Quick Actions Skeleton */}
+      <div className="mb-6">
+        <SkeletonQuickActions />
+      </div>
+
+      {/* Coachings Skeleton */}
+      <div>
+        <div className="h-5 w-28 bg-gray-200 rounded mb-4 animate-pulse"></div>
+        <div className="space-y-4">
+          <SkeletonCoachingCard />
+          <SkeletonCoachingCard />
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 const CoachDashboard = () => {
   const { data: session, status } = useSession();
   const [coachings, setCoachings] = useState<CoachingData[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
-    totalCoachings: 0,
-    totalProfiles: 0,
-    totalCourses: 0,
-    totalStudents: 0,
-    pendingApprovals: 0,
-    monthlyEarnings: 0
+    totalCoachings: 0, totalProfiles: 0, totalCourses: 0,
+    totalStudents: 0, pendingApprovals: 0, monthlyEarnings: 0
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchCoachings = async () => {
-    try {
-      const response = await fetch('/api/coaching/my-coachings');
-      if (response.ok) {
-        const data = await response.json();
-        setCoachings(data.coachings);
-        setStats(data.stats);
-      }
-    } catch (error) {
-      console.error('Error fetching coachings:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (session?.user && status === 'authenticated') {
-      fetchCoachings();
+      fetch('/api/coaching/my-coachings')
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) { setCoachings(data.coachings); setStats(data.stats); }
+        })
+        .finally(() => setIsLoading(false));
     }
   }, [session, status]);
 
-  if (status === 'loading') {
-    return <PageLoader text="Loading your dashboard..." />;
+  // Show skeleton while loading
+  if (status === 'loading' || isLoading) {
+    return <DashboardSkeleton />;
   }
-
-  const StatCard = ({ title, value, icon: Icon, description, color = "blue" }: {
-    title: string;
-    value: string | number;
-    icon: React.ElementType;
-    description: string;
-    color?: string;
-  }) => (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold">{value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{description}</p>
-          </div>
-          <div className={`p-3 rounded-full bg-${color}-100`}>
-            <Icon className={`h-6 w-6 text-${color}-600`} />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const QuickActionCard = ({ title, description, icon: Icon, href, buttonText, variant = "default" }: {
-    title: string;
-    description: string;
-    icon: React.ElementType;
-    href: string;
-    buttonText: string;
-    variant?: "default" | "secondary" | "outline";
-  }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-start gap-4">
-          <div className="p-3 rounded-full bg-blue-100">
-            <Icon className="h-6 w-6 text-blue-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-lg mb-2">{title}</h3>
-            <p className="text-muted-foreground text-sm mb-4">{description}</p>
-            <Button variant={variant} size="sm" asChild>
-              <Link href={href}>{buttonText}</Link>
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto px-4 py-6">
+        
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Coach Dashboard
-          </h1>          <p className="text-gray-600">
-            Welcome back, {session?.user?.name || 'Coach'}! Manage your coaching institutes and courses.
-          </p>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Hello, {session?.user?.name?.split(' ')[0] || 'Coach'} 👋
+          </h1>
+          <p className="text-gray-500 mt-1">Manage your coaching institutes</p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Total Coachings"
-            value={stats.totalCoachings}
-            icon={Building2}
-            description="Active coaching institutes"
-            color="blue"
-          />
-          <StatCard
-            title="Total Profiles"
-            value={stats.totalProfiles}
-            icon={Award}
-            description="Branch profiles created"
-            color="green"
-          />
-          <StatCard
-            title="Total Courses"
-            value={stats.totalCourses}
-            icon={BookOpen}
-            description="Courses offered"
-            color="purple"
-          />
-          <StatCard
-            title="Total Students"
-            value={stats.totalStudents}
-            icon={Users}
-            description="Enrolled students"
-            color="orange"
-          />
+        {/* Stats Cards */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <div className="w-9 h-9 bg-[#0F52BA]/10 rounded-lg flex items-center justify-center mb-2">
+              <Building2 className="w-5 h-5 text-[#0F52BA]" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalCoachings}</p>
+            <p className="text-xs text-gray-500">Coachings</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <div className="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center mb-2">
+              <BookOpen className="w-5 h-5 text-emerald-600" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalCourses}</p>
+            <p className="text-xs text-gray-500">Courses</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <div className="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center mb-2">
+              <Users className="w-5 h-5 text-amber-600" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalStudents}</p>
+            <p className="text-xs text-gray-500">Students</p>
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <QuickActionCard
-              title="Create New Coaching"
-              description="Set up a new coaching institute and start reaching more students"
-              icon={Plus}
+        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+          <p className="text-sm font-medium text-gray-700 mb-3">Quick Actions</p>
+          <div className="flex gap-2 overflow-x-auto">
+            <Link
               href="/newCoaching"
-              buttonText="Create Coaching"
-            />
-            <QuickActionCard
-              title="Manage Courses"
-              description="Add new courses, update pricing, and manage course content"
-              icon={BookOpen}
-              href="/coaching-dashboard/courses"
-              buttonText="Manage Courses"
-              variant="outline"
-            />
-            <QuickActionCard
-              title="View Students"
-              description="Monitor student enrollments and track their progress"
-              icon={Users}
-              href="/coaching-dashboard/students"
-              buttonText="View Students"
-              variant="outline"
-            />
-            <QuickActionCard
-              title="Manage Offers"
-              description="Create discounts and special offers to attract more students"
-              icon={DollarSign}
-              href="/coaching-dashboard/offers"
-              buttonText="Manage Offers"
-              variant="outline"
-            />
-            <QuickActionCard
-              title="Analytics"
-              description="Track performance metrics and revenue insights"
-              icon={TrendingUp}
-              href="/coaching-dashboard/analytics"
-              buttonText="View Analytics"
-              variant="outline"
-            />
-            <QuickActionCard
-              title="Settings"
-              description="Update your profile settings and preferences"
-              icon={Settings}
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#0F52BA] text-white rounded-lg text-sm font-medium whitespace-nowrap hover:bg-[#0A3D8F] transition-colors"
+            >
+              <Plus className="w-4 h-4" /> New Coaching
+            </Link>
+            <Link
+              href="/coaching-dashboard/demo-slots"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-gray-200 transition-colors"
+            >
+              <Calendar className="w-4 h-4" /> Demo Slots
+            </Link>
+            <Link
               href="/coaching-dashboard/settings"
-              buttonText="Settings"
-              variant="secondary"
-            />
+              className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-gray-200 transition-colors"
+            >
+              <Settings className="w-4 h-4" /> Settings
+            </Link>
           </div>
         </div>
 
         {/* My Coachings */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">My Coachings</h2>
-            <Button asChild>
-              <Link href="/newCoaching">
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Coaching
-              </Link>
-            </Button>
-          </div>          {isLoading ? (
-            <CardLoader text="Loading your coaching institutes..." className="py-12" />
-          ) : coachings.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {coachings.map((coaching) => (
-                <CoachingCard
-                  key={coaching.id}
-                  coaching={coaching}
-                  showActions={true}
-                />
-              ))}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">My Coachings</h2>
+          </div>
+          
+          {coachings.length > 0 ? (
+            <div className="space-y-4">
+              {coachings.map((coaching) => {
+                const profile = coaching.profiles?.[0];
+                const courseCount = coaching.profiles?.reduce((a, p) => a + (p.courses?.length || 0), 0) || 0;
+                const exams = profile?.examsOffered?.slice(0, 3) || [];
+                
+                return (
+                  <div
+                    key={coaching.id}
+                    className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow"
+                  >
+                    {/* Header */}
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="w-12 h-12 bg-[#0F52BA] rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 truncate">{coaching.organizationName}</h3>
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-0.5">
+                          {profile && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5" /> {profile.city}, {profile.state}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {profile?.verificationStatus === 'Verified' && (
+                        <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                          <Award className="w-3 h-3" /> Verified
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Exams */}
+                    {exams.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {exams.map(exam => (
+                          <span key={exam} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                            {exam}
+                          </span>
+                        ))}
+                        {(profile?.examsOffered?.length || 0) > 3 && (
+                          <span className="text-xs text-gray-400">+{(profile?.examsOffered?.length || 0) - 3}</span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Stats & Actions */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-4 h-4" /> {courseCount} Courses
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/coaching/${coaching.coachingId}`}
+                          className="p-2 text-gray-400 hover:text-[#0F52BA] hover:bg-gray-100 rounded-lg transition-colors"
+                          title="View Page"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </Link>
+                        <Link
+                          href={`/coaching-dashboard/manage/${coaching.coachingId}`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0F52BA] text-white text-sm font-medium rounded-lg hover:bg-[#0A3D8F] transition-colors"
+                        >
+                          <Edit className="w-3.5 h-3.5" /> Manage
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            <Card className="text-center py-12">
-              <CardContent>
-                <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Coachings Yet</h3>
-                <p className="text-gray-600 mb-6">
-                  Create your first coaching institute to start reaching students and managing courses.
-                </p>
-                <Button asChild>
-                  <Link href="/newCoaching">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Your First Coaching
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Building2 className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">No Coachings Yet</h3>
+              <p className="text-gray-500 text-sm mb-4">
+                Create your first coaching institute to start reaching students.
+              </p>
+              <Button asChild className="bg-[#0F52BA] hover:bg-[#0A3D8F]">
+                <Link href="/newCoaching">
+                  <Plus className="w-4 h-4 mr-2" /> Create Coaching
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
 
-        {/* Recent Activity */}
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                  <Users className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium">New Student Enrollment</p>
-                    <p className="text-sm text-gray-600">John Doe enrolled in JEE Main Course</p>
-                  </div>
-                  <span className="text-xs text-gray-500 ml-auto">2 hours ago</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-green-600" />
-                  <div>
-                    <p className="font-medium">Payment Received</p>
-                    <p className="text-sm text-gray-600">₹15,000 for NEET Course</p>
-                  </div>
-                  <span className="text-xs text-gray-500 ml-auto">5 hours ago</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-                  <FileText className="h-5 w-5 text-yellow-600" />
-                  <div>
-                    <p className="font-medium">Course Updated</p>
-                    <p className="text-sm text-gray-600">Mathematics syllabus updated for Class 12</p>
-                  </div>
-                  <span className="text-xs text-gray-500 ml-auto">1 day ago</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );

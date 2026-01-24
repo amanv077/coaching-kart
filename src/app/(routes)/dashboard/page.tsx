@@ -1,280 +1,236 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { PageLoader } from '@/components/ui/loader';
 import { ProfileCompletionPrompt } from '@/components/common/ProfileCompletionPrompt';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Clock, Award, TrendingUp, Calendar, Users, Target, Star } from 'lucide-react';
+import { BookOpen, Clock, Award, TrendingUp, Calendar, Users, Target, Star, Search } from 'lucide-react';
 import Link from 'next/link';
+
+// Skeleton Components
+const SkeletonStatCard = () => (
+  <div className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="h-3 w-20 bg-gray-200 rounded mb-2"></div>
+        <div className="h-7 w-12 bg-gray-200 rounded mb-1"></div>
+        <div className="h-2 w-16 bg-gray-100 rounded"></div>
+      </div>
+      <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+    </div>
+  </div>
+);
+
+const SkeletonCourseCard = () => (
+  <div className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+    <div className="h-5 w-36 bg-gray-200 rounded mb-2"></div>
+    <div className="h-3 w-24 bg-gray-100 rounded mb-4"></div>
+    <div className="h-2 w-full bg-gray-100 rounded mb-3"></div>
+    <div className="h-3 w-32 bg-gray-100 rounded mb-4"></div>
+    <div className="h-9 w-full bg-gray-200 rounded-lg"></div>
+  </div>
+);
+
+const SkeletonQuickAction = () => (
+  <div className="h-20 bg-white rounded-xl border border-gray-200 animate-pulse"></div>
+);
+
+const DashboardSkeleton = () => (
+  <div className="min-h-screen bg-gray-50">
+    <div className="container mx-auto px-4 py-6">
+      {/* Header Skeleton */}
+      <div className="mb-6 animate-pulse">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-56 bg-gray-200 rounded mb-2"></div>
+            <div className="h-4 w-72 bg-gray-100 rounded"></div>
+          </div>
+          <div className="h-6 w-24 bg-gray-100 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Stats Grid Skeleton */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+        <SkeletonStatCard />
+      </div>
+
+      {/* Courses Skeleton */}
+      <div className="mb-6">
+        <div className="h-6 w-32 bg-gray-200 rounded mb-4 animate-pulse"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <SkeletonCourseCard />
+          <SkeletonCourseCard />
+          <SkeletonCourseCard />
+        </div>
+      </div>
+
+      {/* Quick Actions Skeleton */}
+      <div>
+        <div className="h-6 w-28 bg-gray-200 rounded mb-4 animate-pulse"></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <SkeletonQuickAction />
+          <SkeletonQuickAction />
+          <SkeletonQuickAction />
+          <SkeletonQuickAction />
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 const StudentDashboard = () => {
   const { data: session, status } = useSession();
   const { profile, loading: profileLoading } = useUserProfile();
   const [showProfilePrompt, setShowProfilePrompt] = useState(true);
 
+  // Show skeleton while loading
   if (status === 'loading' || profileLoading) {
-    return <PageLoader text="Loading your dashboard..." />;
+    return <DashboardSkeleton />;
   }
+
   if (!session) {
     redirect('/login');
   }
 
-  // Check if user has STUDENT role (users can have multiple roles)
+  // Check if user has STUDENT role
   const userRoles = session.user?.roles || [session.user?.role];
   const hasStudentRole = userRoles.includes('STUDENT');
   
   if (!hasStudentRole) {
-    // Redirect to appropriate dashboard based on primary role
     const primaryRole = session.user?.role;
-    if (primaryRole === 'COACH') {
-      redirect('/coaching-dashboard');
-    } else if (primaryRole === 'ADMIN') {
-      redirect('/admin-dashboard');
-    } else {
-      redirect('/');
-    }
+    if (primaryRole === 'COACH') redirect('/coaching-dashboard');
+    else if (primaryRole === 'ADMIN') redirect('/admin-dashboard');
+    else redirect('/');
   }
 
   const shouldShowProfilePrompt = !profile?.profileCompleted && showProfilePrompt;
+
+  const stats = [
+    { label: 'Enrolled', value: '5', sub: '2 active', icon: BookOpen, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Hours', value: '24', sub: 'This week', icon: Clock, color: 'bg-green-50 text-green-600' },
+    { label: 'Achievements', value: '12', sub: 'Earned', icon: Award, color: 'bg-purple-50 text-purple-600' },
+    { label: 'Progress', value: '85%', sub: '+12% ↑', icon: Target, color: 'bg-orange-50 text-orange-600' },
+  ];
+
+  const courses = [
+    { name: 'Advanced Mathematics', instructor: 'Dr. Sharma', progress: 65, next: 'Tomorrow 10 AM' },
+    { name: 'Physics Fundamentals', instructor: 'Prof. Kumar', progress: 80, next: 'Today 3 PM' },
+    { name: 'Chemistry Mastery', instructor: 'Dr. Patel', progress: 45, next: 'Friday 11 AM' },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
+        
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Welcome back, {session.user?.name}! 🎓
+            <h1 className="text-2xl font-bold text-gray-900">
+              Welcome, {session.user?.name?.split(' ')[0]}! 🎓
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-gray-500 mt-1">
               {profile?.profileCompleted 
-                ? "Ready to continue your personalized learning journey?"
-                : "Complete your profile to unlock personalized features!"
+                ? "Ready to continue learning?"
+                : "Complete your profile for personalized recommendations"
               }
             </p>
           </div>
           {profile?.profileCompleted && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              Profile Complete
-            </Badge>
+            <Badge className="bg-green-100 text-green-700 border-0">Profile Complete</Badge>
           )}
         </div>
 
-        {/* Profile Completion Prompt */}
+        {/* Profile Prompt */}
         {shouldShowProfilePrompt && (
-          <ProfileCompletionPrompt 
-            onDismiss={() => setShowProfilePrompt(false)}
-          />
+          <ProfileCompletionPrompt onDismiss={() => setShowProfilePrompt(false)} />
         )}
 
-        {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="p-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-700">Enrolled Courses</p>
-                  <p className="text-2xl font-bold text-blue-900">5</p>
-                  <p className="text-xs text-blue-600">2 in progress</p>
+                  <p className="text-xs text-gray-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-xs text-gray-400">{stat.sub}</p>
                 </div>
-                <BookOpen className="h-8 w-8 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-700">Study Hours</p>
-                  <p className="text-2xl font-bold text-green-900">24</p>
-                  <p className="text-xs text-green-600">This week</p>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>
+                  <stat.icon className="w-5 h-5" />
                 </div>
-                <Clock className="h-8 w-8 text-green-600" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-purple-700">Achievements</p>
-                  <p className="text-2xl font-bold text-purple-900">12</p>
-                  <p className="text-xs text-purple-600">Certificates earned</p>
-                </div>
-                <Award className="h-8 w-8 text-purple-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-orange-700">Progress Score</p>
-                  <p className="text-2xl font-bold text-orange-900">85%</p>
-                  <p className="text-xs text-orange-600 flex items-center gap-1">
-                    <TrendingUp className="h-3 w-3" />
-                    +12% this month
-                  </p>
-                </div>
-                <Target className="h-8 w-8 text-orange-600" />
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          ))}
         </div>
 
-        {/* Personalized Recommendations */}
-        {profile?.profileCompleted && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-yellow-500" />
-                Recommended for You
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50">
-                  <h4 className="font-semibold text-gray-900 mb-2">Based on your preferences</h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    {profile.coachingMode === 'Online' && "Online courses in "}
-                    {profile.coachingMode === 'Offline' && "Local coaching centers for "}
-                    {profile.coachingMode === 'Both' && "Flexible learning options for "}
-                    {profile.preferredSubjects.slice(0, 2).join(', ')}
-                  </p>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    View Matches
-                  </Button>
-                </div>
-                <div className="p-4 border rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
-                  <h4 className="font-semibold text-gray-900 mb-2">Upcoming Demo Sessions</h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Free demo sessions available for {profile.targetExams.slice(0, 2).join(', ')} preparation
-                  </p>
-                  <Button size="sm" variant="outline" className="border-green-600 text-green-700">
-                    Book Now
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Current Courses */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Current Courses
-              </span>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/courses">View All</Link>
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { 
-                  id: 1, 
-                  name: "Advanced Mathematics", 
-                  progress: 65, 
-                  nextClass: "Tomorrow 10:00 AM",
-                  instructor: "Dr. Sharma"
-                },
-                { 
-                  id: 2, 
-                  name: "Physics Fundamentals", 
-                  progress: 80, 
-                  nextClass: "Today 3:00 PM",
-                  instructor: "Prof. Kumar"
-                },
-                { 
-                  id: 3, 
-                  name: "Chemistry Mastery", 
-                  progress: 45, 
-                  nextClass: "Friday 11:00 AM",
-                  instructor: "Dr. Patel"
-                }
-              ].map((course) => (
-                <Card key={course.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">{course.name}</h3>
-                        <p className="text-sm text-gray-600">by {course.instructor}</p>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                          <span>Progress</span>
-                          <span>{course.progress}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                            style={{ width: `${course.progress}%` }}
-                          />
-                        </div>
-                      </div>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Your Courses</h2>
+            <Link href="/courses" className="text-sm text-[#0F52BA] font-medium hover:underline">
+              View All
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {courses.map((course) => (
+              <div key={course.name} className="bg-white rounded-xl border border-gray-200 p-4">
+                <h3 className="font-semibold text-gray-900 mb-1">{course.name}</h3>
+                <p className="text-sm text-gray-500 mb-3">by {course.instructor}</p>
+                
+                <div className="mb-3">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Progress</span>
+                    <span>{course.progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-1.5">
+                    <div 
+                      className="bg-[#0F52BA] h-1.5 rounded-full" 
+                      style={{ width: `${course.progress}%` }}
+                    />
+                  </div>
+                </div>
 
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4" />
-                        <span>Next: {course.nextClass}</span>
-                      </div>
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Next: {course.next}</span>
+                </div>
 
-                      <Button className="w-full">
-                        Continue Learning
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <Button size="sm" className="w-full bg-[#0F52BA] hover:bg-[#0A3D8F]">
+                  Continue
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button asChild variant="outline" className="h-20 flex flex-col space-y-2 hover:bg-blue-50">
-                <Link href="/listing">
-                  <BookOpen className="h-6 w-6 text-blue-600" />
-                  <span>Browse Courses</span>
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-20 flex flex-col space-y-2 hover:bg-green-50">
-                <Link href="/cart">
-                  <Users className="h-6 w-6 text-green-600" />
-                  <span>Demo Sessions</span>
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-20 flex flex-col space-y-2 hover:bg-purple-50">
-                <Link href="/profile">
-                  <Target className="h-6 w-6 text-purple-600" />
-                  <span>My Profile</span>
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-20 flex flex-col space-y-2 hover:bg-orange-50">
-                <Link href="/contact-us">
-                  <Award className="h-6 w-6 text-orange-600" />
-                  <span>Get Help</span>
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { icon: Search, label: 'Find Coaching', href: '/coaching', color: 'text-blue-600' },
+              { icon: Calendar, label: 'Demo Sessions', href: '/demo-sessions', color: 'text-green-600' },
+              { icon: Users, label: 'My Profile', href: '/profile', color: 'text-purple-600' },
+              { icon: Star, label: 'Get Help', href: '/contact-us', color: 'text-orange-600' },
+            ].map((action) => (
+              <Link
+                key={action.label}
+                href={action.href}
+                className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col items-center text-center hover:shadow-md hover:border-gray-300 transition-all"
+              >
+                <action.icon className={`w-6 h-6 ${action.color} mb-2`} />
+                <span className="text-sm font-medium text-gray-700">{action.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

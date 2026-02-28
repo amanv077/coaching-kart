@@ -188,6 +188,12 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
           <Link
+            href={handleHomeClick()}
+            className="text-sm font-medium text-gray-600 hover:text-[#0F52BA] transition-colors"
+          >
+            Home
+          </Link>
+          <Link
             href="/coaching"
             className="text-sm font-medium text-gray-600 hover:text-[#0F52BA] transition-colors"
           >
